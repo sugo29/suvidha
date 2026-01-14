@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="page-header">
+    <h1>Records & History</h1>
+    <p>Official meter readings, bills, and payment receipts.</p>
+</section>
+
+<div class="card full-width-card">
+    <div class="table-controls">
+        <input type="text" placeholder="Search by Bill ID..." class="search-input">
+        <select class="filter-select">
+            <option>All Utilities</option>
+            <option>Electricity</option>
+            <option>Water</option>
+            <option>Gas</option>
+        </select>
+        <button class="btn-secondary">Download CSV</button>
+    </div>
+
+    <table class="records-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Utility</th>
+                <th>Bill ID</th>
+                <th>Reading</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Jan 05, 2026</td>
+                <td>Electricity ⚡</td>
+                <td>BRPL-JAN-001</td>
+                <td>24500 (245 units)</td>
+                <td>₹ 1,240</td>
+                <td><span class="status-dot status-warning"></span> Pending</td>
+                <td><a href="#" class="btn-small">View PDF</a></td>
+            </tr>
+            <tr>
+                <td>Jan 03, 2026</td>
+                <td>Gas 🔥</td>
+                <td>IGL-JAN-889</td>
+                <td>4502 (18 units)</td>
+                <td>₹ 850</td>
+                <td><span class="status-dot status-good"></span> Paid</td>
+                <td><a href="#" class="btn-small">Receipt</a></td>
+            </tr>
+            <tr>
+                <td>Dec 05, 2025</td>
+                <td>Electricity ⚡</td>
+                <td>BRPL-DEC-992</td>
+                <td>24255 (200 units)</td>
+                <td>₹ 980</td>
+                <td><span class="status-dot status-good"></span> Paid</td>
+                <td><a href="#" class="btn-small">Receipt</a></td>
+            </tr>
+            <tr>
+                <td>Dec 02, 2025</td>
+                <td>Water 💧</td>
+                <td>DJB-DEC-112</td>
+                <td>1020 (22 KL)</td>
+                <td>₹ 420</td>
+                <td><span class="status-dot status-good"></span> Paid</td>
+                <td><a href="#" class="btn-small">Receipt</a></td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="source-note" style="margin-top: 1rem;">Official meter reading data comes from the respective authority.
+    </p>
+</div>
+{% endblock %}

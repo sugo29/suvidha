@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="page-header">
+    <h1>Utilities View</h1>
+    <p>Detailed breakdown of your consumption and billing history.</p>
+</section>
+
+<!-- Utility Selector Tabs -->
+<div class="tabs-container">
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('electricity')">Electricity ⚡</button>
+        <button class="tab-btn" onclick="switchTab('gas')">Gas 🔥</button>
+        <button class="tab-btn" onclick="switchTab('water')">Water 💧</button>
+    </div>
+</div>
+
+<!-- ELECTRICITY CONTENT -->
+<div id="electricity" class="tab-content active">
+    <div class="content-grid two-column">
+        <!-- Consumption Chart -->
+        <div class="card chart-card">
+            <div class="card-header">
+                <h3>Monthly Consumption (Last 12 Months)</h3>
+                <span class="badge">Avg: 210 kWh</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="elecChart"></canvas>
+            </div>
+            <div class="card-footer">
+                <p class="source-note">Data Source: BRPL Official Meter Readings</p>
+            </div>
+        </div>
+
+        <!-- Info & Tariff -->
+        <div class="card info-card">
+            <h3>Current Tariff Plan</h3>
+            <ul class="info-list">
+                <li><strong>Provider:</strong> BSES Rajdhani (BRPL)</li>
+                <li><strong>Slab 1 (0-200):</strong> ₹3.00/unit (Subsidy Active)</li>
+                <li><strong>Slab 2 (201-400):</strong> ₹4.50/unit</li>
+                <li><strong>Slab 3 (>400):</strong> ₹6.50/unit</li>
+            </ul>
+            <div class="info-alert">
+                <span>ℹ️</span>
+                <p>Your current usage is in <strong>Slab 2</strong>.</p>
+            </div>
+            <a href="#" class="btn-primary">Pay Bill (₹ 1,240)</a>
+        </div>
+    </div>
+</div>
+
+<!-- GAS CONTENT -->
+<div id="gas" class="tab-content" style="display: none;">
+    <div class="content-grid two-column">
+        <div class="card chart-card">
+            <div class="card-header">
+                <h3>Gas Usage Trend</h3>
+                <span class="badge">Avg: 16 SCM</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="gasChart"></canvas>
+            </div>
+            <div class="card-footer">
+                <p class="source-note">Data Source: IGL Meter Readings</p>
+            </div>
+        </div>
+
+        <div class="card info-card">
+            <h3>Safety & Efficiency</h3>
+            <ul class="info-list">
+                <li><strong>Burner Check:</strong> Last done 6 months ago.</li>
+                <li><strong>Leak Detection:</strong> Enabled.</li>
+            </ul>
+            <a href="#" class="btn-primary">Raise Service Request</a>
+        </div>
+    </div>
+</div>
+
+<!-- WATER CONTENT -->
+<div id="water" class="tab-content" style="display: none;">
+    <div class="content-grid two-column">
+        <div class="card chart-card">
+            <div class="card-header">
+                <h3>Water Consumption</h3>
+                <span class="badge">Avg: 20 KL</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="waterChart"></canvas>
+            </div>
+            <div class="card-footer">
+                <p class="source-note">Data Source: Delhi Jal Board</p>
+            </div>
+        </div>
+
+        <div class="card info-card">
+            <h3>Water Quality & Ward Status</h3>
+            <div class="quality-score">
+                <span class="score-label">Ward Quality Score:</span>
+                <span class="score-value good">9.2/10</span>
+            </div>
+            <p class="desc-text">Your supply hours: 6:00 AM - 9:00 AM</p>
+            <a href="#" class="btn-secondary">Report Leakage</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script>
+    function switchTab(utility) {
+        // Hide all contents
+        document.querySelectorAll('.tab-content').forEach(el => {
+            el.style.display = 'none';
+            el.classList.remove('active');
+        });
+        // Remove active class from buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+        // Show selected
+        document.getElementById(utility).style.display = 'block';
+        // Add active class to clicked button (simple logic for now)
+        event.target.classList.add('active');
+    }
+</script>
+{% endblock %}

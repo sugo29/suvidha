@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <!-- LEFT SIDEBAR -->
+    <aside class="dashboard-sidebar">
+        <!-- Policies Section -->
+        <div class="sidebar-card">
+            <h3>Civic Updates & Policies</h3>
+            <div class="sidebar-list">
+                <button class="list-btn" onclick="openPolicyModal('solar')">
+                    <span class="btn-icon">☀️</span>
+                    <div class="btn-info">
+                        <strong>Solar Policy 2026</strong>
+                        <span class="badge-new">NEW</span>
+                    </div>
+                </button>
+                <button class="list-btn" onclick="openPolicyModal('water')">
+                    <span class="btn-icon">💧</span>
+                    <div class="btn-info">
+                        <strong>Water Waiver</strong>
+                        <span class="sub-text">Active Scheme</span>
+                    </div>
+                </button>
+                <button class="list-btn" onclick="openPolicyModal('gas')">
+                    <span class="btn-icon">🔥</span>
+                    <div class="btn-info">
+                        <strong>Safety Check</strong>
+                        <span class="badge-alert">Mandatory</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Know Your Vendor Section -->
+        <div class="sidebar-card">
+            <h3>Know Your Vendor</h3>
+            <div class="sidebar-list">
+                <button class="list-btn" onclick="openVendorModal('brpl')">
+                    <span class="vendor-logo-box">⚡</span>
+                    <div class="btn-info">
+                        <strong>BRPL (Electricity)</strong>
+                        <span class="sub-text">BSES Rajdhani</span>
+                    </div>
+                </button>
+                <button class="list-btn" onclick="openVendorModal('igl')">
+                    <span class="vendor-logo-box">🔥</span>
+                    <div class="btn-info">
+                        <strong>IGL (Gas)</strong>
+                        <span class="sub-text">Indraprastha Gas</span>
+                    </div>
+                </button>
+                <button class="list-btn" onclick="openVendorModal('djb')">
+                    <span class="vendor-logo-box">💧</span>
+                    <div class="btn-info">
+                        <strong>DJB (Water)</strong>
+                        <span class="sub-text">Delhi Jal Board</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- RIGHT MAIN CONTENT -->
+    <div class="dashboard-main">
+        <section class="dashboard-header">
+            <div class="welcome-text">
+                <h1>Namaste, Suhan</h1>
+                <p>Your consolidated utility snapshot</p>
+            </div>
+
+            <!-- Mood Indicator -->
+            <div class="mood-indicators">
+                <div class="mood-item status-good" title="Below Average Usage">
+                    <span class="utility-icon">⚡</span>
+                    <span class="status-dot"></span>
+                </div>
+                <div class="mood-item status-warning" title="Slightly Above Average">
+                    <span class="utility-icon">🔥</span>
+                    <span class="status-dot"></span>
+                </div>
+                <div class="mood-item status-alert" title="High Usage">
+                    <span class="utility-icon">💧</span>
+                    <span class="status-dot"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary Cards -->
+        <section class="summary-cards">
+            <!-- Electricity -->
+            <div class="card utility-card">
+                <div class="card-header">
+                    <h3>Electricity ⚡</h3>
+                    <select class="vendor-select">
+                        <option>BRPL</option>
+                        <option>BYPL</option>
+                        <option>TPDDL</option>
+                    </select>
+                </div>
+                <div class="card-body">
+                    <div class="metric">
+                        <span class="label">Units</span>
+                        <span class="value">245 <small>kWh</small></span>
+                    </div>
+                    <div class="metric">
+                        <span class="label">Bill</span>
+                        <span class="value highlight">₹ 1,240</span>
+                    </div>
+                    <div class="trend up">↗ <small>+5% vs last month</small></div>
+                    <p class="source-note">Source: BRPL Official Reading (Jan 2026)</p>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('utilities') }}?type=electricity" class="btn-secondary">View Details</a>
+                </div>
+            </div>
+
+            <!-- Gas -->
+            <div class="card utility-card">
+                <div class="card-header">
+                    <h3>Gas 🔥</h3>
+                    <span class="vendor-badge">IGL</span>
+                </div>
+                <div class="card-body">
+                    <div class="metric">
+                        <span class="label">Units</span>
+                        <span class="value">18 <small>SCM</small></span>
+                    </div>
+                    <div class="metric">
+                        <span class="label">Bill</span>
+                        <span class="value highlight">₹ 850</span>
+                    </div>
+                    <div class="trend down">↘ <small>-2% vs last month</small></div>
+                    <p class="source-note">Source: IGL Meter Reading (Jan 2026)</p>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('utilities') }}?type=gas" class="btn-secondary">View Details</a>
+                </div>
+            </div>
+
+            <!-- Water -->
+            <div class="card utility-card">
+                <div class="card-header">
+                    <h3>Water 💧</h3>
+                    <span class="vendor-badge">DJB</span>
+                </div>
+                <div class="card-body">
+                    <div class="metric">
+                        <span class="label">Units</span>
+                        <span class="value">22 <small>KL</small></span>
+                    </div>
+                    <div class="metric">
+                        <span class="label">Bill</span>
+                        <span class="value highlight">₹ 420</span>
+                    </div>
+                    <div class="trend stable">➡ <small>Stable</small></div>
+                    <p class="source-note">Source: DJB Reading (Jan 2026)</p>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('utilities') }}?type=water" class="btn-secondary">View Details</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Smart Insight Panel -->
+        <section class="insight-panel">
+            <div class="insight-content">
+                <div class="insight-icon">💡</div>
+                <div class="insight-text">
+                    <h3>Smart Insight</h3>
+                    <p>Your water consumption is <strong>18% above</strong> similar households in your ward.</p>
+                    <a href="#" class="link-text">How is this calculated?</a>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

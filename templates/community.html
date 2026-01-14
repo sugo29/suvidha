@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="community-layout">
+    <!-- SUB-NAVIGATION SIDEBAR -->
+    <aside class="community-sidebar">
+        <div class="com-sidebar-header">
+            <h2>Community</h2>
+            <div class="ward-selector">
+                <label>Your Ward</label>
+                <select id="wardSelect">
+                    <option value="kalkaji" selected>Kalkaji (South)</option>
+                    <option value="nehru_place">Nehru Place</option>
+                    <option value="gk2">Greater Kailash II</option>
+                </select>
+            </div>
+        </div>
+        <nav class="com-nav">
+            <button class="com-nav-btn active" onclick="showSection('overview')">
+                <span class="icon">📊</span> Overview
+            </button>
+            <button class="com-nav-btn" onclick="showSection('map')">
+                <span class="icon">🗺️</span> Ward & Zone Map
+            </button>
+            <button class="com-nav-btn" onclick="showSection('challenges')">
+                <span class="icon">🌱</span> Civic Challenges
+            </button>
+            <button class="com-nav-btn" onclick="showSection('advisories')">
+                <span class="icon">📢</span> Advisories
+            </button>
+            <button class="com-nav-btn" onclick="showSection('activity')">
+                <span class="icon">👥</span> Recent Activity
+            </button>
+            <button class="com-nav-btn" onclick="showSection('insights')">
+                <span class="icon">📊</span> Ward Insights
+            </button>
+            <button class="com-nav-btn" onclick="showSection('learn')">
+                <span class="icon">📘</span> Learn & FAQs
+            </button>
+        </nav>
+    </aside>
+
+    <!-- CONTENT AREA -->
+    <main class="community-content">
+
+        <!-- SECTION 1: OVERVIEW -->
+        <div id="overview" class="com-section active">
+            <div class="section-header">
+                <h1>Community Overview</h1>
+                <p>Utility performance and participation in Ward <strong>Kalkaji</strong>.</p>
+            </div>
+
+            <!-- HEATMAP -->
+            <div class="card heatmap-container">
+                <div class="heatmap-header">
+                    <h3>Ward Stress Map</h3>
+                    <div class="map-toggles">
+                        <button class="map-toggle active">Ward</button>
+                        <button class="map-toggle">Zone</button>
+                        <button class="map-toggle">City</button>
+                    </div>
+                </div>
+                <div class="heatmap-visual" id="wardHeatmap">
+                    <!-- CSS Grid Heatmap Placeholder -->
+                    <div class="heat-zone low-stress" title="Block A: Stable">Block A</div>
+                    <div class="heat-zone med-stress" title="Block B: Moderate Demand">Block B</div>
+                    <div class="heat-zone high-stress" title="Block C: High Stress">Block C</div>
+                    <div class="heat-zone low-stress" title="Block D: Stable">Block D</div>
+                </div>
+                <div class="heatmap-legend">
+                    <span class="legend-item"><span class="dot green"></span> Stable</span>
+                    <span class="legend-item"><span class="dot yellow"></span> Moderate</span>
+                    <span class="legend-item"><span class="dot red"></span> High Stress</span>
+                </div>
+                <p class="source-note">Map shows aggregated, anonymised indicators derived from official stats.</p>
+            </div>
+
+            <!-- SNAPSHOT CARDS -->
+            <div class="snapshot-grid">
+                <div class="card snap-card">
+                    <span class="snap-label">Avg Elec. Bill</span>
+                    <strong class="snap-val">₹ 1,150</strong>
+                </div>
+                <div class="card snap-card">
+                    <span class="snap-label">Avg Water Usage</span>
+                    <strong class="snap-val">19 KL</strong>
+                </div>
+                <div class="card snap-card">
+                    <span class="snap-label">Power Cuts</span>
+                    <strong class="snap-val">1.2 Hrs/M</strong>
+                </div>
+                <div class="card snap-card">
+                    <span class="snap-label">Solar Adoption</span>
+                    <strong class="snap-val">14%</strong>
+                </div>
+            </div>
+
+            <!-- WARD HEALTH SCORE -->
+            <div class="card health-score-card">
+                <div class="score-circle">
+                    <span class="score-val">78</span>
+                    <span class="score-max">/100</span>
+                </div>
+                <div class="score-info">
+                    <h3>Ward Health Score: Stable 🟢</h3>
+                    <p>Calculated using reliability, availability, and community participation indicators.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: MAP (DETAILED) -->
+        <div id="map" class="com-section">
+            <div class="section-header">
+                <h1>Ward & Zone Map</h1>
+                <p>Detailed infrastructure views for public awareness.</p>
+            </div>
+            <div class="card full-map-view">
+                <div class="map-filters">
+                    <select>
+                        <option>Electricity Grid</option>
+                        <option>Water Pipeline</option>
+                        <option>Gas Network</option>
+                    </select>
+                    <select>
+                        <option>Last Month</option>
+                        <option>Last Quarter</option>
+                    </select>
+                </div>
+                <div class="map-placeholder-large">
+                    Interactive Map Container
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: CHALLENGES -->
+        <div id="challenges" class="com-section">
+            <div class="section-header">
+                <h1>Civic Challenges</h1>
+                <p>Participate without affecting your bill. Support supply reliability.</p>
+            </div>
+
+            <div class="challenge-grid">
+                <!-- Electricity Challenge -->
+                <div class="card challenge-card">
+                    <div class="chal-header elec-bg">
+                        <span>⚡ Electricity</span>
+                        <span class="points-badge">50 Pts</span>
+                    </div>
+                    <div class="chal-body">
+                        <h4>Peak-Hour Saver</h4>
+                        <p>Follow peak-hour advisories on 5 notified days this month.</p>
+                        <div class="progress-bar">
+                            <div class="fill" style="width: 40%">2/5 Days</div>
+                        </div>
+                        <button class="btn-primary">Join Challenge</button>
+                    </div>
+                    <div class="chal-footer">
+                        Does not affect billing.
+                    </div>
+                </div>
+
+                <!-- Water Challenge -->
+                <div class="card challenge-card">
+                    <div class="chal-header water-bg">
+                        <span>💧 Water</span>
+                        <span class="points-badge">30 Pts</span>
+                    </div>
+                    <div class="chal-body">
+                        <h4>Leak Detective</h4>
+                        <p>Report visible leaks in public areas via the app.</p>
+                        <button class="btn-primary">Report Now</button>
+                    </div>
+                    <div class="chal-footer">
+                        Community service initiative.
+                    </div>
+                </div>
+
+                <!-- Gas Challenge -->
+                <div class="card challenge-card">
+                    <div class="chal-header gas-bg">
+                        <span>🔥 Gas</span>
+                        <span class="points-badge">100 Pts</span>
+                    </div>
+                    <div class="chal-body">
+                        <h4>Safety First</h4>
+                        <p>Complete the annual safety awareness checklist.</p>
+                        <button class="btn-primary">Start Checklist</button>
+                    </div>
+                    <div class="chal-footer">
+                        Safety awareness program.
+                    </div>
+                </div>
+            </div>
+
+            <!-- PARTICIPATION SCORE -->
+            <div class="card participation-card">
+                <h3>Your Civic Participation</h3>
+                <div class="part-stats">
+                    <div class="stat">
+                        <strong>120</strong>
+                        <span>Points Earned</span>
+                    </div>
+                    <div class="stat">
+                        <strong>Top 15%</strong>
+                        <span>In Ward</span>
+                    </div>
+                    <div class="badges">
+                        <span class="badge-icon" title="Grid Supporter">🗼</span>
+                        <span class="badge-icon" title="Water Steward">💧</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 4: ADVISORIES -->
+        <div id="advisories" class="com-section">
+            <div class="section-header">
+                <h1>Advisories & Announcements</h1>
+                <p>Official communication from utility authorities.</p>
+            </div>
+            <div class="advisory-list">
+                <div class="card advisory-card">
+                    <div class="adv-header">
+                        <span class="adv-auth">Issued by: BRPL</span>
+                        <span class="adv-date">Valid till: 20 Jan</span>
+                    </div>
+                    <h3>⚠️ Planned Maintenance</h3>
+                    <p>Transformer upgrade work in Block C. Expect intermittent cuts between 10 AM - 2 PM.</p>
+                    <div class="adv-footer">Affected Area: Block C, Kalkaji</div>
+                </div>
+                <div class="card advisory-card">
+                    <div class="adv-header">
+                        <span class="adv-auth">Issued by: DJB</span>
+                        <span class="adv-date">Seasonal</span>
+                    </div>
+                    <h3>ℹ️ Winter Water Supply Schedule</h3>
+                    <p>Morning supply hours shifted to 6:30 AM - 9:30 AM due to operational changes.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 5: ACTIVITY -->
+        <div id="activity" class="com-section">
+            <div class="section-header">
+                <h1>Community Activity</h1>
+                <p>Anonymous feed of civic participation.</p>
+            </div>
+            <div class="activity-feed">
+                <div class="feed-item">
+                    <span class="feed-icon">👥</span>
+                    <p>38 households participated in "Peak-Hour Saver" yesterday.</p>
+                </div>
+                <div class="feed-item">
+                    <span class="feed-icon">🔧</span>
+                    <p>12 public water leaks reported this week in South Zone.</p>
+                </div>
+                <div class="feed-item">
+                    <span class="feed-icon">⚡</span>
+                    <p>5 outages resolved faster thanks to early reporting by citizens.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 6: INSIGHTS -->
+        <div id="insights" class="com-section">
+            <div class="section-header">
+                <h1>Ward Insights</h1>
+                <p>Comparative analysis of aggregated data.</p>
+            </div>
+            <div class="card insight-table-card">
+                <h3>Comparison: Ward vs City</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Kalkaji (Ward)</th>
+                            <th>South Delhi (Zone)</th>
+                            <th>Delhi (City)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Avg Electricity Bill</td>
+                            <td>₹ 1,150</td>
+                            <td>₹ 1,300</td>
+                            <td>₹ 1,050</td>
+                        </tr>
+                        <tr>
+                            <td>Water Reliability</td>
+                            <td>92%</td>
+                            <td>88%</td>
+                            <td>85%</td>
+                        </tr>
+                        <tr>
+                            <td>Solar Penetration</td>
+                            <td>14%</td>
+                            <td>10%</td>
+                            <td>8%</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <a href="#" class="link-text">How these insights are calculated</a>
+            </div>
+        </div>
+
+        <!-- SECTION 7: LEARN -->
+        <div id="learn" class="com-section">
+            <div class="section-header">
+                <h1>Learn & FAQs</h1>
+                <p>Understanding civic data and utilities.</p>
+            </div>
+            <div class="card faq-card">
+                <details>
+                    <summary>How is ward data collected?</summary>
+                    <p>Data is aggregated from official meter readings and anonymised to ensure privacy.</p>
+                </details>
+                <details>
+                    <summary>What does "Supply Stress" mean?</summary>
+                    <p>It indicates high demand on the infrastructure or frequent interruptions in service.</p>
+                </details>
+                <details>
+                    <summary>Do challenges affect my bill?</summary>
+                    <p>No. Challenges are voluntary and strictly non-monetary initiatives to support the grid.</p>
+                </details>
+            </div>
+        </div>
+
+    </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function showSection(id) {
+        // Hide all
+        document.querySelectorAll('.com-section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.com-nav-btn').forEach(el => el.classList.remove('active'));
+
+        // Show selected
+        document.getElementById(id).classList.add('active');
+        // Find button that calls this function with this id (approximated)
+        event.target.closest('button').classList.add('active');
+    }
+</script>
+{% endblock %}

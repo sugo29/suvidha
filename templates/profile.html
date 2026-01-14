@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="page-header">
+    <h1>Profile & Settings</h1>
+    <p>Manage your account, preferences, and privacy.</p>
+</section>
+
+<div class="content-grid two-column">
+    <div class="card">
+        <h3>User Information</h3>
+        <form>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" class="form-control" value="Suhan Sharma" readonly>
+            </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" class="form-control" value="+91 98765 43210" readonly>
+            </div>
+            <div class="form-group">
+                <label>Address</label>
+                <textarea class="form-control" rows="3"
+                    readonly>Flat 402, Kaveri Apartments, Kalkaji, New Delhi - 110019</textarea>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Preferences</h3>
+        <form>
+            <div class="form-group">
+                <label>Language</label>
+                <select class="form-control">
+                    <option selected>English</option>
+                    <option>Hindi (हिंदी)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Alerts</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" checked> <label>Bill Generation SMS</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" checked> <label>Usage Spikes Email</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Accessibility</label>
+                <div class="checkbox-group">
+                    <input type="checkbox"> <label>High Contrast Mode</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox"> <label>Large Text</label>
+                </div>
+            </div>
+            <button type="button" class="btn-primary">Save Preferences</button>
+        </form>
+    </div>
+
+    <div class="card full-width-card">
+        <h3>Data Privacy & Connection Details</h3>
+        <p>We do not store meter readings beyond official retention policies (12 months).</p>
+        <div class="connection-list">
+            <div class="conn-item">
+                <strong>Electricity (BRPL) CA No:</strong> 102938475 <span class="badge status-good">Verified</span>
+            </div>
+            <div class="conn-item">
+                <strong>Water (DJB) K No:</strong> 564738291 <span class="badge status-good">Verified</span>
+            </div>
+            <div class="conn-item">
+                <strong>Gas (IGL) BP No:</strong> 900088771 <span class="badge status-good">Verified</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
