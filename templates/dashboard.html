@@ -1,178 +1,465 @@
 {% extends 'base.html' %}
 
+{% block title %}Dashboard - Suvidha Portal{% endblock %}
+
 {% block content %}
-<div class="dashboard-grid">
-    <!-- LEFT SIDEBAR -->
-    <aside class="dashboard-sidebar">
-        <!-- Policies Section -->
-        <div class="sidebar-card">
-            <h3>Civic Updates & Policies</h3>
-            <div class="sidebar-list">
-                <button class="list-btn" onclick="openPolicyModal('solar')">
-                    <span class="btn-icon">☀️</span>
-                    <div class="btn-info">
-                        <strong>Solar Policy 2026</strong>
-                        <span class="badge-new">NEW</span>
-                    </div>
-                </button>
-                <button class="list-btn" onclick="openPolicyModal('water')">
-                    <span class="btn-icon">💧</span>
-                    <div class="btn-info">
-                        <strong>Water Waiver</strong>
-                        <span class="sub-text">Active Scheme</span>
-                    </div>
-                </button>
-                <button class="list-btn" onclick="openPolicyModal('gas')">
-                    <span class="btn-icon">🔥</span>
-                    <div class="btn-info">
-                        <strong>Safety Check</strong>
-                        <span class="badge-alert">Mandatory</span>
-                    </div>
-                </button>
-            </div>
+<div class="dashboard-container">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-title-group">
+            <h1 class="page-title">
+                <i data-lucide="layout-dashboard"></i>
+                Dashboard
+            </h1>
+            <p class="page-subtitle">Your personalized utility management hub</p>
         </div>
-
-        <!-- Know Your Vendor Section -->
-        <div class="sidebar-card">
-            <h3>Know Your Vendor</h3>
-            <div class="sidebar-list">
-                <button class="list-btn" onclick="openVendorModal('brpl')">
-                    <span class="vendor-logo-box">⚡</span>
-                    <div class="btn-info">
-                        <strong>BRPL (Electricity)</strong>
-                        <span class="sub-text">BSES Rajdhani</span>
-                    </div>
-                </button>
-                <button class="list-btn" onclick="openVendorModal('igl')">
-                    <span class="vendor-logo-box">🔥</span>
-                    <div class="btn-info">
-                        <strong>IGL (Gas)</strong>
-                        <span class="sub-text">Indraprastha Gas</span>
-                    </div>
-                </button>
-                <button class="list-btn" onclick="openVendorModal('djb')">
-                    <span class="vendor-logo-box">💧</span>
-                    <div class="btn-info">
-                        <strong>DJB (Water)</strong>
-                        <span class="sub-text">Delhi Jal Board</span>
-                    </div>
-                </button>
-            </div>
-        </div>
-    </aside>
-
-    <!-- RIGHT MAIN CONTENT -->
-    <div class="dashboard-main">
-        <section class="dashboard-header">
-            <div class="welcome-text">
-                <h1>Namaste, Suhan</h1>
-                <p>Your consolidated utility snapshot</p>
-            </div>
-
-            <!-- Mood Indicator -->
-            <div class="mood-indicators">
-                <div class="mood-item status-good" title="Below Average Usage">
-                    <span class="utility-icon">⚡</span>
-                    <span class="status-dot"></span>
-                </div>
-                <div class="mood-item status-warning" title="Slightly Above Average">
-                    <span class="utility-icon">🔥</span>
-                    <span class="status-dot"></span>
-                </div>
-                <div class="mood-item status-alert" title="High Usage">
-                    <span class="utility-icon">💧</span>
-                    <span class="status-dot"></span>
-                </div>
-            </div>
-        </section>
-
-        <!-- Summary Cards -->
-        <section class="summary-cards">
-            <!-- Electricity -->
-            <div class="card utility-card">
-                <div class="card-header">
-                    <h3>Electricity ⚡</h3>
-                    <select class="vendor-select">
-                        <option>BRPL</option>
-                        <option>BYPL</option>
-                        <option>TPDDL</option>
-                    </select>
-                </div>
-                <div class="card-body">
-                    <div class="metric">
-                        <span class="label">Units</span>
-                        <span class="value">245 <small>kWh</small></span>
-                    </div>
-                    <div class="metric">
-                        <span class="label">Bill</span>
-                        <span class="value highlight">₹ 1,240</span>
-                    </div>
-                    <div class="trend up">↗ <small>+5% vs last month</small></div>
-                    <p class="source-note">Source: BRPL Official Reading (Jan 2026)</p>
-                </div>
-                <div class="card-footer">
-                    <a href="{{ url_for('utilities') }}?type=electricity" class="btn-secondary">View Details</a>
-                </div>
-            </div>
-
-            <!-- Gas -->
-            <div class="card utility-card">
-                <div class="card-header">
-                    <h3>Gas 🔥</h3>
-                    <span class="vendor-badge">IGL</span>
-                </div>
-                <div class="card-body">
-                    <div class="metric">
-                        <span class="label">Units</span>
-                        <span class="value">18 <small>SCM</small></span>
-                    </div>
-                    <div class="metric">
-                        <span class="label">Bill</span>
-                        <span class="value highlight">₹ 850</span>
-                    </div>
-                    <div class="trend down">↘ <small>-2% vs last month</small></div>
-                    <p class="source-note">Source: IGL Meter Reading (Jan 2026)</p>
-                </div>
-                <div class="card-footer">
-                    <a href="{{ url_for('utilities') }}?type=gas" class="btn-secondary">View Details</a>
-                </div>
-            </div>
-
-            <!-- Water -->
-            <div class="card utility-card">
-                <div class="card-header">
-                    <h3>Water 💧</h3>
-                    <span class="vendor-badge">DJB</span>
-                </div>
-                <div class="card-body">
-                    <div class="metric">
-                        <span class="label">Units</span>
-                        <span class="value">22 <small>KL</small></span>
-                    </div>
-                    <div class="metric">
-                        <span class="label">Bill</span>
-                        <span class="value highlight">₹ 420</span>
-                    </div>
-                    <div class="trend stable">➡ <small>Stable</small></div>
-                    <p class="source-note">Source: DJB Reading (Jan 2026)</p>
-                </div>
-                <div class="card-footer">
-                    <a href="{{ url_for('utilities') }}?type=water" class="btn-secondary">View Details</a>
-                </div>
-            </div>
-        </section>
-
-        <!-- Smart Insight Panel -->
-        <section class="insight-panel">
-            <div class="insight-content">
-                <div class="insight-icon">💡</div>
-                <div class="insight-text">
-                    <h3>Smart Insight</h3>
-                    <p>Your water consumption is <strong>18% above</strong> similar households in your ward.</p>
-                    <a href="#" class="link-text">How is this calculated?</a>
-                </div>
-            </div>
-        </section>
     </div>
+
+    <!-- Quick Access Policies -->
+    <div class="policy-banner-grid">
+        <a href="{{ url_for('utilities') }}" class="policy-card policy-electricity">
+            <div class="policy-icon">
+                <i data-lucide="zap"></i>
+            </div>
+            <div class="policy-content">
+                <h3>Electricity Services</h3>
+                <p>Bill payments & meter reading</p>
+            </div>
+        </a>
+
+        <a href="{{ url_for('utilities') }}" class="policy-card policy-water">
+            <div class="policy-icon">
+                <i data-lucide="droplet"></i>
+            </div>
+            <div class="policy-content">
+                <h3>Water Services</h3>
+                <p>View usage & manage connections</p>
+            </div>
+        </a>
+
+        <a href="{{ url_for('utilities') }}" class="policy-card policy-gas">
+            <div class="policy-icon">
+                <i data-lucide="flame"></i>
+            </div>
+            <div class="policy-content">
+                <h3>Gas Services</h3>
+                <p>Check tariffs & book cylinders</p>
+            </div>
+        </a>
+
+        <a href="{{ url_for('services') }}" class="policy-card policy-service">
+            <div class="policy-icon">
+                <i data-lucide="wrench"></i>
+            </div>
+            <div class="policy-content">
+                <h3>Services</h3>
+                <p>Submit complaints & track requests</p>
+            </div>
+        </a>
+    </div>
+
+    <!-- Know Your Vendor Section -->
+    <section class="dashboard-section">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i data-lucide="building-2"></i>
+                Know Your Vendor
+            </h2>
+            <p class="section-subtitle">Your registered utility service providers</p>
+        </div>
+
+        <div class="vendor-grid">
+            <!-- Electricity Vendor -->
+            <div class="vendor-card vendor-electricity">
+                <div class="vendor-header">
+                    <div class="vendor-icon">
+                        <i data-lucide="zap"></i>
+                    </div>
+                    <div class="vendor-title-group">
+                        <h3>Electricity Board</h3>
+                        <span class="vendor-badge">Active</span>
+                    </div>
+                </div>
+                <div class="vendor-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Service Provider:</span>
+                        <span class="detail-value">State Electricity Board</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Consumer ID:</span>
+                        <span class="detail-value">{{ session.get('username', 'Not assigned') }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Connection Type:</span>
+                        <span class="detail-value">Domestic</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Contact:</span>
+                        <span class="detail-value">1800-XXX-XXXX</span>
+                    </div>
+                </div>
+                <div class="vendor-actions">
+                    <a href="{{ url_for('utilities') }}" class="btn-outline-small">
+                        <i data-lucide="external-link"></i>
+                        View Details
+                    </a>
+                </div>
+            </div>
+
+            <!-- Water Vendor -->
+            <div class="vendor-card vendor-water">
+                <div class="vendor-header">
+                    <div class="vendor-icon">
+                        <i data-lucide="droplet"></i>
+                    </div>
+                    <div class="vendor-title-group">
+                        <h3>Water Supply</h3>
+                        <span class="vendor-badge">Active</span>
+                    </div>
+                </div>
+                <div class="vendor-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Service Provider:</span>
+                        <span class="detail-value">Municipal Water Works</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Consumer ID:</span>
+                        <span class="detail-value">{{ session.get('username', 'Not assigned') }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Connection Type:</span>
+                        <span class="detail-value">Metered</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Contact:</span>
+                        <span class="detail-value">1800-XXX-YYYY</span>
+                    </div>
+                </div>
+                <div class="vendor-actions">
+                    <a href="{{ url_for('utilities') }}" class="btn-outline-small">
+                        <i data-lucide="external-link"></i>
+                        View Details
+                    </a>
+                </div>
+            </div>
+
+            <!-- Gas Vendor -->
+            <div class="vendor-card vendor-gas">
+                <div class="vendor-header">
+                    <div class="vendor-icon">
+                        <i data-lucide="flame"></i>
+                    </div>
+                    <div class="vendor-title-group">
+                        <h3>Gas Services</h3>
+                        <span class="vendor-badge">Active</span>
+                    </div>
+                </div>
+                <div class="vendor-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Service Provider:</span>
+                        <span class="detail-value">City Gas Distribution</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Consumer ID:</span>
+                        <span class="detail-value">{{ session.get('username', 'Not assigned') }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Connection Type:</span>
+                        <span class="detail-value">PNG Domestic</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Contact:</span>
+                        <span class="detail-value">1800-XXX-ZZZZ</span>
+                    </div>
+                </div>
+                <div class="vendor-actions">
+                    <a href="{{ url_for('utilities') }}" class="btn-outline-small">
+                        <i data-lucide="external-link"></i>
+                        View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Actions Cards (Now Below Vendor Section) -->
+    <section class="dashboard-section">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i data-lucide="activity"></i>
+                Quick Actions
+            </h2>
+            <p class="section-subtitle">Manage your utilities efficiently</p>
+        </div>
+
+        <div class="utility-cards-grid">
+            <!-- Current Bill Card -->
+            <div class="utility-card card-electricity">
+                <div class="utility-card-header">
+                    <div class="utility-icon">
+                        <i data-lucide="file-text"></i>
+                    </div>
+                    <h3>Current Bill</h3>
+                </div>
+                <div class="utility-card-body">
+                    <div class="bill-amount">
+                        <span class="currency">₹</span>
+                        <span class="amount">2,450</span>
+                    </div>
+                    <p class="bill-period">Billing Period: Dec 2024</p>
+                    <div class="bill-details">
+                        <div class="detail-item">
+                            <span class="label">Due Date:</span>
+                            <span class="value text-warning">25 Jan 2025</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="label">Status:</span>
+                            <span class="value badge-warning">Pending</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="utility-card-footer">
+                    <a href="{{ url_for('utilities') }}" class="btn-primary-small">
+                        <i data-lucide="credit-card"></i>
+                        Pay Now
+                    </a>
+                    <a href="{{ url_for('utilities') }}" class="btn-outline-small">
+                        <i data-lucide="download"></i>
+                        Download
+                    </a>
+                </div>
+            </div>
+
+            <!-- Consumption Card -->
+            <div class="utility-card card-water">
+                <div class="utility-card-header">
+                    <div class="utility-icon">
+                        <i data-lucide="trending-up"></i>
+                    </div>
+                    <h3>This Month</h3>
+                </div>
+                <div class="utility-card-body">
+                    <div class="consumption-stat">
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i data-lucide="zap"></i>
+                            </div>
+                            <div class="stat-content">
+                                <span class="stat-value">342</span>
+                                <span class="stat-label">kWh</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i data-lucide="droplet"></i>
+                            </div>
+                            <div class="stat-content">
+                                <span class="stat-value">15.2</span>
+                                <span class="stat-label">kL</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="comparison-bar">
+                        <div class="comparison-label">vs Last Month</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%"></div>
+                        </div>
+                        <div class="comparison-value text-success">
+                            <i data-lucide="arrow-down"></i>
+                            15% lower
+                        </div>
+                    </div>
+                </div>
+                <div class="utility-card-footer">
+                    <a href="{{ url_for('insights') }}" class="btn-primary-small">
+                        <i data-lucide="bar-chart-2"></i>
+                        View Insights
+                    </a>
+                </div>
+            </div>
+
+            <!-- Service Requests Card -->
+            <div class="utility-card card-service">
+                <div class="utility-card-header">
+                    <div class="utility-icon">
+                        <i data-lucide="wrench"></i>
+                    </div>
+                    <h3>Service Requests</h3>
+                </div>
+                <div class="utility-card-body">
+                    <div class="request-summary">
+                        <div class="summary-item">
+                            <span class="summary-count">2</span>
+                            <span class="summary-label">Active</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-count">5</span>
+                            <span class="summary-label">Completed</span>
+                        </div>
+                    </div>
+                    <div class="recent-request">
+                        <div class="request-info">
+                            <span class="request-id">#SR-2024-145</span>
+                            <span class="request-status badge-warning">In Progress</span>
+                        </div>
+                        <p class="request-title">Meter Reading Issue</p>
+                        <p class="request-date">Raised: 15 Jan 2025</p>
+                    </div>
+                </div>
+                <div class="utility-card-footer">
+                    <a href="{{ url_for('services') }}" class="btn-primary-small">
+                        <i data-lucide="plus"></i>
+                        New Request
+                    </a>
+                    <a href="{{ url_for('services') }}" class="btn-outline-small">
+                        <i data-lucide="list"></i>
+                        View All
+                    </a>
+                </div>
+            </div>
+
+            <!-- Notifications Card -->
+            <div class="utility-card card-notification">
+                <div class="utility-card-header">
+                    <div class="utility-icon">
+                        <i data-lucide="bell"></i>
+                    </div>
+                    <h3>Notifications</h3>
+                </div>
+                <div class="utility-card-body">
+                    <div class="notification-list">
+                        <div class="notification-item notification-warning">
+                            <div class="notification-icon">
+                                <i data-lucide="alert-triangle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <p class="notification-text">Bill payment due in 5 days</p>
+                                <span class="notification-time">2 hours ago</span>
+                            </div>
+                        </div>
+                        <div class="notification-item notification-success">
+                            <div class="notification-icon">
+                                <i data-lucide="check-circle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <p class="notification-text">Service request resolved</p>
+                                <span class="notification-time">1 day ago</span>
+                            </div>
+                        </div>
+                        <div class="notification-item notification-info">
+                            <div class="notification-icon">
+                                <i data-lucide="info"></i>
+                            </div>
+                            <div class="notification-content">
+                                <p class="notification-text">Monthly usage report available</p>
+                                <span class="notification-time">2 days ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="utility-card-footer">
+                    <a href="#" class="btn-outline-small">
+                        <i data-lucide="inbox"></i>
+                        View All
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Insights Preview -->
+    <section class="dashboard-section">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i data-lucide="pie-chart"></i>
+                Usage Insights
+            </h2>
+            <p class="section-subtitle">Track your consumption patterns</p>
+            <a href="{{ url_for('insights') }}" class="btn-outline-small">
+                <i data-lucide="arrow-right"></i>
+                View Detailed Insights
+            </a>
+        </div>
+
+        <div class="insights-preview-grid">
+            <!-- Consumption Trend Chart -->
+            <div class="insight-card">
+                <div class="insight-header">
+                    <h3>6-Month Consumption Trend</h3>
+                    <div class="insight-legend">
+                        <span class="legend-item electricity">
+                            <span class="legend-dot"></span>
+                            Electricity
+                        </span>
+                        <span class="legend-item water">
+                            <span class="legend-dot"></span>
+                            Water
+                        </span>
+                    </div>
+                </div>
+                <div class="insight-body">
+                    <canvas id="trendChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Cost Breakdown -->
+            <div class="insight-card">
+                <div class="insight-header">
+                    <h3>Monthly Cost Breakdown</h3>
+                </div>
+                <div class="insight-body">
+                    <div class="cost-breakdown-list">
+                        <div class="cost-item">
+                            <div class="cost-info">
+                                <i data-lucide="zap" class="cost-icon electricity"></i>
+                                <span class="cost-label">Electricity</span>
+                            </div>
+                            <div class="cost-value">
+                                <span class="amount">₹1,850</span>
+                                <span class="percentage">60%</span>
+                            </div>
+                        </div>
+                        <div class="cost-item">
+                            <div class="cost-info">
+                                <i data-lucide="droplet" class="cost-icon water"></i>
+                                <span class="cost-label">Water</span>
+                            </div>
+                            <div class="cost-value">
+                                <span class="amount">₹420</span>
+                                <span class="percentage">14%</span>
+                            </div>
+                        </div>
+                        <div class="cost-item">
+                            <div class="cost-info">
+                                <i data-lucide="flame" class="cost-icon gas"></i>
+                                <span class="cost-label">Gas</span>
+                            </div>
+                            <div class="cost-value">
+                                <span class="amount">₹800</span>
+                                <span class="percentage">26%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cost-total">
+                        <span class="total-label">Total Monthly Cost</span>
+                        <span class="total-amount">₹3,070</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
+
+<script>
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+    
+    // Simple trend chart
+    if (document.getElementById('trendChart')) {
+        const ctx = document.getElementById('trendChart').getContext('2d');
+        // Add chart.js implementation if available
+    }
+</script>
 {% endblock %}

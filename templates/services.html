@@ -1,49 +1,68 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<section class="page-header">
-    <h1>Services & Grievances</h1>
-    <p>Single window for complaints, requests, and issue resolution.</p>
-</section>
-
-<!-- SECTION A: QUICK ACTIONS -->
-<section class="quick-actions-strip">
-    <button class="quick-action-btn alert">
-        <span class="btn-icon">🔴</span> Report Power Theft
-    </button>
-    <button class="quick-action-btn warning">
-        <span class="btn-icon">⚡</span> Power Outage
-    </button>
-    <button class="quick-action-btn">
-        <span class="btn-icon">💡</span> Street Light
-    </button>
-    <button class="quick-action-btn">
-        <span class="btn-icon">💧</span> Water Supply
-    </button>
-    <button class="quick-action-btn">
-        <span class="btn-icon">🔥</span> Gas Leakage
-    </button>
-    <button class="quick-action-btn">
-        <span class="btn-icon">📄</span> Bill Issue
-    </button>
-</section>
-
-<!-- SECTION B: TOGGLE -->
-<div class="service-toggle-container">
-    <div class="toggle-wrapper">
-        <button class="toggle-btn active" onclick="toggleServiceMode('complaint')">Raise a Complaint</button>
-        <button class="toggle-btn" onclick="toggleServiceMode('service')">Apply for a Service</button>
+<div class="services-page-wrapper">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-title-group">
+            <h1 class="page-title">
+                <i data-lucide="wrench"></i>
+                Services & Grievances
+            </h1>
+            <p class="page-subtitle">Single window for complaints, requests, and issue resolution</p>
+        </div>
     </div>
-</div>
 
-<div class="content-grid with-sidebar-right">
+    <!-- SECTION A: QUICK ACTIONS -->
+    <div class="card quick-actions-card">
+        <div class="card-header">
+            <h3>Quick Report</h3>
+            <p>Fast-track common issues</p>
+        </div>
+        <section class="quick-actions-strip">
+            <button class="quick-action-btn alert">
+                <span class="btn-icon">🔴</span> Report Power Theft
+            </button>
+            <button class="quick-action-btn warning">
+                <span class="btn-icon">⚡</span> Power Outage
+            </button>
+            <button class="quick-action-btn">
+                <span class="btn-icon">💡</span> Street Light
+            </button>
+            <button class="quick-action-btn">
+                <span class="btn-icon">💧</span> Water Supply
+            </button>
+            <button class="quick-action-btn">
+                <span class="btn-icon">🔥</span> Gas Leakage
+            </button>
+            <button class="quick-action-btn">
+                <span class="btn-icon">📄</span> Bill Issue
+            </button>
+        </section>
+    </div>
 
-    <!-- MAIN FORM AREA -->
-    <div class="main-form-column">
+    <!-- SECTION B: TOGGLE -->
+    <div class="service-toggle-container">
+        <div class="toggle-wrapper">
+            <button class="toggle-btn active" onclick="toggleServiceMode('complaint')">
+                <i data-lucide="alert-circle"></i>
+                Raise a Complaint
+            </button>
+            <button class="toggle-btn" onclick="toggleServiceMode('service')">
+                <i data-lucide="file-plus"></i>
+                Apply for a Service
+            </button>
+        </div>
+    </div>
 
-        <!-- SECTION C: RAISE A COMPLAINT -->
-        <div id="complaint-section" class="form-container">
-            <div class="card form-card">
+    <div class="content-grid with-sidebar-right">
+
+        <!-- MAIN FORM AREA -->
+        <div class="main-form-column">
+
+            <!-- SECTION C: RAISE A COMPLAINT -->
+            <div id="complaint-section" class="form-container">
+                <div class="card form-card">
                 <h3>Lodge a Grievance</h3>
                 <form id="complaintForm">
                     <!-- Step 1: Utility & Vendor -->

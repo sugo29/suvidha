@@ -5,7 +5,10 @@
     <!-- SUB-NAVIGATION SIDEBAR -->
     <aside class="community-sidebar">
         <div class="com-sidebar-header">
-            <h2>Community</h2>
+            <h2>
+                <i data-lucide="users"></i>
+                Community
+            </h2>
             <div class="ward-selector">
                 <label>Your Ward</label>
                 <select id="wardSelect">
@@ -16,26 +19,33 @@
             </div>
         </div>
         <nav class="com-nav">
-            <button class="com-nav-btn active" onclick="showSection('overview')">
-                <span class="icon">📊</span> Overview
+            <button class="sidebar-nav-btn active" onclick="showSection('overview')">
+                <i data-lucide="layout-grid"></i>
+                <span>Overview</span>
             </button>
-            <button class="com-nav-btn" onclick="showSection('map')">
-                <span class="icon">🗺️</span> Ward & Zone Map
+            <button class="sidebar-nav-btn" onclick="showSection('map')">
+                <i data-lucide="map"></i>
+                <span>Ward & Zone Map</span>
             </button>
-            <button class="com-nav-btn" onclick="showSection('challenges')">
-                <span class="icon">🌱</span> Civic Challenges
+            <button class="sidebar-nav-btn" onclick="showSection('challenges')">
+                <i data-lucide="sprout"></i>
+                <span>Civic Challenges</span>
             </button>
-            <button class="com-nav-btn" onclick="showSection('advisories')">
-                <span class="icon">📢</span> Advisories
+            <button class="sidebar-nav-btn" onclick="showSection('advisories')">
+                <i data-lucide="megaphone"></i>
+                <span>Advisories</span>
             </button>
-            <button class="com-nav-btn" onclick="showSection('activity')">
-                <span class="icon">👥</span> Recent Activity
+            <button class="sidebar-nav-btn" onclick="showSection('activity')">
+                <i data-lucide="activity"></i>
+                <span>Recent Activity</span>
             </button>
-            <button class="com-nav-btn" onclick="showSection('insights')">
-                <span class="icon">📊</span> Ward Insights
+            <button class="sidebar-nav-btn" onclick="showSection('insights')">
+                <i data-lucide="bar-chart-3"></i>
+                <span>Ward Insights</span>
             </button>
-            <button class="com-nav-btn" onclick="showSection('learn')">
-                <span class="icon">📘</span> Learn & FAQs
+            <button class="sidebar-nav-btn" onclick="showSection('learn')">
+                <i data-lucide="book-open"></i>
+                <span>Learn & FAQs</span>
             </button>
         </nav>
     </aside>

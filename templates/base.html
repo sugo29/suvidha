@@ -1,87 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delhi Civic Utilities Portal</title>
+    <title>Suvidha - Government Service Portal</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Chart.js for charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <!-- Sidebar Header -->
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <img src="{{ url_for('static', filename='images/emblem.png') }}" alt="Government Emblem" class="sidebar-emblem">
+                <span class="sidebar-title">Suvidha</span>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
+                <i data-lucide="panel-left-close"></i>
+            </button>
+        </div>
 
-    <!-- Sticky Navigation -->
-    <nav class="navbar">
-        <div class="nav-left">
-            <div class="logo">
-                <img src="{{ url_for('static', filename='images/emblem.png') }}" alt="Govt Emblem" class="emblem-img">
-                <span>Delhi Civic Utilities</span>
+        <!-- Global Disclaimer (Moved to Sidebar) -->
+        <div class="sidebar-notice">
+            <i data-lucide="info" class="notice-icon"></i>
+            <p class="notice-text">Data based on latest official meter readings</p>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('dashboard') }}" class="sidebar-link {% if page == 'dashboard' %}active{% endif %}">
+                <i data-lucide="layout-dashboard"></i>
+                <span class="sidebar-link-text">Dashboard</span>
+            </a>
+            <a href="{{ url_for('utilities') }}" class="sidebar-link {% if page == 'utilities' %}active{% endif %}">
+                <i data-lucide="zap"></i>
+                <span class="sidebar-link-text">Utilities</span>
+            </a>
+            <a href="{{ url_for('insights') }}" class="sidebar-link {% if page == 'insights' %}active{% endif %}">
+                <i data-lucide="line-chart"></i>
+                <span class="sidebar-link-text">Insights</span>
+            </a>
+            <a href="{{ url_for('simulator') }}" class="sidebar-link {% if page == 'simulator' %}active{% endif %}">
+                <i data-lucide="calculator"></i>
+                <span class="sidebar-link-text">Simulator</span>
+            </a>
+            <a href="{{ url_for('services') }}" class="sidebar-link {% if page == 'services' %}active{% endif %}">
+                <i data-lucide="clipboard-list"></i>
+                <span class="sidebar-link-text">Services</span>
+            </a>
+            <a href="{{ url_for('community') }}" class="sidebar-link {% if page == 'community' %}active{% endif %}">
+                <i data-lucide="users"></i>
+                <span class="sidebar-link-text">Community</span>
+            </a>
+            <a href="{{ url_for('records') }}" class="sidebar-link {% if page == 'records' %}active{% endif %}">
+                <i data-lucide="file-text"></i>
+                <span class="sidebar-link-text">Records</span>
+            </a>
+        </nav>
+
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <i data-lucide="user"></i>
+                </div>
+                <div class="user-info">
+                    <span class="user-name">Suhan Kumar</span>
+                    <span class="user-role">Citizen</span>
+                </div>
+            </div>
+            <button class="sidebar-logout" aria-label="Logout">
+                <i data-lucide="log-out"></i>
+                <span class="sidebar-link-text">Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <button class="mobile-menu-toggle" id="mobileMenuToggle">
+            <i data-lucide="menu"></i>
+        </button>
+        <div class="mobile-logo">
+            <img src="{{ url_for('static', filename='images/emblem.png') }}" alt="Government Emblem">
+            <span>Suvidha</span>
+        </div>
+        <div class="mobile-actions">
+            <button class="icon-btn" aria-label="Notifications">
+                <i data-lucide="bell"></i>
+            </button>
+            <button class="icon-btn" aria-label="Language">
+                <span class="lang-text">EN</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+        <!-- Top Bar (Secondary) -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <h2 class="page-title">{{ page|title if page else 'Dashboard' }}</h2>
+            </div>
+            <div class="top-bar-right">
+                <button class="icon-btn" aria-label="Accessibility">
+                    <i data-lucide="accessibility"></i>
+                </button>
+                <button class="lang-toggle-btn">
+                    <i data-lucide="languages"></i>
+                    <span>EN / HI</span>
+                </button>
+                <button class="icon-btn notification-btn" aria-label="Notifications">
+                    <i data-lucide="bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
             </div>
         </div>
 
-        <div class="nav-center">
-            <a href="{{ url_for('dashboard') }}"
-                class="nav-link {% if page == 'dashboard' %}active{% endif %}">Dashboard</a>
-            <a href="{{ url_for('utilities') }}"
-                class="nav-link {% if page == 'utilities' %}active{% endif %}">Utilities</a>
-            <a href="{{ url_for('insights') }}"
-                class="nav-link {% if page == 'insights' %}active{% endif %}">Insights</a>
-            <a href="{{ url_for('simulator') }}"
-                class="nav-link {% if page == 'simulator' %}active{% endif %}">Simulator</a>
-            <a href="{{ url_for('services') }}"
-                class="nav-link {% if page == 'services' %}active{% endif %}">Services</a>
-            <a href="{{ url_for('community') }}"
-                class="nav-link {% if page == 'community' %}active{% endif %}">Community</a>
-            <a href="{{ url_for('records') }}" class="nav-link {% if page == 'records' %}active{% endif %}">Records</a>
-        </div>
+        <!-- Main Content Area -->
+        <main class="main-content">
+            {% block content %}
+            {% endblock %}
+        </main>
 
-        <div class="nav-right">
-            <button class="icon-btn" aria-label="Notifications">🔔</button>
-            <button class="text-btn" aria-label="Language Toggle">EN/HI</button>
-            <button class="icon-btn" aria-label="Accessibility Settings">♿</button>
-            <div class="profile-icon">👤</div>
-        </div>
-    </nav>
-
-    <!-- Global Disclaimer -->
-    <div class="global-disclaimer">
-        <p>⚠️ Data shown is based on the latest official meter readings received from DISCOM / water / gas vendors and
-            may be updated monthly as readings are collected.</p>
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Help Center</a>
+                    <a href="#">Contact Support</a>
+                </div>
+                <div class="footer-info">
+                    <p>Government of NCT of Delhi - Suvidha Civic Utilities Portal</p>
+                    <p class="footer-copyright">© 2026 All Rights Reserved</p>
+                </div>
+            </div>
+        </footer>
     </div>
 
-    <!-- Main Content -->
-    <main class="container">
-        {% block content %}{% endblock %}
-    </main>
-
-    <!-- MODAL POPUP CONTAINER -->
+    <!-- Modal Container -->
     <div id="policyModal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
-            <button class="close-modal" onclick="closePolicyModal()">×</button>
+            <button class="close-modal" onclick="closePolicyModal()">
+                <i data-lucide="x"></i>
+            </button>
             <div id="modalBody">
                 <!-- Dynamic Content injected via JS -->
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-links">
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Use</a>
-            <a href="#">Help Center</a>
-        </div>
-        <div class="footer-note">
-            <p>Government of NCT of Delhi - Civic Utilities Portal</p>
-        </div>
-    </footer>
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
 
+    <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
-    {% block scripts %}{% endblock %}
-</body>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
 
+        // Sidebar toggle functionality
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+            });
+        }
+
+        // Restore sidebar state
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+            sidebar.classList.add('collapsed');
+        }
+
+        // Mobile menu toggle
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('mobile-open');
+                mobileOverlay.classList.toggle('active');
+            });
+        }
+
+        if (mobileOverlay) {
+            mobileOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('mobile-open');
+                mobileOverlay.classList.remove('active');
+            });
+        }
+    </script>
+    {% block scripts %}
+    {% endblock %}
+</body>
 </html>
