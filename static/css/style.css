@@ -109,7 +109,14 @@ body {
     font-weight: var(--font-weight-normal);
     line-height: 1.6;
     color: var(--text-primary);
-    background-color: var(--bg-main);
+    /* Background with OIP.jpg and green overlay for government aesthetic */
+    background-image: 
+        linear-gradient(rgba(220, 255, 230, 0.85), rgba(200, 250, 220, 0.9)),
+        url('../images/OIP.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     overflow-x: hidden;
 }
 
