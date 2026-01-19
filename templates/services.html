@@ -7,36 +7,36 @@
         <div class="page-title-group">
             <h1 class="page-title">
                 <i data-lucide="wrench"></i>
-                Services & Grievances
+                {{ t('services_grievances') }}
             </h1>
-            <p class="page-subtitle">Single window for complaints, requests, and issue resolution</p>
+            <p class="page-subtitle">{{ t('single_window_complaints') }}</p>
         </div>
     </div>
 
     <!-- SECTION A: QUICK ACTIONS -->
     <div class="card quick-actions-card">
         <div class="card-header">
-            <h3>Quick Report</h3>
-            <p>Fast-track common issues</p>
+            <h3>{{ t('quick_report') }}</h3>
+            <p>{{ t('fast_track_common') }}</p>
         </div>
         <section class="quick-actions-strip">
             <button class="quick-action-btn alert">
-                <span class="btn-icon">🔴</span> Report Power Theft
+                <span class="btn-icon">🔴</span> {{ t('report_power_theft') }}
             </button>
             <button class="quick-action-btn warning">
-                <span class="btn-icon">⚡</span> Power Outage
+                <span class="btn-icon">⚡</span> {{ t('power_outage') }}
             </button>
             <button class="quick-action-btn">
-                <span class="btn-icon">💡</span> Street Light
+                <span class="btn-icon">💡</span> {{ t('street_light') }}
             </button>
             <button class="quick-action-btn">
-                <span class="btn-icon">💧</span> Water Supply
+                <span class="btn-icon">💧</span> {{ t('water_supply') }}
             </button>
             <button class="quick-action-btn">
-                <span class="btn-icon">🔥</span> Gas Leakage
+                <span class="btn-icon">🔥</span> {{ t('gas_leakage') }}
             </button>
             <button class="quick-action-btn">
-                <span class="btn-icon">📄</span> Bill Issue
+                <span class="btn-icon">📄</span> {{ t('bill_issue') }}
             </button>
         </section>
     </div>
@@ -46,11 +46,11 @@
         <div class="toggle-wrapper">
             <button class="toggle-btn active" onclick="toggleServiceMode('complaint')">
                 <i data-lucide="alert-circle"></i>
-                Raise a Complaint
+                {{ t('raise_a_complaint') }}
             </button>
             <button class="toggle-btn" onclick="toggleServiceMode('service')">
-                <i data-lucide="file-plus"></i>
-                Apply for a Service
+                <i data-lucide="clipboard-check"></i>
+                {{ t('apply_for_service') }}
             </button>
         </div>
     </div>

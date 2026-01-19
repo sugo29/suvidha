@@ -9,9 +9,9 @@
         <div class="page-title-group">
             <h1 class="page-title">
                 <i data-lucide="layout-dashboard"></i>
-                Dashboard
+                {{ t('dashboard') }}
             </h1>
-            <p class="page-subtitle">Your personalized utility management hub</p>
+            <p class="page-subtitle">{{ t('your_personalized_hub') }}</p>
         </div>
     </div>
 
@@ -22,8 +22,8 @@
                 <i data-lucide="zap"></i>
             </div>
             <div class="policy-content">
-                <h3>Electricity Services</h3>
-                <p>Bill payments & meter reading</p>
+                <h3>{{ t('electricity_services') }}</h3>
+                <p>{{ t('bill_payments') }}</p>
             </div>
         </a>
 
@@ -32,8 +32,8 @@
                 <i data-lucide="droplet"></i>
             </div>
             <div class="policy-content">
-                <h3>Water Services</h3>
-                <p>View usage & manage connections</p>
+                <h3>{{ t('water_services') }}</h3>
+                <p>{{ t('view_usage') }}</p>
             </div>
         </a>
 
@@ -42,8 +42,8 @@
                 <i data-lucide="flame"></i>
             </div>
             <div class="policy-content">
-                <h3>Gas Services</h3>
-                <p>Check tariffs & book cylinders</p>
+                <h3>{{ t('gas_services') }}</h3>
+                <p>{{ t('check_tariffs') }}</p>
             </div>
         </a>
 
@@ -52,8 +52,8 @@
                 <i data-lucide="wrench"></i>
             </div>
             <div class="policy-content">
-                <h3>Services</h3>
-                <p>Submit complaints & track requests</p>
+                <h3>{{ t('services') }}</h3>
+                <p>{{ t('submit_complaints') }}</p>
             </div>
         </a>
     </div>
@@ -63,9 +63,9 @@
         <div class="section-header">
             <h2 class="section-title">
                 <i data-lucide="building-2"></i>
-                Know Your Vendor
+                {{ t('know_your_vendor') }}
             </h2>
-            <p class="section-subtitle">Your registered utility service providers</p>
+            <p class="section-subtitle">{{ t('vendor_subtitle') }}</p>
         </div>
 
         <div class="vendor-grid">
@@ -76,32 +76,32 @@
                         <i data-lucide="zap"></i>
                     </div>
                     <div class="vendor-title-group">
-                        <h3>Electricity Board</h3>
-                        <span class="vendor-badge">Active</span>
+                        <h3>{{ t('electricity_board') }}</h3>
+                        <span class="vendor-badge">{{ t('active') }}</span>
                     </div>
                 </div>
                 <div class="vendor-details">
                     <div class="detail-row">
-                        <span class="detail-label">Service Provider:</span>
+                        <span class="detail-label">{{ t('service_provider') }}:</span>
                         <span class="detail-value">State Electricity Board</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">Consumer ID:</span>
+                        <span class="detail-label">{{ t('customer_id') }}:</span>
                         <span class="detail-value">{{ session.get('username', 'Not assigned') }}</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">Connection Type:</span>
-                        <span class="detail-value">Domestic</span>
+                        <span class="detail-label">{{ t('connection_type') }}:</span>
+                        <span class="detail-value">{{ t('domestic') }}</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">Contact:</span>
+                        <span class="detail-label">{{ t('contact') }}:</span>
                         <span class="detail-value">1800-XXX-XXXX</span>
                     </div>
                 </div>
                 <div class="vendor-actions">
                     <a href="{{ url_for('utilities') }}" class="btn-outline-small">
                         <i data-lucide="external-link"></i>
-                        View Details
+                        {{ t('view_details') }}
                     </a>
                 </div>
             </div>
@@ -113,32 +113,32 @@
                         <i data-lucide="droplet"></i>
                     </div>
                     <div class="vendor-title-group">
-                        <h3>Water Supply</h3>
-                        <span class="vendor-badge">Active</span>
+                        <h3>{{ t('water_board') }}</h3>
+                        <span class="vendor-badge">{{ t('active') }}</span>
                     </div>
                 </div>
                 <div class="vendor-details">
                     <div class="detail-row">
-                        <span class="detail-label">Service Provider:</span>
+                        <span class="detail-label">{{ t('service_provider') }}:</span>
                         <span class="detail-value">Municipal Water Works</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">Consumer ID:</span>
+                        <span class="detail-label">{{ t('customer_id') }}:</span>
                         <span class="detail-value">{{ session.get('username', 'Not assigned') }}</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">Connection Type:</span>
-                        <span class="detail-value">Metered</span>
+                        <span class="detail-label">{{ t('connection_type') }}:</span>
+                        <span class="detail-value">{{ t('metered') }}</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">Contact:</span>
+                        <span class="detail-label">{{ t('contact') }}:</span>
                         <span class="detail-value">1800-XXX-YYYY</span>
                     </div>
                 </div>
                 <div class="vendor-actions">
                     <a href="{{ url_for('utilities') }}" class="btn-outline-small">
                         <i data-lucide="external-link"></i>
-                        View Details
+                        {{ t('view_details') }}
                     </a>
                 </div>
             </div>
@@ -150,32 +150,32 @@
                         <i data-lucide="flame"></i>
                     </div>
                     <div class="vendor-title-group">
-                        <h3>Gas Services</h3>
-                        <span class="vendor-badge">Active</span>
+                        <h3>{{ t('gas_services') }}</h3>
+                        <span class="vendor-badge">{{ t('active') }}</span>
                     </div>
                 </div>
                 <div class="vendor-details">
                     <div class="detail-row">
-                        <span class="detail-label">Service Provider:</span>
+                        <span class="detail-label">{{ t('service_provider') }}:</span>
                         <span class="detail-value">City Gas Distribution</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">Consumer ID:</span>
+                        <span class="detail-label">{{ t('customer_id') }}:</span>
                         <span class="detail-value">{{ session.get('username', 'Not assigned') }}</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">Connection Type:</span>
-                        <span class="detail-value">PNG Domestic</span>
+                        <span class="detail-label">{{ t('connection_type') }}:</span>
+                        <span class="detail-value">{{ t('png_domestic') }}</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">Contact:</span>
+                        <span class="detail-label">{{ t('contact') }}:</span>
                         <span class="detail-value">1800-XXX-ZZZZ</span>
                     </div>
                 </div>
                 <div class="vendor-actions">
                     <a href="{{ url_for('utilities') }}" class="btn-outline-small">
                         <i data-lucide="external-link"></i>
-                        View Details
+                        {{ t('view_details') }}
                     </a>
                 </div>
             </div>
@@ -187,9 +187,9 @@
         <div class="section-header">
             <h2 class="section-title">
                 <i data-lucide="activity"></i>
-                Quick Actions
+                {{ t('quick_actions') }}
             </h2>
-            <p class="section-subtitle">Manage your utilities efficiently</p>
+            <p class="section-subtitle">{{ t('manage_utilities_efficiently') }}</p>
         </div>
 
         <div class="utility-cards-grid">
@@ -199,29 +199,29 @@
                     <div class="utility-icon">
                         <i data-lucide="file-text"></i>
                     </div>
-                    <h3>Current Bill</h3>
+                    <h3>{{ t('current_bill') }}</h3>
                 </div>
                 <div class="utility-card-body">
                     <div class="bill-amount">
                         <span class="currency">₹</span>
                         <span class="amount">2,450</span>
                     </div>
-                    <p class="bill-period">Billing Period: Dec 2024</p>
+                    <p class="bill-period">{{ t('billing_period') }}: Dec 2024</p>
                     <div class="bill-details">
                         <div class="detail-item">
-                            <span class="label">Due Date:</span>
+                            <span class="label">{{ t('due_date') }}:</span>
                             <span class="value text-warning">25 Jan 2025</span>
                         </div>
                         <div class="detail-item">
-                            <span class="label">Status:</span>
-                            <span class="value badge-warning">Pending</span>
+                            <span class="label">{{ t('status') }}:</span>
+                            <span class="value badge-warning">{{ t('pending') }}</span>
                         </div>
                     </div>
                 </div>
                 <div class="utility-card-footer">
                     <a href="{{ url_for('utilities') }}" class="btn-primary-small">
                         <i data-lucide="credit-card"></i>
-                        Pay Now
+                        {{ t('pay_bill') }}
                     </a>
                     <a href="{{ url_for('utilities') }}" class="btn-outline-small">
                         <i data-lucide="download"></i>
@@ -236,7 +236,7 @@
                     <div class="utility-icon">
                         <i data-lucide="trending-up"></i>
                     </div>
-                    <h3>This Month</h3>
+                    <h3>{{ t('this_month') }}</h3>
                 </div>
                 <div class="utility-card-body">
                     <div class="consumption-stat">
@@ -246,7 +246,7 @@
                             </div>
                             <div class="stat-content">
                                 <span class="stat-value">342</span>
-                                <span class="stat-label">kWh</span>
+                                <span class="stat-label">{{ t('kwh') }}</span>
                             </div>
                         </div>
                         <div class="stat-item">
@@ -255,12 +255,12 @@
                             </div>
                             <div class="stat-content">
                                 <span class="stat-value">15.2</span>
-                                <span class="stat-label">kL</span>
+                                <span class="stat-label">{{ t('kl') }}</span>
                             </div>
                         </div>
                     </div>
                     <div class="comparison-bar">
-                        <div class="comparison-label">vs Last Month</div>
+                        <div class="comparison-label">{{ t('vs_last_month') }}</div>
                         <div class="progress-bar">
                             <div class="progress-fill" style="width: 85%"></div>
                         </div>
@@ -284,13 +284,13 @@
                     <div class="utility-icon">
                         <i data-lucide="wrench"></i>
                     </div>
-                    <h3>Service Requests</h3>
+                    <h3>{{ t('service_requests') }}</h3>
                 </div>
                 <div class="utility-card-body">
                     <div class="request-summary">
                         <div class="summary-item">
                             <span class="summary-count">2</span>
-                            <span class="summary-label">Active</span>
+                            <span class="summary-label">{{ t('active') }}</span>
                         </div>
                         <div class="summary-item">
                             <span class="summary-count">5</span>

@@ -14,13 +14,46 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Language Toggle Stub
-    const langBtn = document.querySelector('button[aria-label="Language Toggle"]');
-    if (langBtn) {
-        langBtn.addEventListener('click', () => {
-            const current = langBtn.innerText;
-            langBtn.innerText = current === 'EN/HI' ? 'HI/EN' : 'EN/HI';
-            alert('Language toggle would switch between English and Hindi content.');
+    // Language Dropdown - Multilingual support for all Indian languages
+    const langDropdownBtn = document.getElementById('langDropdownBtn');
+    const langDropdownMenu = document.getElementById('langDropdownMenu');
+    const langOptions = document.querySelectorAll('.lang-option');
+
+    if (langDropdownBtn && langDropdownMenu) {
+        // Toggle dropdown on button click
+        langDropdownBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            langDropdownMenu.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+            langDropdownMenu.classList.remove('show');
+        });
+
+        // Prevent dropdown from closing when clicking inside
+        langDropdownMenu.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // Handle language selection
+        langOptions.forEach(option => {
+            option.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const newLang = option.getAttribute('data-lang');
+                
+                try {
+                    const response = await fetch(`/set_language/${newLang}`);
+                    const data = await response.json();
+                    
+                    if (data.status === 'success') {
+                        // Reload page to apply new language
+                        window.location.reload();
+                    }
+                } catch (error) {
+                    console.error('Error changing language:', error);
+                }
+            });
         });
     }
 

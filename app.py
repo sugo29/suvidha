@@ -1,6 +1,36 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, session, request, jsonify
+import json
+import os
 
 app = Flask(__name__)
+app.secret_key = 'your-secret-key-here-change-in-production'
+
+# Load translations
+def load_translations():
+    with open('translations.json', 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+translations = load_translations()
+
+# Language helper function
+def get_text(key):
+    lang = session.get('language', 'en')
+    return translations.get(lang, {}).get(key, key)
+
+# Make get_text available in all templates
+@app.context_processor
+def inject_translation():
+    return dict(t=get_text, current_lang=session.get('language', 'en'))
+
+# Route to change language
+@app.route('/set_language/<lang>')
+def set_language(lang):
+    # Support all major Indian languages
+    supported_languages = ['en', 'hi', 'bn', 'ta', 'te', 'kn', 'pa', 'gu', 'ml', 'mr', 'or']
+    if lang in supported_languages:
+        session['language'] = lang
+        return jsonify({'status': 'success', 'language': lang})
+    return jsonify({'status': 'error', 'message': 'Invalid language'}), 400
 
 # --- Routes ---
 @app.route('/')

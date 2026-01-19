@@ -2,7 +2,7 @@
 
 {% block content %}
 <section class="page-header">
-    <h1>Smart Insights & Analysis</h1>
+    <h1>{{ t('insights') }}</h1>
     <p>Understanding your household patterns, trends, and civic context.</p>
 </section>
 
@@ -17,29 +17,29 @@
     <div class="cards-grid">
         <div class="card insight-card">
             <div class="card-icon">⚡</div>
-            <h3>Electricity Efficiency</h3>
-            <div class="status-badge status-good">Efficient</div>
-            <p>You consume <strong>12% less</strong> than similar homes in Summer.</p>
+            <h3>{{ t('electricity_efficiency') }}</h3>
+            <div class="status-badge status-good">{{ t('efficient') }}</div>
+            <p>{{ t('you_consume_less') }}</p>
             <div class="card-meta">
-                <span>Based on last 12 months</span>
+                <span>{{ t('based_on_12_months') }}</span>
                 <span class="confidence-tag high">High Confidence</span>
             </div>
         </div>
         <div class="card insight-card">
             <div class="card-icon">💧</div>
-            <h3>Water Usage Category</h3>
-            <div class="status-badge status-warning">Moderate High</div>
-            <p>Your usage peaks on weekends. Consider checking for leaks.</p>
+            <h3>{{ t('water_usage_category') }}</h3>
+            <div class="status-badge status-warning">{{ t('moderate_high') }}</div>
+            <p>{{ t('usage_peaks_weekends') }}</p>
             <div class="card-meta">
-                <span>Based on last 6 months</span>
+                <span>{{ t('based_on_6_months') }}</span>
                 <span class="confidence-tag medium">Med Confidence</span>
             </div>
         </div>
         <div class="card insight-card">
             <div class="card-icon">🔥</div>
-            <h3>Gas Stability Index</h3>
-            <div class="status-badge status-good">Stable</div>
-            <p>Consistent usage pattern observed over last 6 months.</p>
+            <h3>{{ t('gas_stability_index') }}</h3>
+            <div class="status-badge status-good">{{ t('stable') }}</div>
+            <p>{{ t('consistent_usage_pattern') }}</p>
             <div class="card-meta">
                 <span>Based on last 6 months</span>
                 <span class="confidence-tag high">High Confidence</span>
@@ -51,33 +51,33 @@
 
 <!-- Section 2: Trend Over Time (NEW) -->
 <section class="section-block">
-    <h2>Your Consumption Trend (Last 6 Billing Cycles)</h2>
+    <h2>{{ t('your_consumption_trend') }}</h2>
     <div class="card trend-timeline-card">
         <div class="trend-row">
             <div class="trend-meta">
-                <strong>Electricity</strong>
-                <span class="trend-badge improving">Improving ↘</span>
+                <strong>{{ t('electricity') }}</strong>
+                <span class="trend-badge improving">{{ t('improving') }} ↘</span>
             </div>
             <div class="trend-desc">
-                Usage has reduced consistently over the last 3 billing cycles.
+                {{ t('usage_reduced_consistently') }}
             </div>
         </div>
         <div class="trend-row">
             <div class="trend-meta">
-                <strong>Water</strong>
-                <span class="trend-badge warning">Increasing ↗</span>
+                <strong>{{ t('water') }}</strong>
+                <span class="trend-badge warning">{{ t('increasing') }} ↗</span>
             </div>
             <div class="trend-desc">
-                Steady increase observed since post-monsoon period (Nov-Jan).
+                {{ t('steady_increase_observed') }}
             </div>
         </div>
         <div class="trend-row">
             <div class="trend-meta">
-                <strong>Gas</strong>
-                <span class="trend-badge stable">Stable ➡</span>
+                <strong>{{ t('gas') }}</strong>
+                <span class="trend-badge stable">{{ t('stable') }} ➡</span>
             </div>
             <div class="trend-desc">
-                Consumption variance is within standard deviation (+/- 5%).
+                {{ t('consumption_variance') }}
             </div>
         </div>
         <div class="trend-footer">

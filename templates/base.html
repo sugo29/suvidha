@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ current_lang }}" data-lang="{{ current_lang }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suvidha - Government Service Portal</title>
+    <title>{{ t('app_name') }} - {{ t('tagline') }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Lucide Icons -->
@@ -18,7 +18,7 @@
         <div class="sidebar-header">
             <div class="sidebar-logo">
                 <img src="{{ url_for('static', filename='images/emblem.png') }}" alt="Government Emblem" class="sidebar-emblem">
-                <span class="sidebar-title">Suvidha</span>
+                <span class="sidebar-title">{{ t('app_name') }}</span>
             </div>
             <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
                 <i data-lucide="panel-left-close"></i>
@@ -28,38 +28,38 @@
         <!-- Global Disclaimer (Moved to Sidebar) -->
         <div class="sidebar-notice">
             <i data-lucide="info" class="notice-icon"></i>
-            <p class="notice-text">Data based on latest official meter readings</p>
+            <p class="notice-text">{{ t('data_notice') }}</p>
         </div>
 
         <!-- Navigation Menu -->
         <nav class="sidebar-nav">
             <a href="{{ url_for('dashboard') }}" class="sidebar-link {% if page == 'dashboard' %}active{% endif %}">
                 <i data-lucide="layout-dashboard"></i>
-                <span class="sidebar-link-text">Dashboard</span>
+                <span class="sidebar-link-text">{{ t('dashboard') }}</span>
             </a>
             <a href="{{ url_for('utilities') }}" class="sidebar-link {% if page == 'utilities' %}active{% endif %}">
                 <i data-lucide="zap"></i>
-                <span class="sidebar-link-text">Utilities</span>
+                <span class="sidebar-link-text">{{ t('utilities') }}</span>
             </a>
             <a href="{{ url_for('insights') }}" class="sidebar-link {% if page == 'insights' %}active{% endif %}">
                 <i data-lucide="line-chart"></i>
-                <span class="sidebar-link-text">Insights</span>
+                <span class="sidebar-link-text">{{ t('insights') }}</span>
             </a>
             <a href="{{ url_for('simulator') }}" class="sidebar-link {% if page == 'simulator' %}active{% endif %}">
                 <i data-lucide="calculator"></i>
-                <span class="sidebar-link-text">Simulator</span>
+                <span class="sidebar-link-text">{{ t('simulator') }}</span>
             </a>
             <a href="{{ url_for('services') }}" class="sidebar-link {% if page == 'services' %}active{% endif %}">
                 <i data-lucide="clipboard-list"></i>
-                <span class="sidebar-link-text">Services</span>
+                <span class="sidebar-link-text">{{ t('services') }}</span>
             </a>
             <a href="{{ url_for('community') }}" class="sidebar-link {% if page == 'community' %}active{% endif %}">
                 <i data-lucide="users"></i>
-                <span class="sidebar-link-text">Community</span>
+                <span class="sidebar-link-text">{{ t('community') }}</span>
             </a>
             <a href="{{ url_for('records') }}" class="sidebar-link {% if page == 'records' %}active{% endif %}">
                 <i data-lucide="file-text"></i>
-                <span class="sidebar-link-text">Records</span>
+                <span class="sidebar-link-text">{{ t('records') }}</span>
             </a>
         </nav>
 
@@ -71,12 +71,12 @@
                 </div>
                 <div class="user-info">
                     <span class="user-name">Suhan Kumar</span>
-                    <span class="user-role">Citizen</span>
+                    <span class="user-role">{{ t('citizen') }}</span>
                 </div>
             </div>
             <button class="sidebar-logout" aria-label="Logout">
                 <i data-lucide="log-out"></i>
-                <span class="sidebar-link-text">Logout</span>
+                <span class="sidebar-link-text">{{ t('logout') }}</span>
             </button>
         </div>
     </aside>
@@ -88,14 +88,14 @@
         </button>
         <div class="mobile-logo">
             <img src="{{ url_for('static', filename='images/emblem.png') }}" alt="Government Emblem">
-            <span>Suvidha</span>
+            <span>{{ t('app_name') }}</span>
         </div>
         <div class="mobile-actions">
-            <button class="icon-btn" aria-label="Notifications">
+            <button class="icon-btn" aria-label="{{ t('notifications') }}">
                 <i data-lucide="bell"></i>
             </button>
-            <button class="icon-btn" aria-label="Language">
-                <span class="lang-text">EN</span>
+            <button class="icon-btn lang-toggle-btn" aria-label="{{ t('language') }}">
+                <span class="lang-text">{{ current_lang|upper }}</span>
             </button>
         </div>
     </header>
@@ -105,17 +105,33 @@
         <!-- Top Bar (Secondary) -->
         <div class="top-bar">
             <div class="top-bar-left">
-                <h2 class="page-title">{{ page|title if page else 'Dashboard' }}</h2>
+                <h2 class="page-title">{{ t(page) if page else t('dashboard') }}</h2>
             </div>
             <div class="top-bar-right">
-                <button class="icon-btn" aria-label="Accessibility">
+                <button class="icon-btn" aria-label="{{ t('accessibility') }}">
                     <i data-lucide="accessibility"></i>
                 </button>
-                <button class="lang-toggle-btn">
-                    <i data-lucide="languages"></i>
-                    <span>EN / HI</span>
-                </button>
-                <button class="icon-btn notification-btn" aria-label="Notifications">
+                <div class="lang-dropdown">
+                    <button class="lang-toggle-btn" id="langDropdownBtn">
+                        <i data-lucide="languages"></i>
+                        <span>{% if current_lang == 'en' %}EN{% elif current_lang == 'hi' %}HI{% elif current_lang == 'bn' %}BN{% elif current_lang == 'ta' %}TA{% elif current_lang == 'te' %}TE{% elif current_lang == 'kn' %}KN{% elif current_lang == 'pa' %}PA{% elif current_lang == 'gu' %}GU{% elif current_lang == 'ml' %}ML{% elif current_lang == 'mr' %}MR{% else %}OR{% endif %}</span>
+                        <i data-lucide="chevron-down" class="chevron-icon"></i>
+                    </button>
+                    <div class="lang-dropdown-menu" id="langDropdownMenu">
+                        <a href="#" class="lang-option {% if current_lang == 'en' %}active{% endif %}" data-lang="en">English</a>
+                        <a href="#" class="lang-option {% if current_lang == 'hi' %}active{% endif %}" data-lang="hi">हिन्दी (Hindi)</a>
+                        <a href="#" class="lang-option {% if current_lang == 'bn' %}active{% endif %}" data-lang="bn">বাংলা (Bengali)</a>
+                        <a href="#" class="lang-option {% if current_lang == 'ta' %}active{% endif %}" data-lang="ta">தமிழ் (Tamil)</a>
+                        <a href="#" class="lang-option {% if current_lang == 'te' %}active{% endif %}" data-lang="te">తెలుగు (Telugu)</a>
+                        <a href="#" class="lang-option {% if current_lang == 'kn' %}active{% endif %}" data-lang="kn">ಕನ್ನಡ (Kannada)</a>
+                        <a href="#" class="lang-option {% if current_lang == 'pa' %}active{% endif %}" data-lang="pa">ਪੰਜਾਬੀ (Punjabi)</a>
+                        <a href="#" class="lang-option {% if current_lang == 'gu' %}active{% endif %}" data-lang="gu">ગુજરાતી (Gujarati)</a>
+                        <a href="#" class="lang-option {% if current_lang == 'ml' %}active{% endif %}" data-lang="ml">മലയാളം (Malayalam)</a>
+                        <a href="#" class="lang-option {% if current_lang == 'mr' %}active{% endif %}" data-lang="mr">मराठी (Marathi)</a>
+                        <a href="#" class="lang-option {% if current_lang == 'or' %}active{% endif %}" data-lang="or">ଓଡ଼ିଆ (Odia)</a>
+                    </div>
+                </div>
+                <button class="icon-btn notification-btn" aria-label="{{ t('notifications') }}">
                     <i data-lucide="bell"></i>
                     <span class="notification-badge">3</span>
                 </button>
@@ -132,13 +148,13 @@
         <footer class="main-footer">
             <div class="footer-content">
                 <div class="footer-links">
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Service</a>
-                    <a href="#">Help Center</a>
+                    <a href="#">{{ t('privacy_policy') }}</a>
+                    <a href="#">{{ t('terms_of_service') }}</a>
+                    <a href="#">{{ t('help_center') }}</a>
                     <a href="#">Contact Support</a>
                 </div>
                 <div class="footer-info">
-                    <p>Government of NCT of Delhi - Suvidha Civic Utilities Portal</p>
+                    <p>{{ t('govt_of_nct') }}</p>
                     <p class="footer-copyright">© 2026 All Rights Reserved</p>
                 </div>
             </div>

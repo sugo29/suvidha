@@ -2,38 +2,38 @@
 
 {% block content %}
 <section class="page-header">
-    <h1>Bill Simulator</h1>
-    <p>Estimate your utility bills based on consumption patterns.</p>
+    <h1>{{ t('bill_simulator') }}</h1>
+    <p>{{ t('estimate_utility_bills') }}</p>
 </section>
 
 <div class="content-grid two-column">
     <!-- Simulator Form -->
     <div class="card">
         <div class="card-header">
-            <h3>Consumption Simulator</h3>
+            <h3>{{ t('consumption_simulator') }}</h3>
         </div>
         <div class="card-body">
             <form id="simulatorForm">
                 <!-- Utility Selection -->
                 <div class="form-group">
-                    <label>Select Utility</label>
+                    <label>{{ t('select_utility') }}</label>
                     <select class="form-control" id="utilityType">
-                        <option value="electricity">Electricity ⚡</option>
-                        <option value="gas">Gas 🔥</option>
-                        <option value="water">Water 💧</option>
+                        <option value="electricity">{{ t('electricity') }} ⚡</option>
+                        <option value="gas">{{ t('gas') }} 🔥</option>
+                        <option value="water">{{ t('water') }} 💧</option>
                     </select>
                 </div>
 
                 <!-- Consumption Input -->
                 <div class="form-group">
-                    <label>Monthly Consumption</label>
-                    <input type="number" class="form-control" id="consumption" placeholder="Enter units" value="245">
-                    <small class="form-text text-muted">Enter units in kWh / SCM / KL</small>
+                    <label>{{ t('monthly_consumption') }}</label>
+                    <input type="number" class="form-control" id="consumption" placeholder="{{ t('enter_units') }}" value="245">
+                    <small class="form-text text-muted">{{ t('enter_units') }}</small>
                 </div>
 
                 <!-- Vendor Selection -->
                 <div class="form-group">
-                    <label>Service Provider</label>
+                    <label>{{ t('service_provider') }}</label>
                     <select class="form-control" id="vendor">
                         <option value="brpl">BSES Rajdhani (BRPL)</option>
                         <option value="bypl">BSES Yamuna (BYPL)</option>
@@ -43,7 +43,7 @@
 
                 <!-- Calculate Button -->
                 <button type="button" class="btn-primary full-width" onclick="calculateBill()">
-                    Calculate Estimated Bill
+                    {{ t('calculate_estimated_bill') }}
                 </button>
             </form>
         </div>

@@ -7,10 +7,10 @@
         <div class="com-sidebar-header">
             <h2>
                 <i data-lucide="users"></i>
-                Community
+                {{ t('community') }}
             </h2>
             <div class="ward-selector">
-                <label>Your Ward</label>
+                <label>{{ t('your_ward') }}</label>
                 <select id="wardSelect">
                     <option value="kalkaji" selected>Kalkaji (South)</option>
                     <option value="nehru_place">Nehru Place</option>
@@ -21,31 +21,31 @@
         <nav class="com-nav">
             <button class="sidebar-nav-btn active" onclick="showSection('overview')">
                 <i data-lucide="layout-grid"></i>
-                <span>Overview</span>
+                <span>{{ t('overview') }}</span>
             </button>
             <button class="sidebar-nav-btn" onclick="showSection('map')">
                 <i data-lucide="map"></i>
-                <span>Ward & Zone Map</span>
+                <span>{{ t('ward_zone_map') }}</span>
             </button>
             <button class="sidebar-nav-btn" onclick="showSection('challenges')">
                 <i data-lucide="sprout"></i>
-                <span>Civic Challenges</span>
+                <span>{{ t('civic_challenges') }}</span>
             </button>
             <button class="sidebar-nav-btn" onclick="showSection('advisories')">
                 <i data-lucide="megaphone"></i>
-                <span>Advisories</span>
+                <span>{{ t('advisories') }}</span>
             </button>
             <button class="sidebar-nav-btn" onclick="showSection('activity')">
                 <i data-lucide="activity"></i>
-                <span>Recent Activity</span>
+                <span>{{ t('recent_activity') }}</span>
             </button>
             <button class="sidebar-nav-btn" onclick="showSection('insights')">
                 <i data-lucide="bar-chart-3"></i>
-                <span>Ward Insights</span>
+                <span>{{ t('ward_insights') }}</span>
             </button>
             <button class="sidebar-nav-btn" onclick="showSection('learn')">
                 <i data-lucide="book-open"></i>
-                <span>Learn & FAQs</span>
+                <span>{{ t('learn_faqs') }}</span>
             </button>
         </nav>
     </aside>
@@ -56,51 +56,51 @@
         <!-- SECTION 1: OVERVIEW -->
         <div id="overview" class="com-section active">
             <div class="section-header">
-                <h1>Community Overview</h1>
-                <p>Utility performance and participation in Ward <strong>Kalkaji</strong>.</p>
+                <h1>{{ t('community_overview') }}</h1>
+                <p>{{ t('utility_performance_participation') }} <strong>Kalkaji</strong>.</p>
             </div>
 
             <!-- HEATMAP -->
             <div class="card heatmap-container">
                 <div class="heatmap-header">
-                    <h3>Ward Stress Map</h3>
+                    <h3>{{ t('ward_stress_map') }}</h3>
                     <div class="map-toggles">
-                        <button class="map-toggle active">Ward</button>
-                        <button class="map-toggle">Zone</button>
-                        <button class="map-toggle">City</button>
+                        <button class="map-toggle active">{{ t('ward') }}</button>
+                        <button class="map-toggle">{{ t('zone') }}</button>
+                        <button class="map-toggle">{{ t('city') }}</button>
                     </div>
                 </div>
                 <div class="heatmap-visual" id="wardHeatmap">
                     <!-- CSS Grid Heatmap Placeholder -->
-                    <div class="heat-zone low-stress" title="Block A: Stable">Block A</div>
-                    <div class="heat-zone med-stress" title="Block B: Moderate Demand">Block B</div>
-                    <div class="heat-zone high-stress" title="Block C: High Stress">Block C</div>
-                    <div class="heat-zone low-stress" title="Block D: Stable">Block D</div>
+                    <div class="heat-zone low-stress" title="{{ t('block_a') }}: {{ t('stable') }}">{{ t('block_a') }}</div>
+                    <div class="heat-zone med-stress" title="{{ t('block_b') }}: {{ t('moderate_demand') }}">{{ t('block_b') }}</div>
+                    <div class="heat-zone high-stress" title="{{ t('block_c') }}: {{ t('high_stress') }}">{{ t('block_c') }}</div>
+                    <div class="heat-zone low-stress" title="{{ t('block_d') }}: {{ t('stable') }}">{{ t('block_d') }}</div>
                 </div>
                 <div class="heatmap-legend">
-                    <span class="legend-item"><span class="dot green"></span> Stable</span>
-                    <span class="legend-item"><span class="dot yellow"></span> Moderate</span>
-                    <span class="legend-item"><span class="dot red"></span> High Stress</span>
+                    <span class="legend-item"><span class="dot green"></span> {{ t('stable') }}</span>
+                    <span class="legend-item"><span class="dot yellow"></span> {{ t('moderate') }}</span>
+                    <span class="legend-item"><span class="dot red"></span> {{ t('high_stress') }}</span>
                 </div>
-                <p class="source-note">Map shows aggregated, anonymised indicators derived from official stats.</p>
+                <p class="source-note">{{ t('map_shows_aggregated') }}</p>
             </div>
 
             <!-- SNAPSHOT CARDS -->
             <div class="snapshot-grid">
                 <div class="card snap-card">
-                    <span class="snap-label">Avg Elec. Bill</span>
+                    <span class="snap-label">{{ t('avg_elec_bill') }}</span>
                     <strong class="snap-val">₹ 1,150</strong>
                 </div>
                 <div class="card snap-card">
-                    <span class="snap-label">Avg Water Usage</span>
+                    <span class="snap-label">{{ t('avg_water_usage') }}</span>
                     <strong class="snap-val">19 KL</strong>
                 </div>
                 <div class="card snap-card">
-                    <span class="snap-label">Power Cuts</span>
+                    <span class="snap-label">{{ t('power_cuts') }}</span>
                     <strong class="snap-val">1.2 Hrs/M</strong>
                 </div>
                 <div class="card snap-card">
-                    <span class="snap-label">Solar Adoption</span>
+                    <span class="snap-label">{{ t('solar_adoption') }}</span>
                     <strong class="snap-val">14%</strong>
                 </div>
             </div>
@@ -112,8 +112,8 @@
                     <span class="score-max">/100</span>
                 </div>
                 <div class="score-info">
-                    <h3>Ward Health Score: Stable 🟢</h3>
-                    <p>Calculated using reliability, availability, and community participation indicators.</p>
+                    <h3>{{ t('ward_health_score') }}: {{ t('stable') }} 🟢</h3>
+                    <p>{{ t('calculated_using_reliability') }}</p>
                 </div>
             </div>
         </div>
@@ -121,23 +121,23 @@
         <!-- SECTION 2: MAP (DETAILED) -->
         <div id="map" class="com-section">
             <div class="section-header">
-                <h1>Ward & Zone Map</h1>
-                <p>Detailed infrastructure views for public awareness.</p>
+                <h1>{{ t('ward_zone_map') }}</h1>
+                <p>{{ t('detailed_infrastructure_views') }}</p>
             </div>
             <div class="card full-map-view">
                 <div class="map-filters">
                     <select>
-                        <option>Electricity Grid</option>
-                        <option>Water Pipeline</option>
-                        <option>Gas Network</option>
+                        <option>{{ t('electricity_grid') }}</option>
+                        <option>{{ t('water_pipeline') }}</option>
+                        <option>{{ t('gas_network') }}</option>
                     </select>
                     <select>
-                        <option>Last Month</option>
-                        <option>Last Quarter</option>
+                        <option>{{ t('last_month') }}</option>
+                        <option>{{ t('last_quarter') }}</option>
                     </select>
                 </div>
                 <div class="map-placeholder-large">
-                    Interactive Map Container
+                    {{ t('interactive_map_container') }}
                 </div>
             </div>
         </div>
@@ -145,78 +145,78 @@
         <!-- SECTION 3: CHALLENGES -->
         <div id="challenges" class="com-section">
             <div class="section-header">
-                <h1>Civic Challenges</h1>
-                <p>Participate without affecting your bill. Support supply reliability.</p>
+                <h1>{{ t('civic_challenges') }}</h1>
+                <p>{{ t('participate_without_affecting_bill') }}</p>
             </div>
 
             <div class="challenge-grid">
                 <!-- Electricity Challenge -->
                 <div class="card challenge-card">
                     <div class="chal-header elec-bg">
-                        <span>⚡ Electricity</span>
-                        <span class="points-badge">50 Pts</span>
+                        <span>⚡ {{ t('electricity') }}</span>
+                        <span class="points-badge">50 {{ t('points') }}</span>
                     </div>
                     <div class="chal-body">
-                        <h4>Peak-Hour Saver</h4>
-                        <p>Follow peak-hour advisories on 5 notified days this month.</p>
+                        <h4>{{ t('peak_hour_saver') }}</h4>
+                        <p>{{ t('follow_peak_hour_advisories') }}</p>
                         <div class="progress-bar">
-                            <div class="fill" style="width: 40%">2/5 Days</div>
+                            <div class="fill" style="width: 40%">2/5 {{ t('days') }}</div>
                         </div>
-                        <button class="btn-primary">Join Challenge</button>
+                        <button class="btn-primary">{{ t('join_challenge') }}</button>
                     </div>
                     <div class="chal-footer">
-                        Does not affect billing.
+                        {{ t('does_not_affect_billing') }}
                     </div>
                 </div>
 
                 <!-- Water Challenge -->
                 <div class="card challenge-card">
                     <div class="chal-header water-bg">
-                        <span>💧 Water</span>
-                        <span class="points-badge">30 Pts</span>
+                        <span>💧 {{ t('water') }}</span>
+                        <span class="points-badge">30 {{ t('points') }}</span>
                     </div>
                     <div class="chal-body">
-                        <h4>Leak Detective</h4>
-                        <p>Report visible leaks in public areas via the app.</p>
-                        <button class="btn-primary">Report Now</button>
+                        <h4>{{ t('leak_detective') }}</h4>
+                        <p>{{ t('report_visible_leaks') }}</p>
+                        <button class="btn-primary">{{ t('report_now') }}</button>
                     </div>
                     <div class="chal-footer">
-                        Community service initiative.
+                        {{ t('community_service_initiative') }}
                     </div>
                 </div>
 
                 <!-- Gas Challenge -->
                 <div class="card challenge-card">
                     <div class="chal-header gas-bg">
-                        <span>🔥 Gas</span>
-                        <span class="points-badge">100 Pts</span>
+                        <span>🔥 {{ t('gas') }}</span>
+                        <span class="points-badge">100 {{ t('points') }}</span>
                     </div>
                     <div class="chal-body">
-                        <h4>Safety First</h4>
-                        <p>Complete the annual safety awareness checklist.</p>
-                        <button class="btn-primary">Start Checklist</button>
+                        <h4>{{ t('safety_first') }}</h4>
+                        <p>{{ t('complete_annual_safety') }}</p>
+                        <button class="btn-primary">{{ t('start_checklist') }}</button>
                     </div>
                     <div class="chal-footer">
-                        Safety awareness program.
+                        {{ t('safety_awareness_program') }}
                     </div>
                 </div>
             </div>
 
             <!-- PARTICIPATION SCORE -->
             <div class="card participation-card">
-                <h3>Your Civic Participation</h3>
+                <h3>{{ t('your_civic_participation') }}</h3>
                 <div class="part-stats">
                     <div class="stat">
                         <strong>120</strong>
-                        <span>Points Earned</span>
+                        <span>{{ t('points_earned') }}</span>
                     </div>
                     <div class="stat">
-                        <strong>Top 15%</strong>
-                        <span>In Ward</span>
+                        <strong>{{ t('top') }} 15%</strong>
+                        <span>{{ t('in_ward') }}</span>
                     </div>
                     <div class="badges">
-                        <span class="badge-icon" title="Grid Supporter">🗼</span>
-                        <span class="badge-icon" title="Water Steward">💧</span>
+                        <span class="badge-icon" title="{{ t('grid_supporter') }}">🗼</span>
+                        <span class="badge-icon" title="{{ t('water_steward') }}">💧</span>
                     </div>
                 </div>
             </div>
@@ -225,26 +225,26 @@
         <!-- SECTION 4: ADVISORIES -->
         <div id="advisories" class="com-section">
             <div class="section-header">
-                <h1>Advisories & Announcements</h1>
-                <p>Official communication from utility authorities.</p>
+                <h1>{{ t('advisories_announcements') }}</h1>
+                <p>{{ t('official_communication') }}</p>
             </div>
             <div class="advisory-list">
                 <div class="card advisory-card">
                     <div class="adv-header">
-                        <span class="adv-auth">Issued by: BRPL</span>
-                        <span class="adv-date">Valid till: 20 Jan</span>
+                        <span class="adv-auth">{{ t('issued_by') }}: BRPL</span>
+                        <span class="adv-date">{{ t('valid_till') }}: 20 Jan</span>
                     </div>
-                    <h3>⚠️ Planned Maintenance</h3>
-                    <p>Transformer upgrade work in Block C. Expect intermittent cuts between 10 AM - 2 PM.</p>
-                    <div class="adv-footer">Affected Area: Block C, Kalkaji</div>
+                    <h3>⚠️ {{ t('planned_maintenance') }}</h3>
+                    <p>{{ t('transformer_upgrade_work') }}</p>
+                    <div class="adv-footer">{{ t('affected_area') }}: Block C, Kalkaji</div>
                 </div>
                 <div class="card advisory-card">
                     <div class="adv-header">
-                        <span class="adv-auth">Issued by: DJB</span>
-                        <span class="adv-date">Seasonal</span>
+                        <span class="adv-auth">{{ t('issued_by') }}: DJB</span>
+                        <span class="adv-date">{{ t('seasonal') }}</span>
                     </div>
-                    <h3>ℹ️ Winter Water Supply Schedule</h3>
-                    <p>Morning supply hours shifted to 6:30 AM - 9:30 AM due to operational changes.</p>
+                    <h3>ℹ️ {{ t('winter_water_supply') }}</h3>
+                    <p>{{ t('morning_supply_hours') }}</p>
                 </div>
             </div>
         </div>
@@ -252,21 +252,21 @@
         <!-- SECTION 5: ACTIVITY -->
         <div id="activity" class="com-section">
             <div class="section-header">
-                <h1>Community Activity</h1>
-                <p>Anonymous feed of civic participation.</p>
+                <h1>{{ t('community_activity') }}</h1>
+                <p>{{ t('anonymous_feed_civic') }}</p>
             </div>
             <div class="activity-feed">
                 <div class="feed-item">
                     <span class="feed-icon">👥</span>
-                    <p>38 households participated in "Peak-Hour Saver" yesterday.</p>
+                    <p>38 {{ t('households_participated') }} "{{ t('peak_hour_saver') }}" {{ t('yesterday') }}.</p>
                 </div>
                 <div class="feed-item">
                     <span class="feed-icon">🔧</span>
-                    <p>12 public water leaks reported this week in South Zone.</p>
+                    <p>12 {{ t('public_water_leaks') }}.</p>
                 </div>
                 <div class="feed-item">
                     <span class="feed-icon">⚡</span>
-                    <p>5 outages resolved faster thanks to early reporting by citizens.</p>
+                    <p>5 {{ t('outages_resolved_faster') }}.</p>
                 </div>
             </div>
         </div>
@@ -274,63 +274,63 @@
         <!-- SECTION 6: INSIGHTS -->
         <div id="insights" class="com-section">
             <div class="section-header">
-                <h1>Ward Insights</h1>
-                <p>Comparative analysis of aggregated data.</p>
+                <h1>{{ t('ward_insights') }}</h1>
+                <p>{{ t('comparison_ward_city') }}</p>
             </div>
             <div class="card insight-table-card">
-                <h3>Comparison: Ward vs City</h3>
+                <h3>{{ t('comparison_ward_city') }}</h3>
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Metric</th>
-                            <th>Kalkaji (Ward)</th>
-                            <th>South Delhi (Zone)</th>
-                            <th>Delhi (City)</th>
+                            <th>{{ t('metric') }}</th>
+                            <th>Kalkaji ({{ t('ward') }})</th>
+                            <th>{{ t('south_delhi_zone') }}</th>
+                            <th>{{ t('delhi_city') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Avg Electricity Bill</td>
+                            <td>{{ t('avg_electricity_bill') }}</td>
                             <td>₹ 1,150</td>
                             <td>₹ 1,300</td>
                             <td>₹ 1,050</td>
                         </tr>
                         <tr>
-                            <td>Water Reliability</td>
+                            <td>{{ t('water_reliability') }}</td>
                             <td>92%</td>
                             <td>88%</td>
                             <td>85%</td>
                         </tr>
                         <tr>
-                            <td>Solar Penetration</td>
+                            <td>{{ t('solar_penetration') }}</td>
                             <td>14%</td>
                             <td>10%</td>
                             <td>8%</td>
                         </tr>
                     </tbody>
                 </table>
-                <a href="#" class="link-text">How these insights are calculated</a>
+                <a href="#" class="link-text">{{ t('how_insights_calculated') }}</a>
             </div>
         </div>
 
         <!-- SECTION 7: LEARN -->
         <div id="learn" class="com-section">
             <div class="section-header">
-                <h1>Learn & FAQs</h1>
-                <p>Understanding civic data and utilities.</p>
+                <h1>{{ t('learn_faqs') }}</h1>
+                <p>{{ t('understanding_civic_data') }}</p>
             </div>
             <div class="card faq-card">
                 <details>
-                    <summary>How is ward data collected?</summary>
-                    <p>Data is aggregated from official meter readings and anonymised to ensure privacy.</p>
+                    <summary>{{ t('how_ward_data_collected') }}</summary>
+                    <p>{{ t('data_aggregated_official') }}</p>
                 </details>
                 <details>
-                    <summary>What does "Supply Stress" mean?</summary>
-                    <p>It indicates high demand on the infrastructure or frequent interruptions in service.</p>
+                    <summary>{{ t('what_supply_stress_mean') }}</summary>
+                    <p>{{ t('indicates_high_demand') }}</p>
                 </details>
                 <details>
-                    <summary>Do challenges affect my bill?</summary>
-                    <p>No. Challenges are voluntary and strictly non-monetary initiatives to support the grid.</p>
+                    <summary>{{ t('do_challenges_affect_bill') }}</summary>
+                    <p>{{ t('no_challenges_voluntary') }}</p>
                 </details>
             </div>
         </div>

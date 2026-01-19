@@ -483,6 +483,73 @@ body {
     height: 18px;
 }
 
+/* Language Dropdown */
+.lang-dropdown {
+    position: relative;
+}
+
+.lang-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    min-width: 220px;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all var(--transition-fast);
+}
+
+.lang-dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.lang-option {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: background var(--transition-fast);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.lang-option:last-child {
+    border-bottom: none;
+}
+
+.lang-option:hover {
+    background: var(--gray-100);
+}
+
+.lang-option.active {
+    background: var(--primary-blue);
+    color: var(--text-on-dark);
+    font-weight: var(--font-weight-semibold);
+}
+
+.lang-option.active:hover {
+    background: var(--primary-blue-dark);
+}
+
+.chevron-icon {
+    width: 16px;
+    height: 16px;
+    transition: transform var(--transition-fast);
+}
+
+.lang-dropdown-menu.show ~ .lang-toggle-btn .chevron-icon {
+    transform: rotate(180deg);
+}
+
 .notification-btn {
     position: relative;
 }
