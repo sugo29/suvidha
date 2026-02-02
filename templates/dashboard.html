@@ -4,6 +4,41 @@
 
 {% block content %}
 <div class="dashboard-container">
+    <!-- DNA Helix Utility Visualization -->
+    <div class="dna-helix-section">
+        <div class="dna-container" id="dna-container">
+            <canvas id="dna-canvas"></canvas>
+            
+            <!-- Tooltip for strand info -->
+            <div class="dna-tooltip" id="dna-tooltip">
+                <div class="tooltip-header">
+                    <i class="tooltip-icon"></i>
+                    <span class="tooltip-title"></span>
+                </div>
+                <div class="tooltip-content"></div>
+            </div>
+        </div>
+        
+        <!-- Legend with clickable/hoverable items -->
+        <div class="dna-legend">
+            <div class="dna-legend-item" data-utility="electricity">
+                <div class="dna-color-box electricity"></div>
+                <span>{{ t('electricity_services') }}</span>
+                <i data-lucide="zap" class="legend-icon electricity-icon"></i>
+            </div>
+            <div class="dna-legend-item" data-utility="gas">
+                <div class="dna-color-box gas"></div>
+                <span>{{ t('gas_services') }}</span>
+                <i data-lucide="flame" class="legend-icon gas-icon"></i>
+            </div>
+            <div class="dna-legend-item" data-utility="water">
+                <div class="dna-color-box water"></div>
+                <span>{{ t('water_services') }}</span>
+                <i data-lucide="droplet" class="legend-icon water-icon"></i>
+            </div>
+        </div>
+    </div>
+
     <!-- Page Header -->
     <div class="page-header">
         <div class="page-title-group">
@@ -461,5 +496,244 @@
         const ctx = document.getElementById('trendChart').getContext('2d');
         // Add chart.js implementation if available
     }
+
+    // DNA Helix Visualization for Utilities
+    (function() {
+        const canvas = document.getElementById('dna-canvas');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('dna-container');
+        const tooltip = document.getElementById('dna-tooltip');
+        
+        // Utility data
+        const utilityData = {
+            electricity: {
+                color: {r: 34, g: 197, b: 94},  // Green
+                name: 'Electricity',
+                icon: 'zap',
+                currentBill: '₹1,850',
+                lastMonth: '₹1,720',
+                units: '285 kWh',
+                status: 'Active',
+                dueDate: '15th Feb 2026',
+                trend: '+7.5%'
+            },
+            gas: {
+                color: {r: 239, g: 68, b: 68},   // Red
+                name: 'Gas',
+                icon: 'flame',
+                currentBill: '₹800',
+                lastMonth: '₹750',
+                units: '12 SCM',
+                status: 'Active',
+                dueDate: '20th Feb 2026',
+                trend: '+6.7%'
+            },
+            water: {
+                color: {r: 59, g: 130, b: 246},  // Blue
+                name: 'Water',
+                icon: 'droplet',
+                currentBill: '₹420',
+                lastMonth: '₹400',
+                units: '15,000 L',
+                status: 'Active',
+                dueDate: '10th Feb 2026',
+                trend: '+5%'
+            }
+        };
+        
+        const strandColors = [
+            utilityData.electricity.color,
+            utilityData.gas.color,
+            utilityData.water.color
+        ];
+        
+        const strandKeys = ['electricity', 'gas', 'water'];
+        
+        // Canvas setup
+        function resizeCanvas() {
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Animation parameters
+        const rotationSpeed = 0.6;
+        const helixRadius = 4;
+        const strandThickness = 1.2;
+        let rotationAngle = 0;
+        let animationId = null;
+        let hoveredStrand = null;
+        
+        // Draw strand
+        function drawStrand(color, phaseOffset, depthOffset, isHighlighted) {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const horizontalScale = 12;
+            const segments = 80;
+            const radius = helixRadius * 18;
+            const thickness = strandThickness * (isHighlighted ? 14 : 10);
+            
+            ctx.beginPath();
+            for (let i = 0; i <= segments; i++) {
+                const t = i / segments * Math.PI * 3.5;
+                const x = i * horizontalScale - segments * horizontalScale / 2 + depthOffset;
+                const y = radius * Math.sin(t + rotationAngle + phaseOffset);
+                const z = radius * Math.cos(t + rotationAngle + phaseOffset) + 100;
+                
+                const scale = 300 / (z + 300);
+                const projectedX = centerX + x * scale;
+                const projectedY = centerY + y * scale;
+                
+                if (i === 0) {
+                    ctx.moveTo(projectedX, projectedY);
+                } else {
+                    ctx.lineTo(projectedX, projectedY);
+                }
+            }
+            
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            const alpha = isHighlighted ? 1 : 0.7;
+            gradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha * 0.5})`);
+            gradient.addColorStop(0.5, `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`);
+            gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha * 0.5})`);
+            
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = thickness;
+            ctx.lineCap = 'round';
+            
+            if (isHighlighted) {
+                ctx.shadowColor = `rgba(${color.r}, ${color.g}, ${color.b}, 0.6)`;
+                ctx.shadowBlur = 20;
+            }
+            
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+            
+            // Draw connections
+            const connections = 12;
+            for (let i = 0; i <= connections; i++) {
+                const t = i / connections * Math.PI * 3.5;
+                const x = i * (segments * horizontalScale / connections) - segments * horizontalScale / 2 + depthOffset;
+                const y = radius * Math.sin(t + rotationAngle + phaseOffset);
+                const z = radius * Math.cos(t + rotationAngle + phaseOffset) + 100;
+                
+                const scale = 300 / (z + 300);
+                const startX = centerX + x * scale;
+                const startY = centerY + y * scale;
+                
+                const otherPhaseOffset = phaseOffset + Math.PI * 0.66;
+                const otherY = radius * Math.sin(t + rotationAngle + otherPhaseOffset);
+                const otherZ = radius * Math.cos(t + rotationAngle + otherPhaseOffset) + 100;
+                
+                const otherScale = 300 / (otherZ + 300);
+                const endX = centerX + x * otherScale;
+                const endY = centerY + otherY * otherScale;
+                
+                const connectionGradient = ctx.createLinearGradient(startX, startY, endX, endY);
+                connectionGradient.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, 0.3)`);
+                
+                const connectedColorIndex = (strandColors.findIndex(c => 
+                    c.r === color.r && c.g === color.g && c.b === color.b) + 1) % strandColors.length;
+                const connectedColor = strandColors[connectedColorIndex];
+                connectionGradient.addColorStop(1, `rgba(${connectedColor.r}, ${connectedColor.g}, ${connectedColor.b}, 0.3)`);
+                
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+                ctx.strokeStyle = connectionGradient;
+                ctx.lineWidth = thickness * 0.3;
+                ctx.stroke();
+            }
+        }
+        
+        // Draw DNA
+        function drawDNA() {
+            ctx.fillStyle = 'rgba(249, 250, 251, 0.95)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < strandColors.length; i++) {
+                const phaseOffset = (i / strandColors.length) * Math.PI * 2;
+                const depthOffset = (i - 1) * 12;
+                const isHighlighted = hoveredStrand === strandKeys[i];
+                drawStrand(strandColors[i], phaseOffset, depthOffset, isHighlighted);
+            }
+        }
+        
+        // Animation loop
+        function animate() {
+            rotationAngle += 0.008 * rotationSpeed;
+            drawDNA();
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        animate();
+        
+        // Show tooltip
+        function showTooltip(utility, x, y) {
+            const data = utilityData[utility];
+            tooltip.querySelector('.tooltip-title').textContent = data.name;
+            tooltip.querySelector('.tooltip-content').innerHTML = `
+                <div class="tooltip-row"><span>Current Bill:</span><strong>${data.currentBill}</strong></div>
+                <div class="tooltip-row"><span>Last Month:</span><span>${data.lastMonth}</span></div>
+                <div class="tooltip-row"><span>Usage:</span><span>${data.units}</span></div>
+                <div class="tooltip-row"><span>Status:</span><span class="status-active">${data.status}</span></div>
+                <div class="tooltip-row"><span>Due Date:</span><span>${data.dueDate}</span></div>
+                <div class="tooltip-row"><span>Trend:</span><span class="trend-up">${data.trend}</span></div>
+            `;
+            
+            tooltip.className = `dna-tooltip ${utility} active`;
+            
+            const tooltipRect = tooltip.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            
+            let left = x - tooltipRect.width / 2;
+            let top = y - tooltipRect.height - 15;
+            
+            if (left < 10) left = 10;
+            if (left + tooltipRect.width > containerRect.width - 10) {
+                left = containerRect.width - tooltipRect.width - 10;
+            }
+            if (top < 10) top = y + 20;
+            
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+        }
+        
+        function hideTooltip() {
+            tooltip.classList.remove('active');
+        }
+        
+        // Legend hover/click events
+        document.querySelectorAll('.dna-legend-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                hoveredStrand = this.dataset.utility;
+                const rect = this.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+                showTooltip(hoveredStrand, rect.left - containerRect.left + rect.width / 2, containerRect.height / 2);
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                hoveredStrand = null;
+                hideTooltip();
+            });
+            
+            item.addEventListener('click', function() {
+                window.location.href = '/utilities';
+            });
+        });
+        
+        // Pause on hidden
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                cancelAnimationFrame(animationId);
+            } else {
+                animate();
+            }
+        });
+    })();
 </script>
 {% endblock %}
