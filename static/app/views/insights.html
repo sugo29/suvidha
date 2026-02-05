@@ -1,245 +1,671 @@
-<section class="page-header">
-    <h1>{{t('insights')}}</h1>
-    <p>Understanding your household patterns, trends, and civic context.</p>
-</section>
+<!-- Insights Header with Stats -->
+<div class="insights-header">
+    <div class="header-content">
+        <h1>{{t('insights')}}</h1>
+        <p>Understanding your household patterns, trends, and civic context.</p>
+    </div>
+    <div class="insights-stats-bar">
+        <div class="stat-item">
+            <i data-lucide="trending-down"></i>
+            <div>
+                <span class="stat-label">Energy Efficiency</span>
+                <span class="stat-value">{{vm.stats.efficiency}}%</span>
+            </div>
+        </div>
+        <div class="stat-item">
+            <i data-lucide="calendar"></i>
+            <div>
+                <span class="stat-label">Analysis Period</span>
+                <span class="stat-value">{{vm.stats.analysisMonths}} Months</span>
+            </div>
+        </div>
+        <div class="stat-item">
+            <i data-lucide="award"></i>
+            <div>
+                <span class="stat-label">Ward Ranking</span>
+                <span class="stat-value">Top {{vm.stats.wardRank}}%</span>
+            </div>
+        </div>
+    </div>
+</div>
 
-<!-- Section 1: Utility Profile (Refined) -->
-<section class="section-block">
-    <div class="section-header-row">
+<!-- Enhanced Tabs for Insights Sections -->
+<div class="tabs-container enhanced">
+    <div class="tabs">
+        <button class="insight-tab" ng-class="{active: vm.activeSection === 'profile'}" ng-click="vm.switchSection('profile')">
+            <i data-lucide="user"></i>
+            <span>Profile</span>
+        </button>
+        <button class="insight-tab" ng-class="{active: vm.activeSection === 'trends'}" ng-click="vm.switchSection('trends')">
+            <i data-lucide="trending-up"></i>
+            <span>Trends</span>
+        </button>
+        <button class="insight-tab" ng-class="{active: vm.activeSection === 'recommendations'}" ng-click="vm.switchSection('recommendations')">
+            <i data-lucide="lightbulb"></i>
+            <span>Recommendations</span>
+        </button>
+        <button class="insight-tab" ng-class="{active: vm.activeSection === 'comparison'}" ng-click="vm.switchSection('comparison')">
+            <i data-lucide="bar-chart-2"></i>
+            <span>Comparison</span>
+        </button>
+    </div>
+</div>
+
+<!-- Profile Section -->
+<div ng-show="vm.activeSection === 'profile'" class="insight-section">
+    <div class="section-header-enhanced">
         <h2>Your Utility Profile</h2>
-        <a href="#" class="learn-more-link" title="Data sources, frequency, and limitations">Data Disclaimer &
-            Limitations ⓘ</a>
+        <button class="action-btn" ng-click="vm.viewDataDisclaimer()">
+            <i data-lucide="info"></i>
+            <span>Data Disclaimer</span>
+        </button>
     </div>
 
-    <div class="cards-grid">
-        <div class="card insight-card">
-            <div class="card-icon">⚡</div>
-            <h3>{{t('electricity_efficiency')}}</h3>
-            <div class="status-badge status-good">{{t('efficient')}}</div>
-            <p>{{t('you_consume_less')}}</p>
-            <div class="card-meta">
-                <span>{{t('based_on_12_months')}}</span>
+    <div class="content-grid enhanced three-column">
+        <div class="card enhanced">
+            <div class="card-header">
+                <div class="header-left">
+                    <div class="header-icon" style="color: var(--status-success); background: rgba(16, 185, 129, 0.1);">
+                        <i data-lucide="zap"></i>
+                    </div>
+                    <div>
+                        <h3>{{t('electricity_efficiency')}}</h3>
+                        <p class="card-subtitle">Based on 12 months data</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <span class="badge success">{{t('efficient')}}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="profile-metric">
+                    <div class="metric-value">{{vm.profile.electricity.score}}<span class="metric-unit">/10</span></div>
+                    <p class="metric-desc">{{t('you_consume_less')}}</p>
+                </div>
+                <div class="profile-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Avg Monthly</span>
+                        <span class="detail-value">{{vm.profile.electricity.avgMonthly}} kWh</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">vs Ward Avg</span>
+                        <span class="detail-value trend-down">-15%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
                 <span class="confidence-tag high">High Confidence</span>
             </div>
         </div>
-        <div class="card insight-card">
-            <div class="card-icon">💧</div>
-            <h3>{{t('water_usage_category')}}</h3>
-            <div class="status-badge status-warning">{{t('moderate_high')}}</div>
-            <p>{{t('usage_peaks_weekends')}}</p>
-            <div class="card-meta">
-                <span>{{t('based_on_6_months')}}</span>
-                <span class="confidence-tag medium">Med Confidence</span>
+
+        <div class="card enhanced">
+            <div class="card-header">
+                <div class="header-left">
+                    <div class="header-icon" style="color: var(--status-warning); background: rgba(245, 158, 11, 0.1);">
+                        <i data-lucide="droplet"></i>
+                    </div>
+                    <div>
+                        <h3>{{t('water_usage_category')}}</h3>
+                        <p class="card-subtitle">Based on 6 months data</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <span class="badge warning">{{t('moderate_high')}}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="profile-metric">
+                    <div class="metric-value">{{vm.profile.water.score}}<span class="metric-unit">/10</span></div>
+                    <p class="metric-desc">{{t('usage_peaks_weekends')}}</p>
+                </div>
+                <div class="profile-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Avg Monthly</span>
+                        <span class="detail-value">{{vm.profile.water.avgMonthly}} L</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">vs Ward Avg</span>
+                        <span class="detail-value trend-up">+15%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="confidence-tag medium">Medium Confidence</span>
             </div>
         </div>
-        <div class="card insight-card">
-            <div class="card-icon">🔥</div>
-            <h3>{{t('gas_stability_index')}}</h3>
-            <div class="status-badge status-good">{{t('stable')}}</div>
-            <p>{{t('consistent_usage_pattern')}}</p>
-            <div class="card-meta">
-                <span>Based on last 6 months</span>
+
+        <div class="card enhanced">
+            <div class="card-header">
+                <div class="header-left">
+                    <div class="header-icon" style="color: var(--primary-blue); background: rgba(29, 112, 184, 0.1);">
+                        <i data-lucide="flame"></i>
+                    </div>
+                    <div>
+                        <h3>{{t('gas_stability_index')}}</h3>
+                        <p class="card-subtitle">Based on 6 months data</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <span class="badge success">{{t('stable')}}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="profile-metric">
+                    <div class="metric-value">{{vm.profile.gas.score}}<span class="metric-unit">/10</span></div>
+                    <p class="metric-desc">{{t('consistent_usage_pattern')}}</p>
+                </div>
+                <div class="profile-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Avg Monthly</span>
+                        <span class="detail-value">{{vm.profile.gas.avgMonthly}} m³</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">vs Ward Avg</span>
+                        <span class="detail-value">±0%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
                 <span class="confidence-tag high">High Confidence</span>
             </div>
         </div>
     </div>
-    <p class="section-note">Classifications derived by comparing your monthly usage data against city ward norms.</p>
-</section>
+    
+    <div class="info-alert enhanced">
+        <i data-lucide="info"></i>
+        <p>Classifications derived by comparing your monthly usage data against city ward norms.</p>
+    </div>
+</div>
 
-<!-- Section 2: Trend Over Time (NEW) -->
-<section class="section-block">
-    <h2>{{t('your_consumption_trend')}}</h2>
-    <div class="card trend-timeline-card">
-        <div class="trend-row">
-            <div class="trend-meta">
-                <strong>{{t('electricity')}}</strong>
-                <span class="trend-badge improving">{{t('improving')}} ↘</span>
+<div ng-show="vm.activeSection === 'trends'" class="insight-section">
+    <div class="section-header-enhanced">
+        <h2>{{t('your_consumption_trend')}}</h2>
+        <button class="action-btn" ng-click="vm.exportTrendData()">
+            <i data-lucide="download"></i>
+            <span>Export Data</span>
+        </button>
+    </div>
+
+    <div class="content-grid enhanced single-column">
+        <div class="card enhanced">
+            <div class="card-header">
+                <h3>Consumption Trends Analysis</h3>
             </div>
-            <div class="trend-desc">
-                {{t('usage_reduced_consistently')}}
+            <div class="card-body">
+                <div class="trend-items">
+                    <div class="trend-item">
+                        <div class="trend-icon improving">
+                            <i data-lucide="zap"></i>
+                        </div>
+                        <div class="trend-content">
+                            <div class="trend-header">
+                                <strong>{{t('electricity')}}</strong>
+                                <span class="trend-badge improving">{{t('improving')}} <i data-lucide="trending-down"></i></span>
+                            </div>
+                            <p class="trend-desc">{{t('usage_reduced_consistently')}}</p>
+                            <div class="trend-chart">
+                                <canvas id="electricityTrendChart" width="400" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="trend-item">
+                        <div class="trend-icon warning">
+                            <i data-lucide="droplet"></i>
+                        </div>
+                        <div class="trend-content">
+                            <div class="trend-header">
+                                <strong>{{t('water')}}</strong>
+                                <span class="trend-badge warning">{{t('increasing')}} <i data-lucide="trending-up"></i></span>
+                            </div>
+                            <p class="trend-desc">{{t('steady_increase_observed')}}</p>
+                            <div class="trend-chart">
+                                <canvas id="waterTrendChart" width="400" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="trend-item">
+                        <div class="trend-icon stable">
+                            <i data-lucide="flame"></i>
+                        </div>
+                        <div class="trend-content">
+                            <div class="trend-header">
+                                <strong>{{t('gas')}}</strong>
+                                <span class="trend-badge stable">{{t('stable')}} <i data-lucide="minus"></i></span>
+                            </div>
+                            <p class="trend-desc">{{t('consumption_variance')}}</p>
+                            <div class="trend-chart">
+                                <canvas id="gasTrendChart" width="400" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <i data-lucide="info"></i>
+                <span>Trend analysis is based on officially recorded monthly meter readings.</span>
             </div>
         </div>
-        <div class="trend-row">
-            <div class="trend-meta">
-                <strong>{{t('water')}}</strong>
-                <span class="trend-badge warning">{{t('increasing')}} ↗</span>
+
+        <div class="card enhanced">
+            <div class="card-header">
+                <h3>Key Observations & Insights</h3>
             </div>
-            <div class="trend-desc">
-                {{t('steady_increase_observed')}}
+            <div class="card-body">
+                <div class="observations-list">
+                    <div class="observation-item">
+                        <div class="obs-icon success">
+                            <i data-lucide="check-circle"></i>
+                        </div>
+                        <div class="obs-content">
+                            <h4>Electricity Efficiency</h4>
+                            <p>Consumption is significantly lower than ward average during peak winter months.</p>
+                        </div>
+                    </div>
+                    <div class="observation-item">
+                        <div class="obs-icon warning">
+                            <i data-lucide="alert-circle"></i>
+                        </div>
+                        <div class="obs-content">
+                            <h4>Water Usage Alert</h4>
+                            <p>Usage per capita is 15% higher than the Jal Board benchmark for this ward.</p>
+                        </div>
+                    </div>
+                    <div class="observation-item">
+                        <div class="obs-icon info">
+                            <i data-lucide="info"></i>
+                        </div>
+                        <div class="obs-content">
+                            <h4>Gas Consumption Pattern</h4>
+                            <p>Seasonal variation aligns perfectly with temperature drops; no anomalies detected.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="trend-row">
-            <div class="trend-meta">
-                <strong>{{t('gas')}}</strong>
-                <span class="trend-badge stable">{{t('stable')}} ➡</span>
+            <div class="card-footer">
+                <a href="#" ng-click="vm.viewMethodology()" class="link-text">
+                    <i data-lucide="help-circle"></i>
+                    <span>How we infer these insights</span>
+                </a>
             </div>
-            <div class="trend-desc">
-                {{t('consumption_variance')}}
-            </div>
-        </div>
-        <div class="trend-footer">
-            <p>Analysis indicates improved efficiency in electricity but potential leak/waste in water usage.</p>
-            <small>Trend analysis is based on officially recorded monthly meter readings.</small>
         </div>
     </div>
-</section>
+</div>
 
-<!-- Section 3: Key Observations & Reasons (NEW) -->
-<section class="section-block">
-    <h2>Key Observations & Reasons</h2>
-    <div class="card observation-card">
-        <ul class="obs-list">
-            <li><strong>Electricity:</strong> Consumption is significantly lower than ward average during peak winter
-                months.</li>
-            <li><strong>Water:</strong> Usage per capita is 15% higher than the Jal Board benchmark for this ward.</li>
-            <li><strong>Gas:</strong> Seasonal variation aligns perfectly with temperature drops; no anomalies detected.
-            </li>
-        </ul>
-        <div class="obs-footer">
-            <a href="#" class="link-text">ⓘ How we infer these insights</a>
-        </div>
+<!-- Recommendations Section -->
+<div ng-show="vm.activeSection === 'recommendations'" class="insight-section">
+    <div class="section-header-enhanced">
+        <h2>Recommended Actions</h2>
+        <p class="section-desc">Personalized recommendations based on your consumption patterns</p>
     </div>
-</section>
 
-<!-- Section 4: What You Can Do Next (Actionable) (NEW) -->
-<section class="section-block">
-    <h2>Recommended Actions</h2>
-    <div class="action-grid">
-        <!-- Electricity Actions -->
-        <div class="card action-card">
-            <div class="action-header elec-bg">
-                <h3>⚡ Electricity</h3>
-                <span class="status-tag">Maintain</span>
+    <div class="content-grid enhanced three-column">
+        <div class="card enhanced recommendation-card">
+            <div class="card-header elec-themed">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="zap"></i>
+                    </div>
+                    <h3>Electricity</h3>
+                </div>
+                <div class="header-right">
+                    <span class="badge success">Maintain</span>
+                </div>
             </div>
-            <div class="action-body">
-                <ul>
-                    <li>Maintain current efficient usage pattern.</li>
-                    <li>Consider 5-star rated appliances for reliable savings.</li>
-                    <li>Eligible for <a href="#">DSM / Efficiency Programs</a>.</li>
+            <div class="card-body">
+                <ul class="recommendation-list">
+                    <li>
+                        <i data-lucide="check"></i>
+                        <span>Maintain current efficient usage pattern.</span>
+                    </li>
+                    <li>
+                        <i data-lucide="check"></i>
+                        <span>Consider 5-star rated appliances for reliable savings.</span>
+                    </li>
+                    <li>
+                        <i data-lucide="award"></i>
+                        <span>Eligible for DSM / Efficiency Programs.</span>
+                    </li>
                 </ul>
+                <div class="potential-savings">
+                    <span class="savings-label">Potential Annual Savings</span>
+                    <span class="savings-value">₹{{vm.recommendations.electricity.savings}}</span>
+                </div>
             </div>
-            <div class="action-footer">
-                <a href="#" class="btn-small-outline">View Govt Advisory</a>
+            <div class="card-actions">
+                <button class="btn-secondary full-width" ng-click="vm.viewGovernmentAdvisory('electricity')">
+                    <i data-lucide="external-link"></i>
+                    <span>View Govt Advisory</span>
+                </button>
             </div>
         </div>
 
-        <!-- Water Actions -->
-        <div class="card action-card">
-            <div class="action-header water-bg">
-                <h3>💧 Water</h3>
-                <span class="status-tag warning">Attention</span>
+        <div class="card enhanced recommendation-card">
+            <div class="card-header water-themed">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="droplet"></i>
+                    </div>
+                    <h3>Water</h3>
+                </div>
+                <div class="header-right">
+                    <span class="badge warning">Attention</span>
+                </div>
             </div>
-            <div class="action-body">
-                <ul>
-                    <li>Check internal pipelines and overhead tanks for leaks.</li>
-                    <li>Review household water-intensive activities.</li>
-                    <li>Refer to <a href="#">Jal Board Advisory</a> for self-checks.</li>
+            <div class="card-body">
+                <ul class="recommendation-list">
+                    <li>
+                        <i data-lucide="alert-circle"></i>
+                        <span>Check internal pipelines and overhead tanks for leaks.</span>
+                    </li>
+                    <li>
+                        <i data-lucide="search"></i>
+                        <span>Review household water-intensive activities.</span>
+                    </li>
+                    <li>
+                        <i data-lucide="file-text"></i>
+                        <span>Refer to Jal Board Advisory for self-checks.</span>
+                    </li>
                 </ul>
+                <div class="potential-savings warning">
+                    <span class="savings-label">Potential Reduction</span>
+                    <span class="savings-value">15% usage</span>
+                </div>
             </div>
-            <div class="action-footer">
-                <a href="#!/services" class="btn-small-primary">Raise Service Request</a>
+            <div class="card-actions">
+                <button class="btn-primary full-width" ng-click="vm.raiseServiceRequest('water')">
+                    <i data-lucide="wrench"></i>
+                    <span>Raise Service Request</span>
+                </button>
             </div>
         </div>
 
-        <!-- Gas Actions -->
-        <div class="card action-card">
-            <div class="action-header gas-bg">
-                <h3>🔥 Gas</h3>
-                <span class="status-tag">No Action</span>
+        <div class="card enhanced recommendation-card">
+            <div class="card-header gas-themed">
+                <div class="header-left">
+                    <div class="header-icon">
+                        <i data-lucide="flame"></i>
+                    </div>
+                    <h3>Gas</h3>
+                </div>
+                <div class="header-right">
+                    <span class="badge info">No Action</span>
+                </div>
             </div>
-            <div class="action-body">
-                <ul>
-                    <li>Usage is within normal variations.</li>
-                    <li>Annual safety check is recommended.</li>
+            <div class="card-body">
+                <ul class="recommendation-list">
+                    <li>
+                        <i data-lucide="check-circle"></i>
+                        <span>Usage is within normal variations.</span>
+                    </li>
+                    <li>
+                        <i data-lucide="shield"></i>
+                        <span>Annual safety check is recommended.</span>
+                    </li>
                 </ul>
+                <div class="potential-savings info">
+                    <span class="savings-label">Status</span>
+                    <span class="savings-value">Optimal</span>
+                </div>
             </div>
-            <div class="action-footer">
-                <a href="#" class="btn-small-outline">Safety Guidelines</a>
+            <div class="card-actions">
+                <button class="btn-secondary full-width" ng-click="vm.viewSafetyGuidelines('gas')">
+                    <i data-lucide="book-open"></i>
+                    <span>Safety Guidelines</span>
+                </button>
             </div>
         </div>
     </div>
-</section>
 
-<!-- Section 5: Comparison with Ward -->
-<section class="section-block">
-    <h2>Comparison with Ward</h2>
-    <div class="card comparison-card">
-        <div class="comparison-row">
-            <span class="comp-label">Nearby Households <span class="tooltip"
-                    title="Households within 500m radius">ⓘ</span></span>
-            <div class="comp-bar-bg">
-                <div class="comp-bar-fill" style="width: 60%;">You</div>
-                <div class="comp-bar-marker" style="left: 70%;">Avg</div>
+    <div class="info-alert enhanced">
+        <i data-lucide="sparkles"></i>
+        <p>These recommendations are updated monthly based on your consumption patterns and government advisories.</p>
+    </div>
+</div>
+
+<!-- Comparison Section -->
+<div ng-show="vm.activeSection === 'comparison'" class="insight-section">
+    <div class="section-header-enhanced">
+        <h2>Comparison with Ward</h2>
+        <p class="section-desc">See how your consumption compares with similar households</p>
+    </div>
+
+    <div class="content-grid enhanced two-column">
+        <div class="card enhanced">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="home"></i>
+                    Nearby Households
+                </h3>
+                <span class="tooltip-icon" title="Households within 500m radius">
+                    <i data-lucide="help-circle"></i>
+                </span>
             </div>
-            <span class="comp-val">Better than 40%</span>
-        </div>
-        <div class="comparison-row">
-            <span class="comp-label">Similar Household Size (4) <span class="tooltip"
-                    title="Households with 4 members declared">ⓘ</span></span>
-            <div class="comp-bar-bg">
-                <div class="comp-bar-fill warning" style="width: 85%;">You</div>
-                <div class="comp-bar-marker" style="left: 70%;">Avg</div>
+            <div class="card-body">
+                <div class="comparison-bar-container">
+                    <div class="comparison-labels">
+                        <span>0</span>
+                        <span>Ward Average</span>
+                        <span>Max</span>
+                    </div>
+                    <div class="comparison-bar">
+                        <div class="bar-fill your-position" style="width: 60%;"></div>
+                        <div class="bar-marker avg-marker" style="left: 70%;">
+                            <span>Avg</span>
+                        </div>
+                    </div>
+                    <div class="comparison-result success">
+                        <i data-lucide="trophy"></i>
+                        <span>Better than 40% of nearby households</span>
+                    </div>
+                </div>
             </div>
-            <span class="comp-val">Above Average</span>
         </div>
-        <p class="source-note">Source: Ward-level aggregated official data.</p>
-    </div>
-</section>
 
-<!-- Section 6: Ward & City Context (NEW) -->
-<section class="section-block">
-    <h2>Your Ward in Context</h2>
-    <div class="card context-card">
-        <div class="context-item">
-            <strong>Ward Trend (Kalkaji)</strong>
-            <p>The ward has observed increased water demand during the current quarter.</p>
-        </div>
-        <div class="context-item">
-            <strong>Civic Advisory</strong>
-            <p>Citizens are advised to use water judiciously due to pipeline maintenance in South Zone.</p>
-        </div>
-    </div>
-</section>
-
-<!-- Section 7: Policy & Linkage (NEW) -->
-<section class="section-block">
-    <h2>Related Government Programmes 🇮🇳</h2>
-    <div class="policy-links">
-        <a href="#" class="policy-pill">Energy Efficiency (UJALA)</a>
-        <a href="#" class="policy-pill">Jal Shakti Mission</a>
-        <a href="#" class="policy-pill">Rooftop Solar (MNRE)</a>
-        <a href="#" class="policy-pill">BSES DSM Program</a>
-    </div>
-    <p class="section-note">Your current electricity usage makes you eligible for efficiency improvement programmes.</p>
-</section>
-
-<!-- Section 8: Data Confidence (NEW) -->
-<section class="section-block confidence-block">
-    <h3>Data Confidence & Coverage</h3>
-    <div class="conf-grid">
-        <div class="conf-item">
-            <span>Data Availability</span>
-            <strong>Last 8 Months</strong>
-        </div>
-        <div class="conf-item">
-            <span>Vendors Connected</span>
-            <strong>BRPL / DJB / IGL</strong>
-        </div>
-        <div class="conf-item">
-            <span>Confidence Level</span>
-            <strong class="text-green">High</strong>
+        <div class="card enhanced">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="users"></i>
+                    Similar Household Size (4)
+                </h3>
+                <span class="tooltip-icon" title="Households with 4 members">
+                    <i data-lucide="help-circle"></i>
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="comparison-bar-container">
+                    <div class="comparison-labels">
+                        <span>0</span>
+                        <span>Category Average</span>
+                        <span>Max</span>
+                    </div>
+                    <div class="comparison-bar">
+                        <div class="bar-fill your-position warning" style="width: 85%;"></div>
+                        <div class="bar-marker avg-marker" style="left: 70%;">
+                            <span>Avg</span>
+                        </div>
+                    </div>
+                    <div class="comparison-result warning">
+                        <i data-lucide="alert-triangle"></i>
+                        <span>Above average consumption for household size</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <p>Insights are generated using sufficient historical billing data and validated against ward-level norms.</p>
-</section>
 
-<!-- Section 9: Next Steps Navigator (NEW) -->
-<section class="navigator-section">
+    <div class="content-grid enhanced single-column">
+        <div class="card enhanced">
+            <div class="card-header">
+                <h3>Ward & City Context</h3>
+            </div>
+            <div class="card-body">
+                <div class="context-items">
+                    <div class="context-item">
+                        <div class="context-icon">
+                            <i data-lucide="map-pin"></i>
+                        </div>
+                        <div class="context-content">
+                            <h4>Ward Trend (Kalkaji)</h4>
+                            <p>The ward has observed increased water demand during the current quarter.</p>
+                            <div class="context-stats">
+                                <span class="stat-chip">+12% vs last quarter</span>
+                                <span class="stat-chip">Above city avg</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="context-item">
+                        <div class="context-icon warning">
+                            <i data-lucide="bell"></i>
+                        </div>
+                        <div class="context-content">
+                            <h4>Civic Advisory</h4>
+                            <p>Citizens are advised to use water judiciously due to pipeline maintenance in South Zone.</p>
+                            <div class="context-meta">
+                                <span><i data-lucide="calendar"></i> Valid until: 15 Feb 2026</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <i data-lucide="database"></i>
+                <span>Source: Ward-level aggregated official data from DJB & BRPL</span>
+            </div>
+        </div>
+
+        <div class="card enhanced">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="flag"></i>
+                    Related Government Programmes
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="programme-grid">
+                    <a href="#" class="programme-card" ng-click="vm.viewProgramme('ujala')">
+                        <div class="programme-icon">
+                            <i data-lucide="lightbulb"></i>
+                        </div>
+                        <div class="programme-info">
+                            <h4>UJALA</h4>
+                            <p>Energy Efficiency Programme</p>
+                        </div>
+                        <i data-lucide="arrow-right"></i>
+                    </a>
+                    <a href="#" class="programme-card" ng-click="vm.viewProgramme('jal-shakti')">
+                        <div class="programme-icon">
+                            <i data-lucide="droplet"></i>
+                        </div>
+                        <div class="programme-info">
+                            <h4>Jal Shakti</h4>
+                            <p>Water Conservation Mission</p>
+                        </div>
+                        <i data-lucide="arrow-right"></i>
+                    </a>
+                    <a href="#" class="programme-card" ng-click="vm.viewProgramme('solar')">
+                        <div class="programme-icon">
+                            <i data-lucide="sun"></i>
+                        </div>
+                        <div class="programme-info">
+                            <h4>Rooftop Solar</h4>
+                            <p>MNRE Solar Programme</p>
+                        </div>
+                        <i data-lucide="arrow-right"></i>
+                    </a>
+                    <a href="#" class="programme-card" ng-click="vm.viewProgramme('dsm')">
+                        <div class="programme-icon">
+                            <i data-lucide="activity"></i>
+                        </div>
+                        <div class="programme-info">
+                            <h4>BSES DSM</h4>
+                            <p>Demand Side Management</p>
+                        </div>
+                        <i data-lucide="arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-footer">
+                <i data-lucide="check-circle"></i>
+                <span>You're eligible for 3 out of 4 programmes based on your current usage</span>
+            </div>
+        </div>
+
+        <div class="card enhanced confidence-card">
+            <div class="card-header">
+                <h3>
+                    <i data-lucide="shield-check"></i>
+                    Data Confidence & Coverage
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="confidence-grid">
+                    <div class="confidence-item">
+                        <div class="conf-icon">
+                            <i data-lucide="calendar-range"></i>
+                        </div>
+                        <div class="conf-details">
+                            <span class="conf-label">Data Availability</span>
+                            <strong class="conf-value">Last 8 Months</strong>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 67%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="confidence-item">
+                        <div class="conf-icon">
+                            <i data-lucide="plug"></i>
+                        </div>
+                        <div class="conf-details">
+                            <span class="conf-label">Vendors Connected</span>
+                            <strong class="conf-value">BRPL / DJB / IGL</strong>
+                            <div class="vendor-badges">
+                                <span class="vendor-badge">BRPL</span>
+                                <span class="vendor-badge">DJB</span>
+                                <span class="vendor-badge">IGL</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="confidence-item">
+                        <div class="conf-icon success">
+                            <i data-lucide="check-circle"></i>
+                        </div>
+                        <div class="conf-details">
+                            <span class="conf-label">Confidence Level</span>
+                            <strong class="conf-value success">High</strong>
+                            <p class="conf-note">Based on sufficient historical data</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <i data-lucide="info"></i>
+                <span>Insights are generated using validated billing data and ward-level benchmarks</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Navigation -->
+<div class="quick-navigation">
     <h3>Continue Exploring</h3>
-    <div class="nav-buttons">
-        <a href="#!/utilities" class="btn-secondary">Go to Utilities</a>
-        <a href="#!/simulator" class="btn-secondary">Try "What If?" Simulator</a>
-        <a href="#!/services" class="btn-secondary">Raise Service Request</a>
-        <a href="#!/records" class="btn-secondary">Download Records</a>
+    <div class="nav-grid">
+        <a href="#!/utilities" class="nav-card">
+            <i data-lucide="activity"></i>
+            <span>Go to Utilities</span>
+        </a>
+        <a href="#!/simulator" class="nav-card">
+            <i data-lucide="sliders"></i>
+            <span>Try "What If?" Simulator</span>
+        </a>
+        <a href="#!/services" class="nav-card">
+            <i data-lucide="wrench"></i>
+            <span>Raise Service Request</span>
+        </a>
+        <a href="#!/records" class="nav-card">
+            <i data-lucide="download"></i>
+            <span>Download Records</span>
+        </a>
     </div>
-</section>
+</div>
