@@ -20,8 +20,8 @@
             };
 
             self.translate = function(key) {
-                if (self.translations[key] && self.translations[key][self.currentLang]) {
-                    return self.translations[key][self.currentLang];
+                if (self.translations[self.currentLang] && self.translations[self.currentLang][key]) {
+                    return self.translations[self.currentLang][key];
                 }
                 return key; // Fallback to key if translation not found
             };

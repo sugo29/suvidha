@@ -13,7 +13,7 @@
 </div>
 
 <!-- ELECTRICITY CONTENT -->
-<div id="electricity" class="tab-content" ng-show="vm.activeTab === 'electricity'">
+<div id="electricity" class="tab-content" ng-class="{active: vm.activeTab === 'electricity'}">
     <div class="content-grid two-column">
         <!-- Consumption Chart -->
         <div class="card chart-card">
@@ -48,7 +48,7 @@
 </div>
 
 <!-- GAS CONTENT -->
-<div id="gas" class="tab-content" ng-show="vm.activeTab === 'gas'">
+<div id="gas" class="tab-content" ng-class="{active: vm.activeTab === 'gas'}">
     <div class="content-grid two-column">
         <div class="card chart-card">
             <div class="card-header">
@@ -75,7 +75,7 @@
 </div>
 
 <!-- WATER CONTENT -->
-<div id="water" class="tab-content" ng-show="vm.activeTab === 'water'">
+<div id="water" class="tab-content" ng-class="{active: vm.activeTab === 'water'}">
     <div class="content-grid two-column">
         <div class="card chart-card">
             <div class="card-header">
