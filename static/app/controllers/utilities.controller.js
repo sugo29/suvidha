@@ -10,10 +10,71 @@
         vm.loading = false;
         vm.activeTab = 'electricity';
         vm.utilitiesData = {};
+        
+        // Header stats
+        vm.totalConsumption = 481;
+        vm.currentMonth = 'January 2026';
+        vm.pendingBills = 1;
 
         vm.switchTab = function(tab) {
             console.log('Switching to:', tab);
             vm.activeTab = tab;
+            // Reinitialize Lucide icons after tab switch
+            $timeout(function() {
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            }, 50);
+        };
+
+        // Action methods
+        vm.payBill = function(utility) {
+            console.log('Pay bill for:', utility);
+            window.location.href = '#!/services';
+        };
+
+        vm.downloadBill = function(utility) {
+            console.log('Download bill for:', utility);
+            alert('Downloading ' + utility + ' bill...');
+        };
+
+        vm.viewHistory = function(utility) {
+            console.log('View history for:', utility);
+            window.location.href = '#!/records';
+        };
+
+        vm.raiseRequest = function(utility) {
+            console.log('Raise request for:', utility);
+            window.location.href = '#!/services';
+        };
+
+        vm.bookCylinder = function() {
+            console.log('Book gas cylinder');
+            alert('Redirecting to IGL booking portal...');
+        };
+
+        vm.reportLeakage = function() {
+            console.log('Report water leakage');
+            window.location.href = '#!/services';
+        };
+
+        vm.toggleChartType = function(utility) {
+            console.log('Toggle chart type for:', utility);
+        };
+
+        vm.viewTariffDetails = function() {
+            console.log('View tariff details');
+            alert('Opening complete tariff schedule...');
+        };
+
+        vm.viewSafetyTips = function() {
+            console.log('View safety tips');
+            alert('Opening gas safety guidelines...');
+        };
+
+        vm.viewQualityReport = function() {
+            console.log('View quality report');
+            alert('Opening water quality report...');
         };
 
         console.log('UtilitiesController initialized, activeTab:', vm.activeTab);

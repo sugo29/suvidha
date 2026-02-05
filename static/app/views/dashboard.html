@@ -302,19 +302,30 @@
                     <h3>{{t('current_bill')}}</h3>
                 </div>
                 <div class="utility-card-body">
-                    <div class="bill-amount">
-                        <span class="currency">₹</span>
-                        <span class="amount">2,450</span>
-                    </div>
-                    <p class="bill-period">{{t('billing_period')}}: Dec 2024</p>
-                    <div class="bill-details">
-                        <div class="detail-item">
-                            <span class="label">{{t('due_date')}}:</span>
-                            <span class="value text-warning">25 Jan 2025</span>
+                    <div class="bill-content-wrapper">
+                        <div class="bill-main-info">
+                            <div class="bill-amount">
+                                <span class="currency">₹</span>
+                                <span class="amount">2,450</span>
+                            </div>
+                            <p class="bill-period">{{t('billing_period')}}: Dec 2024</p>
+                            <div class="bill-details">
+                                <div class="detail-item">
+                                    <span class="label">{{t('due_date')}}:</span>
+                                    <span class="value text-warning">25 Jan 2025</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">{{t('status')}}:</span>
+                                    <span class="value badge-warning">{{t('pending')}}</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="detail-item">
-                            <span class="label">{{t('status')}}:</span>
-                            <span class="value badge-warning">{{t('pending')}}</span>
+                        <div class="bill-cycle-chart">
+                            <canvas id="billingCycleChart" width="140" height="140"></canvas>
+                            <div class="cycle-info">
+                                <span class="cycle-label">Billing Cycle:</span>
+                                <span class="cycle-value">18/30 days</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -471,34 +482,31 @@
     <section class="dashboard-section">
         <div class="section-header">
             <h2 class="section-title">
-                <i data-lucide="pie-chart"></i>
+                <i data-lucide="activity"></i>
                 Usage Insights
             </h2>
             <p class="section-subtitle">Track your consumption patterns</p>
-            <a href="#!/insights" class="btn-outline-small">
-                <i data-lucide="arrow-right"></i>
-                View Detailed Insights
-            </a>
         </div>
 
         <div class="insights-preview-grid">
             <!-- Consumption Trend Chart -->
             <div class="insight-card">
                 <div class="insight-header">
+                    <i data-lucide="activity"></i>
                     <h3>6-Month Consumption Trend</h3>
-                    <div class="insight-legend">
-                        <span class="legend-item electricity">
-                            <span class="legend-dot"></span>
-                            Electricity
-                        </span>
-                        <span class="legend-item water">
-                            <span class="legend-dot"></span>
-                            Water
-                        </span>
-                    </div>
                 </div>
                 <div class="insight-body">
                     <canvas id="trendChart" width="400" height="200"></canvas>
+                    <div class="insight-legend">
+                        <span class="legend-item legend-electricity">
+                            <i data-lucide="zap"></i>
+                            <span>Electricity</span>
+                        </span>
+                        <span class="legend-item legend-water">
+                            <i data-lucide="droplet"></i>
+                            <span>Water</span>
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -510,39 +518,48 @@
                 <div class="insight-body">
                     <div class="cost-breakdown-list">
                         <div class="cost-item">
-                            <div class="cost-info">
-                                <i data-lucide="zap" class="cost-icon electricity"></i>
-                                <span class="cost-label">Electricity</span>
+                            <div class="cost-item-left">
+                                <i data-lucide="zap" class="cost-icon cost-icon-electricity"></i>
+                                <div class="cost-details">
+                                    <span class="cost-label">Electricity</span>
+                                    <span class="cost-amount">₹1,850</span>
+                                    <span class="cost-percentage">60%</span>
+                                </div>
                             </div>
-                            <div class="cost-value">
-                                <span class="amount">₹1,850</span>
-                                <span class="percentage">60%</span>
-                            </div>
+                            <span class="cost-time">2h ago</span>
                         </div>
                         <div class="cost-item">
-                            <div class="cost-info">
-                                <i data-lucide="droplet" class="cost-icon water"></i>
-                                <span class="cost-label">Water</span>
+                            <div class="cost-item-left">
+                                <i data-lucide="droplet" class="cost-icon cost-icon-water"></i>
+                                <div class="cost-details">
+                                    <span class="cost-label">Water</span>
+                                    <span class="cost-amount">₹420</span>
+                                    <span class="cost-percentage">14%</span>
+                                </div>
                             </div>
-                            <div class="cost-value">
-                                <span class="amount">₹420</span>
-                                <span class="percentage">14%</span>
-                            </div>
+                            <span class="cost-time">1d ago</span>
                         </div>
                         <div class="cost-item">
-                            <div class="cost-info">
-                                <i data-lucide="flame" class="cost-icon gas"></i>
-                                <span class="cost-label">Gas</span>
+                            <div class="cost-item-left">
+                                <i data-lucide="flame" class="cost-icon cost-icon-gas"></i>
+                                <div class="cost-details">
+                                    <span class="cost-label">Gas</span>
+                                    <span class="cost-amount">₹800</span>
+                                    <span class="cost-percentage">26%</span>
+                                </div>
                             </div>
-                            <div class="cost-value">
-                                <span class="amount">₹800</span>
-                                <span class="percentage">26%</span>
-                            </div>
+                            <span class="cost-time">2d ago</span>
                         </div>
                     </div>
                     <div class="cost-total">
                         <span class="total-label">Total Monthly Cost</span>
                         <span class="total-amount">₹3,070</span>
+                    </div>
+                    <div class="insight-footer">
+                        <a href="#!/insights" class="insight-link">
+                            View Detailed Insights
+                            <i data-lucide="arrow-right"></i>
+                        </a>
                     </div>
                 </div>
             </div>
