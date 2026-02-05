@@ -1,6 +1,3 @@
-{% extends 'base.html' %}
-
-{% block content %}
 <section class="page-header">
     <h1>Profile & Settings</h1>
     <p>Manage your account, preferences, and privacy.</p>
@@ -12,49 +9,48 @@
         <form>
             <div class="form-group">
                 <label>Full Name</label>
-                <input type="text" class="form-control" value="Suhan Sharma" readonly>
+                <input type="text" class="form-control" ng-model="vm.user.fullName" readonly>
             </div>
             <div class="form-group">
                 <label>Phone Number</label>
-                <input type="text" class="form-control" value="+91 98765 43210" readonly>
+                <input type="text" class="form-control" ng-model="vm.user.phone" readonly>
             </div>
             <div class="form-group">
                 <label>Address</label>
-                <textarea class="form-control" rows="3"
-                    readonly>Flat 402, Kaveri Apartments, Kalkaji, New Delhi - 110019</textarea>
+                <textarea class="form-control" rows="3" ng-model="vm.user.address" readonly></textarea>
             </div>
         </form>
     </div>
 
     <div class="card">
         <h3>Preferences</h3>
-        <form>
+        <form ng-submit="vm.savePreferences()">
             <div class="form-group">
                 <label>Language</label>
-                <select class="form-control">
-                    <option selected>English</option>
-                    <option>Hindi (हिंदी)</option>
+                <select class="form-control" ng-model="vm.preferences.language">
+                    <option value="en">English</option>
+                    <option value="hi">Hindi (हिंदी)</option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Alerts</label>
                 <div class="checkbox-group">
-                    <input type="checkbox" checked> <label>Bill Generation SMS</label>
+                    <input type="checkbox" ng-model="vm.preferences.billSms"> <label>Bill Generation SMS</label>
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" checked> <label>Usage Spikes Email</label>
+                    <input type="checkbox" ng-model="vm.preferences.usageEmail"> <label>Usage Spikes Email</label>
                 </div>
             </div>
             <div class="form-group">
                 <label>Accessibility</label>
                 <div class="checkbox-group">
-                    <input type="checkbox"> <label>High Contrast Mode</label>
+                    <input type="checkbox" ng-model="vm.preferences.highContrast"> <label>High Contrast Mode</label>
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox"> <label>Large Text</label>
+                    <input type="checkbox" ng-model="vm.preferences.largeText"> <label>Large Text</label>
                 </div>
             </div>
-            <button type="button" class="btn-primary">Save Preferences</button>
+            <button type="submit" class="btn-primary">Save Preferences</button>
         </form>
     </div>
 
@@ -62,16 +58,10 @@
         <h3>Data Privacy & Connection Details</h3>
         <p>We do not store meter readings beyond official retention policies (12 months).</p>
         <div class="connection-list">
-            <div class="conn-item">
-                <strong>Electricity (BRPL) CA No:</strong> 102938475 <span class="badge status-good">Verified</span>
-            </div>
-            <div class="conn-item">
-                <strong>Water (DJB) K No:</strong> 564738291 <span class="badge status-good">Verified</span>
-            </div>
-            <div class="conn-item">
-                <strong>Gas (IGL) BP No:</strong> 900088771 <span class="badge status-good">Verified</span>
+            <div class="conn-item" ng-repeat="connection in vm.connections">
+                <strong>{{connection.utility}} {{connection.label}}:</strong> {{connection.number}} 
+                <span class="badge" ng-class="connection.statusClass">{{connection.status}}</span>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}

@@ -1,8 +1,3 @@
-{% extends 'base.html' %}
-
-{% block title %}Dashboard - Suvidha Portal{% endblock %}
-
-{% block content %}
 <div class="dashboard-container">
     <!-- DNA Helix Utility Visualization -->
     <div class="dna-helix-section">
@@ -23,17 +18,17 @@
         <div class="dna-legend">
             <div class="dna-legend-item" data-utility="electricity">
                 <div class="dna-color-box electricity"></div>
-                <span>{{ t('electricity_services') }}</span>
+                <span>{{t('electricity_services')}}</span>
                 <i data-lucide="zap" class="legend-icon electricity-icon"></i>
             </div>
             <div class="dna-legend-item" data-utility="gas">
                 <div class="dna-color-box gas"></div>
-                <span>{{ t('gas_services') }}</span>
+                <span>{{t('gas_services')}}</span>
                 <i data-lucide="flame" class="legend-icon gas-icon"></i>
             </div>
             <div class="dna-legend-item" data-utility="water">
                 <div class="dna-color-box water"></div>
-                <span>{{ t('water_services') }}</span>
+                <span>{{t('water_services')}}</span>
                 <i data-lucide="droplet" class="legend-icon water-icon"></i>
             </div>
         </div>
@@ -44,51 +39,51 @@
         <div class="page-title-group">
             <h1 class="page-title">
                 <i data-lucide="layout-dashboard"></i>
-                {{ t('dashboard') }}
+                {{t('dashboard')}}
             </h1>
-            <p class="page-subtitle">{{ t('your_personalized_hub') }}</p>
+            <p class="page-subtitle">{{t('your_personalized_hub')}}</p>
         </div>
     </div>
 
     <!-- Quick Access Policies -->
     <div class="policy-banner-grid">
-        <a href="{{ url_for('utilities') }}" class="policy-card policy-electricity">
+        <a href="#!/utilities" class="policy-card policy-electricity">
             <div class="policy-icon">
                 <i data-lucide="zap"></i>
             </div>
             <div class="policy-content">
-                <h3>{{ t('electricity_services') }}</h3>
-                <p>{{ t('bill_payments') }}</p>
+                <h3>{{t('electricity_services')}}</h3>
+                <p>{{t('bill_payments')}}</p>
             </div>
         </a>
 
-        <a href="{{ url_for('utilities') }}" class="policy-card policy-water">
+        <a href="#!/utilities" class="policy-card policy-water">
             <div class="policy-icon">
                 <i data-lucide="droplet"></i>
             </div>
             <div class="policy-content">
-                <h3>{{ t('water_services') }}</h3>
-                <p>{{ t('view_usage') }}</p>
+                <h3>{{t('water_services')}}</h3>
+                <p>{{t('view_usage')}}</p>
             </div>
         </a>
 
-        <a href="{{ url_for('utilities') }}" class="policy-card policy-gas">
+        <a href="#!/utilities" class="policy-card policy-gas">
             <div class="policy-icon">
                 <i data-lucide="flame"></i>
             </div>
             <div class="policy-content">
-                <h3>{{ t('gas_services') }}</h3>
-                <p>{{ t('check_tariffs') }}</p>
+                <h3>{{t('gas_services')}}</h3>
+                <p>{{t('check_tariffs')}}</p>
             </div>
         </a>
 
-        <a href="{{ url_for('services') }}" class="policy-card policy-service">
+        <a href="#!/services" class="policy-card policy-service">
             <div class="policy-icon">
                 <i data-lucide="wrench"></i>
             </div>
             <div class="policy-content">
-                <h3>{{ t('services') }}</h3>
-                <p>{{ t('submit_complaints') }}</p>
+                <h3>{{t('services')}}</h3>
+                <p>{{t('submit_complaints')}}</p>
             </div>
         </a>
     </div>
@@ -98,9 +93,9 @@
         <div class="section-header">
             <h2 class="section-title">
                 <i data-lucide="building-2"></i>
-                {{ t('know_your_vendor') }}
+                {{t('know_your_vendor')}}
             </h2>
-            <p class="section-subtitle">{{ t('vendor_subtitle') }}</p>
+            <p class="section-subtitle">{{t('vendor_subtitle')}}</p>
         </div>
 
         <div class="vendor-grid">
@@ -111,32 +106,32 @@
                         <i data-lucide="zap"></i>
                     </div>
                     <div class="vendor-title-group">
-                        <h3>{{ t('electricity_board') }}</h3>
-                        <span class="vendor-badge">{{ t('active') }}</span>
+                        <h3>{{t('electricity_board')}}</h3>
+                        <span class="vendor-badge">{{t('active')}}</span>
                     </div>
                 </div>
                 <div class="vendor-details">
                     <div class="detail-row">
-                        <span class="detail-label">{{ t('service_provider') }}:</span>
+                        <span class="detail-label">{{t('service_provider')}}:</span>
                         <span class="detail-value">State Electricity Board</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">{{ t('customer_id') }}:</span>
-                        <span class="detail-value">{{ session.get('username', 'Not assigned') }}</span>
+                        <span class="detail-label">{{t('customer_id')}}:</span>
+                        <span class="detail-value">{{username || 'Not assigned'}}</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">{{ t('connection_type') }}:</span>
-                        <span class="detail-value">{{ t('domestic') }}</span>
+                        <span class="detail-label">{{t('connection_type')}}:</span>
+                        <span class="detail-value">{{t('domestic')}}</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">{{ t('contact') }}:</span>
+                        <span class="detail-label">{{t('contact')}}:</span>
                         <span class="detail-value">1800-XXX-XXXX</span>
                     </div>
                 </div>
                 <div class="vendor-actions">
-                    <a href="{{ url_for('utilities') }}" class="btn-outline-small">
+                    <a href="#!/utilities" class="btn-outline-small">
                         <i data-lucide="external-link"></i>
-                        {{ t('view_details') }}
+                        {{t('view_details')}}
                     </a>
                 </div>
             </div>
@@ -148,32 +143,32 @@
                         <i data-lucide="droplet"></i>
                     </div>
                     <div class="vendor-title-group">
-                        <h3>{{ t('water_board') }}</h3>
-                        <span class="vendor-badge">{{ t('active') }}</span>
+                        <h3>{{t('water_board')}}</h3>
+                        <span class="vendor-badge">{{t('active')}}</span>
                     </div>
                 </div>
                 <div class="vendor-details">
                     <div class="detail-row">
-                        <span class="detail-label">{{ t('service_provider') }}:</span>
+                        <span class="detail-label">{{t('service_provider')}}:</span>
                         <span class="detail-value">Municipal Water Works</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">{{ t('customer_id') }}:</span>
-                        <span class="detail-value">{{ session.get('username', 'Not assigned') }}</span>
+                        <span class="detail-label">{{t('customer_id')}}:</span>
+                        <span class="detail-value">{{username || 'Not assigned'}}</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">{{ t('connection_type') }}:</span>
-                        <span class="detail-value">{{ t('metered') }}</span>
+                        <span class="detail-label">{{t('connection_type')}}:</span>
+                        <span class="detail-value">{{t('metered')}}</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">{{ t('contact') }}:</span>
+                        <span class="detail-label">{{t('contact')}}:</span>
                         <span class="detail-value">1800-XXX-YYYY</span>
                     </div>
                 </div>
                 <div class="vendor-actions">
-                    <a href="{{ url_for('utilities') }}" class="btn-outline-small">
+                    <a href="#!/utilities" class="btn-outline-small">
                         <i data-lucide="external-link"></i>
-                        {{ t('view_details') }}
+                        {{t('view_details')}}
                     </a>
                 </div>
             </div>
@@ -185,32 +180,32 @@
                         <i data-lucide="flame"></i>
                     </div>
                     <div class="vendor-title-group">
-                        <h3>{{ t('gas_services') }}</h3>
-                        <span class="vendor-badge">{{ t('active') }}</span>
+                        <h3>{{t('gas_services')}}</h3>
+                        <span class="vendor-badge">{{t('active')}}</span>
                     </div>
                 </div>
                 <div class="vendor-details">
                     <div class="detail-row">
-                        <span class="detail-label">{{ t('service_provider') }}:</span>
+                        <span class="detail-label">{{t('service_provider')}}:</span>
                         <span class="detail-value">City Gas Distribution</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">{{ t('customer_id') }}:</span>
-                        <span class="detail-value">{{ session.get('username', 'Not assigned') }}</span>
+                        <span class="detail-label">{{t('customer_id')}}:</span>
+                        <span class="detail-value">{{username || 'Not assigned'}}</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">{{ t('connection_type') }}:</span>
-                        <span class="detail-value">{{ t('png_domestic') }}</span>
+                        <span class="detail-label">{{t('connection_type')}}:</span>
+                        <span class="detail-value">{{t('png_domestic')}}</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">{{ t('contact') }}:</span>
+                        <span class="detail-label">{{t('contact')}}:</span>
                         <span class="detail-value">1800-XXX-ZZZZ</span>
                     </div>
                 </div>
                 <div class="vendor-actions">
-                    <a href="{{ url_for('utilities') }}" class="btn-outline-small">
+                    <a href="#!/utilities" class="btn-outline-small">
                         <i data-lucide="external-link"></i>
-                        {{ t('view_details') }}
+                        {{t('view_details')}}
                     </a>
                 </div>
             </div>
@@ -222,9 +217,9 @@
         <div class="section-header">
             <h2 class="section-title">
                 <i data-lucide="activity"></i>
-                {{ t('quick_actions') }}
+                {{t('quick_actions')}}
             </h2>
-            <p class="section-subtitle">{{ t('manage_utilities_efficiently') }}</p>
+            <p class="section-subtitle">{{t('manage_utilities_efficiently')}}</p>
         </div>
 
         <div class="utility-cards-grid">
@@ -234,31 +229,31 @@
                     <div class="utility-icon">
                         <i data-lucide="file-text"></i>
                     </div>
-                    <h3>{{ t('current_bill') }}</h3>
+                    <h3>{{t('current_bill')}}</h3>
                 </div>
                 <div class="utility-card-body">
                     <div class="bill-amount">
                         <span class="currency">₹</span>
                         <span class="amount">2,450</span>
                     </div>
-                    <p class="bill-period">{{ t('billing_period') }}: Dec 2024</p>
+                    <p class="bill-period">{{t('billing_period')}}: Dec 2024</p>
                     <div class="bill-details">
                         <div class="detail-item">
-                            <span class="label">{{ t('due_date') }}:</span>
+                            <span class="label">{{t('due_date')}}:</span>
                             <span class="value text-warning">25 Jan 2025</span>
                         </div>
                         <div class="detail-item">
-                            <span class="label">{{ t('status') }}:</span>
-                            <span class="value badge-warning">{{ t('pending') }}</span>
+                            <span class="label">{{t('status')}}:</span>
+                            <span class="value badge-warning">{{t('pending')}}</span>
                         </div>
                     </div>
                 </div>
                 <div class="utility-card-footer">
-                    <a href="{{ url_for('utilities') }}" class="btn-primary-small">
+                    <a href="#!/utilities" class="btn-primary-small">
                         <i data-lucide="credit-card"></i>
-                        {{ t('pay_bill') }}
+                        {{t('pay_bill')}}
                     </a>
-                    <a href="{{ url_for('utilities') }}" class="btn-outline-small">
+                    <a href="#!/utilities" class="btn-outline-small">
                         <i data-lucide="download"></i>
                         Download
                     </a>
@@ -271,7 +266,7 @@
                     <div class="utility-icon">
                         <i data-lucide="trending-up"></i>
                     </div>
-                    <h3>{{ t('this_month') }}</h3>
+                    <h3>{{t('this_month')}}</h3>
                 </div>
                 <div class="utility-card-body">
                     <div class="consumption-stat">
@@ -281,7 +276,7 @@
                             </div>
                             <div class="stat-content">
                                 <span class="stat-value">342</span>
-                                <span class="stat-label">{{ t('kwh') }}</span>
+                                <span class="stat-label">{{t('kwh')}}</span>
                             </div>
                         </div>
                         <div class="stat-item">
@@ -290,12 +285,12 @@
                             </div>
                             <div class="stat-content">
                                 <span class="stat-value">15.2</span>
-                                <span class="stat-label">{{ t('kl') }}</span>
+                                <span class="stat-label">{{t('kl')}}</span>
                             </div>
                         </div>
                     </div>
                     <div class="comparison-bar">
-                        <div class="comparison-label">{{ t('vs_last_month') }}</div>
+                        <div class="comparison-label">{{t('vs_last_month')}}</div>
                         <div class="progress-bar">
                             <div class="progress-fill" style="width: 85%"></div>
                         </div>
@@ -306,7 +301,7 @@
                     </div>
                 </div>
                 <div class="utility-card-footer">
-                    <a href="{{ url_for('insights') }}" class="btn-primary-small">
+                    <a href="#!/insights" class="btn-primary-small">
                         <i data-lucide="bar-chart-2"></i>
                         View Insights
                     </a>
@@ -319,13 +314,13 @@
                     <div class="utility-icon">
                         <i data-lucide="wrench"></i>
                     </div>
-                    <h3>{{ t('service_requests') }}</h3>
+                    <h3>{{t('service_requests')}}</h3>
                 </div>
                 <div class="utility-card-body">
                     <div class="request-summary">
                         <div class="summary-item">
                             <span class="summary-count">2</span>
-                            <span class="summary-label">{{ t('active') }}</span>
+                            <span class="summary-label">{{t('active')}}</span>
                         </div>
                         <div class="summary-item">
                             <span class="summary-count">5</span>
@@ -342,11 +337,11 @@
                     </div>
                 </div>
                 <div class="utility-card-footer">
-                    <a href="{{ url_for('services') }}" class="btn-primary-small">
+                    <a href="#!/services" class="btn-primary-small">
                         <i data-lucide="plus"></i>
                         New Request
                     </a>
-                    <a href="{{ url_for('services') }}" class="btn-outline-small">
+                    <a href="#!/services" class="btn-outline-small">
                         <i data-lucide="list"></i>
                         View All
                     </a>
@@ -410,7 +405,7 @@
                 Usage Insights
             </h2>
             <p class="section-subtitle">Track your consumption patterns</p>
-            <a href="{{ url_for('insights') }}" class="btn-outline-small">
+            <a href="#!/insights" class="btn-outline-small">
                 <i data-lucide="arrow-right"></i>
                 View Detailed Insights
             </a>
@@ -722,7 +717,7 @@
             });
             
             item.addEventListener('click', function() {
-                window.location.href = '/utilities';
+                window.location.href = '#!/utilities';
             });
         });
         
@@ -736,4 +731,3 @@
         });
     })();
 </script>
-{% endblock %}

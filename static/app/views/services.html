@@ -1,42 +1,39 @@
-{% extends 'base.html' %}
-
-{% block content %}
 <div class="services-page-wrapper">
     <!-- Page Header -->
     <div class="page-header">
         <div class="page-title-group">
             <h1 class="page-title">
                 <i data-lucide="wrench"></i>
-                {{ t('services_grievances') }}
+                {{t('services_grievances')}}
             </h1>
-            <p class="page-subtitle">{{ t('single_window_complaints') }}</p>
+            <p class="page-subtitle">{{t('single_window_complaints')}}</p>
         </div>
     </div>
 
     <!-- SECTION A: QUICK ACTIONS -->
     <div class="card quick-actions-card">
         <div class="card-header">
-            <h3>{{ t('quick_report') }}</h3>
-            <p>{{ t('fast_track_common') }}</p>
+            <h3>{{t('quick_report')}}</h3>
+            <p>{{t('fast_track_common')}}</p>
         </div>
         <section class="quick-actions-strip">
-            <button class="quick-action-btn alert">
-                <span class="btn-icon">🔴</span> {{ t('report_power_theft') }}
+            <button class="quick-action-btn alert" ng-click="vm.quickReport('power_theft')">
+                <span class="btn-icon">🔴</span> {{t('report_power_theft')}}
             </button>
-            <button class="quick-action-btn warning">
-                <span class="btn-icon">⚡</span> {{ t('power_outage') }}
+            <button class="quick-action-btn warning" ng-click="vm.quickReport('power_outage')">
+                <span class="btn-icon">⚡</span> {{t('power_outage')}}
             </button>
-            <button class="quick-action-btn">
-                <span class="btn-icon">💡</span> {{ t('street_light') }}
+            <button class="quick-action-btn" ng-click="vm.quickReport('street_light')">
+                <span class="btn-icon">💡</span> {{t('street_light')}}
             </button>
-            <button class="quick-action-btn">
-                <span class="btn-icon">💧</span> {{ t('water_supply') }}
+            <button class="quick-action-btn" ng-click="vm.quickReport('water_supply')">
+                <span class="btn-icon">💧</span> {{t('water_supply')}}
             </button>
-            <button class="quick-action-btn">
-                <span class="btn-icon">🔥</span> {{ t('gas_leakage') }}
+            <button class="quick-action-btn" ng-click="vm.quickReport('gas_leakage')">
+                <span class="btn-icon">🔥</span> {{t('gas_leakage')}}
             </button>
-            <button class="quick-action-btn">
-                <span class="btn-icon">📄</span> {{ t('bill_issue') }}
+            <button class="quick-action-btn" ng-click="vm.quickReport('bill_issue')">
+                <span class="btn-icon">📄</span> {{t('bill_issue')}}
             </button>
         </section>
     </div>
@@ -44,13 +41,13 @@
     <!-- SECTION B: TOGGLE -->
     <div class="service-toggle-container">
         <div class="toggle-wrapper">
-            <button class="toggle-btn active" onclick="toggleServiceMode('complaint')">
+            <button class="toggle-btn" ng-class="{active: vm.serviceMode === 'complaint'}" ng-click="vm.toggleServiceMode('complaint')">
                 <i data-lucide="alert-circle"></i>
-                {{ t('raise_a_complaint') }}
+                {{t('raise_a_complaint')}}
             </button>
-            <button class="toggle-btn" onclick="toggleServiceMode('service')">
+            <button class="toggle-btn" ng-class="{active: vm.serviceMode === 'service'}" ng-click="vm.toggleServiceMode('service')">
                 <i data-lucide="clipboard-check"></i>
-                {{ t('apply_for_service') }}
+                {{t('apply_for_service')}}
             </button>
         </div>
     </div>
@@ -61,48 +58,49 @@
         <div class="main-form-column">
 
             <!-- SECTION C: RAISE A COMPLAINT -->
-            <div id="complaint-section" class="form-container">
+            <div id="complaint-section" class="form-container" ng-show="vm.serviceMode === 'complaint'">
                 <div class="card form-card">
                 <h3>Lodge a Grievance</h3>
-                <form id="complaintForm">
+                <form id="complaintForm" ng-submit="vm.submitComplaint()">
                     <!-- Step 1: Utility & Vendor -->
                     <div class="form-group">
                         <label>Select Utility & Vendor</label>
-                        <select class="form-control" id="utilitySelect" onchange="updateCategories()">
+                        <select class="form-control" ng-model="vm.selectedUtility" ng-change="vm.updateCategories()">
                             <option value="">-- Select Utility --</option>
                             <option value="electricity">Electricity (BRPL / BYPL / TPDDL)</option>
                             <option value="water">Water (Delhi Jal Board)</option>
                             <option value="gas">Gas (IGL / PNG)</option>
                         </select>
-                        <div id="vendor-logo-display" class="vendor-display" style="display:none;">
-                            <!-- Injected via JS -->
+                        <div class="vendor-display" ng-show="vm.selectedUtility">
+                            <!-- Injected via Angular -->
                         </div>
                     </div>
 
                     <!-- Step 4: Identifier (moved up for flow) -->
-                    <div class="form-group identifier-group" style="display:none;">
-                        <label id="identifierLabel">CA Number / KNO</label>
-                        <input type="text" class="form-control" placeholder="Enter ID found on bill">
+                    <div class="form-group identifier-group" ng-show="vm.selectedUtility">
+                        <label>{{vm.identifierLabel}}</label>
+                        <input type="text" class="form-control" ng-model="vm.identifier" placeholder="Enter ID found on bill">
                     </div>
 
                     <!-- Step 2: Category -->
                     <div class="form-group">
                         <label>Complaint Category</label>
-                        <select class="form-control" id="categorySelect" disabled>
-                            <option>Select Utility First</option>
+                        <select class="form-control" ng-model="vm.category" ng-disabled="!vm.selectedUtility">
+                            <option ng-if="!vm.selectedUtility">Select Utility First</option>
+                            <option ng-repeat="cat in vm.categories" value="{{cat}}">{{cat}}</option>
                         </select>
                     </div>
 
                     <!-- Step 3: Contextual Questions -->
-                    <div class="context-questions" id="contextQuestions" style="display:none;">
+                    <div class="context-questions" ng-show="vm.category">
                         <div class="form-row">
                             <div class="col">
                                 <label>Since when?</label>
-                                <input type="datetime-local" class="form-control">
+                                <input type="datetime-local" class="form-control" ng-model="vm.incidentDate">
                             </div>
                             <div class="col">
                                 <label>Impact Scope</label>
-                                <select class="form-control">
+                                <select class="form-control" ng-model="vm.impactScope">
                                     <option>Individual House</option>
                                     <option>Entire Building</option>
                                     <option>Entire Street</option>
@@ -111,7 +109,7 @@
                         </div>
                         <div class="form-group" style="margin-top: 1rem;">
                             <label>Description</label>
-                            <textarea class="form-control" rows="3"></textarea>
+                            <textarea class="form-control" rows="3" ng-model="vm.description"></textarea>
                         </div>
                         <div class="form-group">
                             <label>Upload Photo (Optional)</label>
@@ -120,11 +118,11 @@
                     </div>
 
                     <!-- Step 5: SLA Preview -->
-                    <div class="sla-preview" id="slaPreview" style="display:none;">
+                    <div class="sla-preview" ng-show="vm.category">
                         <span class="sla-icon">⏱️</span>
                         <div class="sla-text">
                             <strong>Expected Resolution Time:</strong>
-                            <span id="slaTime">24 Hours</span>
+                            <span>{{vm.slaTime}}</span>
                             <small>Subject to field conditions</small>
                         </div>
                     </div>
@@ -139,18 +137,23 @@
         </div>
 
         <!-- SECTION D: APPLY FOR A SERVICE -->
-        <div id="service-section" class="form-container" style="display:none;">
+        <div id="service-section" class="form-container" ng-show="vm.serviceMode === 'service'">
             <div class="card form-card">
                 <h3>Apply for New Service</h3>
                 <!-- Service Grid (Visual Selection) -->
                 <div class="service-type-selector">
-                    <button class="svc-type-btn active" onclick="filterServices('elec')">⚡ Electricity</button>
-                    <button class="svc-type-btn" onclick="filterServices('water')">💧 Water</button>
-                    <button class="svc-type-btn" onclick="filterServices('gas')">🔥 Gas</button>
+                    <button class="svc-type-btn" ng-class="{active: vm.serviceFilter === 'elec'}" ng-click="vm.filterServices('elec')">⚡ Electricity</button>
+                    <button class="svc-type-btn" ng-class="{active: vm.serviceFilter === 'water'}" ng-click="vm.filterServices('water')">💧 Water</button>
+                    <button class="svc-type-btn" ng-class="{active: vm.serviceFilter === 'gas'}" ng-click="vm.filterServices('gas')">🔥 Gas</button>
                 </div>
 
                 <div class="service-list-grid" id="serviceOptions">
-                    <!-- Populated by JS -->
+                    <!-- Populated by Angular -->
+                    <div ng-repeat="service in vm.filteredServices" class="service-option-card">
+                        <h4>{{service.name}}</h4>
+                        <p>{{service.description}}</p>
+                        <button class="btn-secondary" ng-click="vm.applyForService(service)">Apply</button>
+                    </div>
                 </div>
 
                 <p class="form-note">Service requests are forwarded directly to the respective utility authority portal.
@@ -159,12 +162,12 @@
         </div>
 
         <!-- SECTION F: OUTAGE INFO -->
-        <div class="card info-card collapsed-panel">
-            <div class="panel-header" onclick="this.parentElement.classList.toggle('active')">
+        <div class="card info-card collapsed-panel" ng-class="{active: vm.outageInfoOpen}">
+            <div class="panel-header" ng-click="vm.outageInfoOpen = !vm.outageInfoOpen">
                 <h4>⚠️ Outage & Maintenance Information</h4>
                 <span class="toggle-icon">▼</span>
             </div>
-            <div class="panel-body">
+            <div class="panel-body" ng-show="vm.outageInfoOpen">
                 <div class="outage-item">
                     <strong>Planned Maintenance (Kalkaji Area)</strong>
                     <p>15th Jan, 10:00 AM - 2:00 PM. Effect: Power cut expected.</p>
@@ -185,47 +188,26 @@
         <div class="card tracker-card">
             <h3>Track Requests</h3>
 
-            <div class="ticket-item active-ticket">
+            <div class="ticket-item active-ticket" ng-repeat="ticket in vm.activeTickets">
                 <div class="ticket-header">
-                    <span class="ticket-id">#REQ-889</span>
-                    <span class="ticket-status in-progress">In Progress</span>
+                    <span class="ticket-id">{{ticket.id}}</span>
+                    <span class="ticket-status" ng-class="ticket.statusClass">{{ticket.status}}</span>
                 </div>
-                <strong>Meter Display Issue (BRPL)</strong>
+                <strong>{{ticket.title}}</strong>
 
                 <!-- Vertical Timeline -->
                 <ul class="timeline">
-                    <li class="done">
+                    <li ng-repeat="step in ticket.timeline" ng-class="step.state">
                         <span class="dot"></span>
-                        <div class="tl-content">Submitted <small>10 Jan</small></div>
-                    </li>
-                    <li class="done">
-                        <span class="dot"></span>
-                        <div class="tl-content">Assigned to Vendor <small>11 Jan</small></div>
-                    </li>
-                    <li class="current">
-                        <span class="dot"></span>
-                        <div class="tl-content">Field Visit Scheduled <small>14 Jan</small></div>
-                    </li>
-                    <li>
-                        <span class="dot"></span>
-                        <div class="tl-content">Resolution</div>
+                        <div class="tl-content">{{step.label}} <small ng-if="step.date">{{step.date}}</small></div>
                     </li>
                 </ul>
 
-                <div class="vendor-remarks">
-                    <strong>Vendor Action:</strong> Technician assigned. Visit expected by 2 PM.
+                <div class="vendor-remarks" ng-if="ticket.remarks">
+                    <strong>Vendor Action:</strong> {{ticket.remarks}}
                 </div>
 
-                <button class="btn-text-danger">Escalate to Grievance Cell</button>
-            </div>
-
-            <div class="ticket-item closed-ticket">
-                <div class="ticket-header">
-                    <span class="ticket-id">#REQ-102</span>
-                    <span class="ticket-status resolved">Resolved</span>
-                </div>
-                <strong>Water Pressure Low</strong>
-                <p>Closed on 18 Dec 2025</p>
+                <button class="btn-text-danger" ng-click="vm.escalateTicket(ticket)">Escalate to Grievance Cell</button>
             </div>
         </div>
 
@@ -233,21 +215,15 @@
         <div class="card history-card">
             <h3>Your Complaint History</h3>
             <div class="history-stat">
-                <span class="stat-val">3</span>
+                <span class="stat-val">{{vm.complaintsCount}}</span>
                 <span class="stat-label">Complaints in last 12 months</span>
             </div>
             <div class="history-stat">
-                <span class="stat-val">2.5 Days</span>
+                <span class="stat-val">{{vm.avgResolutionTime}} Days</span>
                 <span class="stat-label">Avg Resolution Time</span>
             </div>
-            <p class="history-insight">You have raised frequent water-related complaints. Consider checking internal
-                plumbing.</p>
+            <p class="history-insight" ng-if="vm.historyInsight">{{vm.historyInsight}}</p>
         </div>
 
     </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/services.js') }}"></script>
-{% endblock %}

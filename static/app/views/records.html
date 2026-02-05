@@ -1,0 +1,44 @@
+<section class="page-header">
+    <h1>{{t('records_history')}}</h1>
+    <p>{{t('official_meter_readings_bills')}}</p>
+</section>
+
+<div class="card full-width-card">
+    <div class="table-controls">
+        <input type="text" placeholder="{{t('search_by_bill_id')}}" class="search-input" ng-model="vm.searchQuery">
+        <select class="filter-select" ng-model="vm.utilityFilter">
+            <option value="">{{t('all_utilities')}}</option>
+            <option value="electricity">{{t('electricity')}}</option>
+            <option value="water">{{t('water')}}</option>
+            <option value="gas">{{t('gas')}}</option>
+        </select>
+        <button class="btn-secondary" ng-click="vm.downloadCSV()">{{t('download_csv')}}</button>
+    </div>
+
+    <table class="records-table">
+        <thead>
+            <tr>
+                <th>{{t('date')}}</th>
+                <th>{{t('utility')}}</th>
+                <th>{{t('bill_id')}}</th>
+                <th>{{t('reading')}}</th>
+                <th>{{t('amount')}}</th>
+                <th>{{t('status')}}</th>
+                <th>{{t('action')}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="record in vm.records | filter:vm.filterRecords">
+                <td>{{record.date}}</td>
+                <td>{{record.utility}} {{record.icon}}</td>
+                <td>{{record.billId}}</td>
+                <td>{{record.reading}}</td>
+                <td>₹ {{record.amount}}</td>
+                <td><span class="status-dot" ng-class="record.statusClass"></span> {{record.status}}</td>
+                <td><a href="#" class="btn-small" ng-click="vm.viewDocument(record)">{{record.actionLabel}}</a></td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="source-note" style="margin-top: 1rem;">Official meter reading data comes from the respective authority.
+    </p>
+</div>

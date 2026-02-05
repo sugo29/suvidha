@@ -1,8 +1,5 @@
-{% extends 'base.html' %}
-
-{% block content %}
 <section class="page-header">
-    <h1>{{ t('insights') }}</h1>
+    <h1>{{t('insights')}}</h1>
     <p>Understanding your household patterns, trends, and civic context.</p>
 </section>
 
@@ -17,29 +14,29 @@
     <div class="cards-grid">
         <div class="card insight-card">
             <div class="card-icon">⚡</div>
-            <h3>{{ t('electricity_efficiency') }}</h3>
-            <div class="status-badge status-good">{{ t('efficient') }}</div>
-            <p>{{ t('you_consume_less') }}</p>
+            <h3>{{t('electricity_efficiency')}}</h3>
+            <div class="status-badge status-good">{{t('efficient')}}</div>
+            <p>{{t('you_consume_less')}}</p>
             <div class="card-meta">
-                <span>{{ t('based_on_12_months') }}</span>
+                <span>{{t('based_on_12_months')}}</span>
                 <span class="confidence-tag high">High Confidence</span>
             </div>
         </div>
         <div class="card insight-card">
             <div class="card-icon">💧</div>
-            <h3>{{ t('water_usage_category') }}</h3>
-            <div class="status-badge status-warning">{{ t('moderate_high') }}</div>
-            <p>{{ t('usage_peaks_weekends') }}</p>
+            <h3>{{t('water_usage_category')}}</h3>
+            <div class="status-badge status-warning">{{t('moderate_high')}}</div>
+            <p>{{t('usage_peaks_weekends')}}</p>
             <div class="card-meta">
-                <span>{{ t('based_on_6_months') }}</span>
+                <span>{{t('based_on_6_months')}}</span>
                 <span class="confidence-tag medium">Med Confidence</span>
             </div>
         </div>
         <div class="card insight-card">
             <div class="card-icon">🔥</div>
-            <h3>{{ t('gas_stability_index') }}</h3>
-            <div class="status-badge status-good">{{ t('stable') }}</div>
-            <p>{{ t('consistent_usage_pattern') }}</p>
+            <h3>{{t('gas_stability_index')}}</h3>
+            <div class="status-badge status-good">{{t('stable')}}</div>
+            <p>{{t('consistent_usage_pattern')}}</p>
             <div class="card-meta">
                 <span>Based on last 6 months</span>
                 <span class="confidence-tag high">High Confidence</span>
@@ -51,33 +48,33 @@
 
 <!-- Section 2: Trend Over Time (NEW) -->
 <section class="section-block">
-    <h2>{{ t('your_consumption_trend') }}</h2>
+    <h2>{{t('your_consumption_trend')}}</h2>
     <div class="card trend-timeline-card">
         <div class="trend-row">
             <div class="trend-meta">
-                <strong>{{ t('electricity') }}</strong>
-                <span class="trend-badge improving">{{ t('improving') }} ↘</span>
+                <strong>{{t('electricity')}}</strong>
+                <span class="trend-badge improving">{{t('improving')}} ↘</span>
             </div>
             <div class="trend-desc">
-                {{ t('usage_reduced_consistently') }}
+                {{t('usage_reduced_consistently')}}
             </div>
         </div>
         <div class="trend-row">
             <div class="trend-meta">
-                <strong>{{ t('water') }}</strong>
-                <span class="trend-badge warning">{{ t('increasing') }} ↗</span>
+                <strong>{{t('water')}}</strong>
+                <span class="trend-badge warning">{{t('increasing')}} ↗</span>
             </div>
             <div class="trend-desc">
-                {{ t('steady_increase_observed') }}
+                {{t('steady_increase_observed')}}
             </div>
         </div>
         <div class="trend-row">
             <div class="trend-meta">
-                <strong>{{ t('gas') }}</strong>
-                <span class="trend-badge stable">{{ t('stable') }} ➡</span>
+                <strong>{{t('gas')}}</strong>
+                <span class="trend-badge stable">{{t('stable')}} ➡</span>
             </div>
             <div class="trend-desc">
-                {{ t('consumption_variance') }}
+                {{t('consumption_variance')}}
             </div>
         </div>
         <div class="trend-footer">
@@ -140,7 +137,7 @@
                 </ul>
             </div>
             <div class="action-footer">
-                <a href="{{ url_for('services') }}" class="btn-small-primary">Raise Service Request</a>
+                <a href="#!/services" class="btn-small-primary">Raise Service Request</a>
             </div>
         </div>
 
@@ -240,11 +237,9 @@
 <section class="navigator-section">
     <h3>Continue Exploring</h3>
     <div class="nav-buttons">
-        <a href="{{ url_for('utilities') }}" class="btn-secondary">Go to Utilities</a>
-        <a href="{{ url_for('simulator') }}" class="btn-secondary">Try "What If?" Simulator</a>
-        <a href="{{ url_for('services') }}" class="btn-secondary">Raise Service Request</a>
-        <a href="{{ url_for('records') }}" class="btn-secondary">Download Records</a>
+        <a href="#!/utilities" class="btn-secondary">Go to Utilities</a>
+        <a href="#!/simulator" class="btn-secondary">Try "What If?" Simulator</a>
+        <a href="#!/services" class="btn-secondary">Raise Service Request</a>
+        <a href="#!/records" class="btn-secondary">Download Records</a>
     </div>
 </section>
-
-{% endblock %}

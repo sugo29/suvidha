@@ -1,0 +1,103 @@
+<section class="page-header">
+    <h1>{{t('utilities_view')}}</h1>
+    <p>{{t('utilities_subtitle')}}</p>
+</section>
+
+<!-- Utility Selector Tabs -->
+<div class="tabs-container">
+    <div class="tabs">
+        <button class="tab-btn" ng-class="{active: vm.activeTab === 'electricity'}" ng-click="vm.switchTab('electricity')">{{t('electricity')}} ⚡</button>
+        <button class="tab-btn" ng-class="{active: vm.activeTab === 'gas'}" ng-click="vm.switchTab('gas')">{{t('gas')}} 🔥</button>
+        <button class="tab-btn" ng-class="{active: vm.activeTab === 'water'}" ng-click="vm.switchTab('water')">{{t('water')}} 💧</button>
+    </div>
+</div>
+
+<!-- ELECTRICITY CONTENT -->
+<div id="electricity" class="tab-content" ng-show="vm.activeTab === 'electricity'">
+    <div class="content-grid two-column">
+        <!-- Consumption Chart -->
+        <div class="card chart-card">
+            <div class="card-header">
+                <h3>{{t('monthly_consumption_last_12')}}</h3>
+                <span class="badge">{{t('avg')}}: 210 {{t('kwh')}}</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="elecChart"></canvas>
+            </div>
+            <div class="card-footer">
+                <p class="source-note">Data Source: BRPL Official Meter Readings</p>
+            </div>
+        </div>
+
+        <!-- Info & Tariff -->
+        <div class="card info-card">
+            <h3>{{t('current_tariff_plan')}}</h3>
+            <ul class="info-list">
+                <li><strong>{{t('provider')}}:</strong> BSES Rajdhani (BRPL)</li>
+                <li><strong>{{t('slab_1')}}:</strong> ₹3.00{{t('per_unit')}} ({{t('subsidy_active')}})</li>
+                <li><strong>{{t('slab_2')}}:</strong> ₹4.50{{t('per_unit')}}</li>
+                <li><strong>{{t('slab_3')}}:</strong> ₹6.50{{t('per_unit')}}</li>
+            </ul>
+            <div class="info-alert">
+                <span>ℹ️</span>
+                <p>{{t('your_current_usage_in')}} <strong>{{t('slab_2')}}</strong>.</p>
+            </div>
+            <a href="#!/services" class="btn-primary">{{t('pay_bill')}} (₹ 1,240)</a>
+        </div>
+    </div>
+</div>
+
+<!-- GAS CONTENT -->
+<div id="gas" class="tab-content" ng-show="vm.activeTab === 'gas'">
+    <div class="content-grid two-column">
+        <div class="card chart-card">
+            <div class="card-header">
+                <h3>{{t('gas_usage_trend')}}</h3>
+                <span class="badge">{{t('avg')}}: 16 SCM</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="gasChart"></canvas>
+            </div>
+            <div class="card-footer">
+                <p class="source-note">Data Source: IGL Meter Readings</p>
+            </div>
+        </div>
+
+        <div class="card info-card">
+            <h3>{{t('safety_efficiency')}}</h3>
+            <ul class="info-list">
+                <li><strong>{{t('burner_check')}}:</strong> {{t('last_done')}} 6 {{t('months_ago')}}.</li>
+                <li><strong>{{t('leak_detection')}}:</strong> {{t('enabled')}}.</li>
+            </ul>
+            <a href="#!/services" class="btn-primary">{{t('raise_service_request')}}</a>
+        </div>
+    </div>
+</div>
+
+<!-- WATER CONTENT -->
+<div id="water" class="tab-content" ng-show="vm.activeTab === 'water'">
+    <div class="content-grid two-column">
+        <div class="card chart-card">
+            <div class="card-header">
+                <h3>{{t('water_consumption')}}</h3>
+                <span class="badge">{{t('avg')}}: 20 {{t('kl')}}</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="waterChart"></canvas>
+            </div>
+            <div class="card-footer">
+                <p class="source-note">Data Source: Delhi Jal Board</p>
+            </div>
+        </div>
+
+        <div class="card info-card">
+            <h3>{{t('water_quality_ward')}}</h3>
+            <div class="quality-score">
+                <span class="score-label">{{t('ward_quality_score')}}:</span>
+                <span class="score-value good">9.2/10</span>
+            </div>
+            <p class="desc-text">Your supply hours: 6:00 AM - 9:00 AM</p>
+            <a href="#!/services" class="btn-secondary">Report Leakage</a>
+        </div>
+    </div>
+</div>

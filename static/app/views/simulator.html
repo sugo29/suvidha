@@ -1,40 +1,37 @@
-{% extends 'base.html' %}
-
-{% block content %}
 <section class="page-header">
-    <h1>{{ t('bill_simulator') }}</h1>
-    <p>{{ t('estimate_utility_bills') }}</p>
+    <h1>{{t('bill_simulator')}}</h1>
+    <p>{{t('estimate_utility_bills')}}</p>
 </section>
 
 <div class="content-grid two-column">
     <!-- Simulator Form -->
     <div class="card">
         <div class="card-header">
-            <h3>{{ t('consumption_simulator') }}</h3>
+            <h3>{{t('consumption_simulator')}}</h3>
         </div>
         <div class="card-body">
-            <form id="simulatorForm">
+            <form id="simulatorForm" ng-submit="vm.calculateBill()">
                 <!-- Utility Selection -->
                 <div class="form-group">
-                    <label>{{ t('select_utility') }}</label>
-                    <select class="form-control" id="utilityType">
-                        <option value="electricity">{{ t('electricity') }} ⚡</option>
-                        <option value="gas">{{ t('gas') }} 🔥</option>
-                        <option value="water">{{ t('water') }} 💧</option>
+                    <label>{{t('select_utility')}}</label>
+                    <select class="form-control" ng-model="vm.utilityType">
+                        <option value="electricity">{{t('electricity')}} ⚡</option>
+                        <option value="gas">{{t('gas')}} 🔥</option>
+                        <option value="water">{{t('water')}} 💧</option>
                     </select>
                 </div>
 
                 <!-- Consumption Input -->
                 <div class="form-group">
-                    <label>{{ t('monthly_consumption') }}</label>
-                    <input type="number" class="form-control" id="consumption" placeholder="{{ t('enter_units') }}" value="245">
-                    <small class="form-text text-muted">{{ t('enter_units') }}</small>
+                    <label>{{t('monthly_consumption')}}</label>
+                    <input type="number" class="form-control" ng-model="vm.consumption" placeholder="{{t('enter_units')}}">
+                    <small class="form-text text-muted">{{t('enter_units')}}</small>
                 </div>
 
                 <!-- Vendor Selection -->
                 <div class="form-group">
-                    <label>{{ t('service_provider') }}</label>
-                    <select class="form-control" id="vendor">
+                    <label>{{t('service_provider')}}</label>
+                    <select class="form-control" ng-model="vm.vendor">
                         <option value="brpl">BSES Rajdhani (BRPL)</option>
                         <option value="bypl">BSES Yamuna (BYPL)</option>
                         <option value="tpddl">Tata Power DDL</option>
@@ -42,8 +39,8 @@
                 </div>
 
                 <!-- Calculate Button -->
-                <button type="button" class="btn-primary full-width" onclick="calculateBill()">
-                    {{ t('calculate_estimated_bill') }}
+                <button type="submit" class="btn-primary full-width">
+                    {{t('calculate_estimated_bill')}}
                 </button>
             </form>
         </div>
@@ -57,28 +54,28 @@
         <div class="card-body">
             <div class="result-display" id="resultDisplay">
                 <div class="result-icon">💵</div>
-                <div class="result-amount" id="resultAmount">₹ 1,240</div>
+                <div class="result-amount">₹ {{vm.totalBill | number:0}}</div>
                 <div class="result-breakdown">
                     <div class="breakdown-item">
                         <span>Energy Charges</span>
-                        <span id="energyCharge">₹ 980</span>
+                        <span>₹ {{vm.energyCharge | number:0}}</span>
                     </div>
                     <div class="breakdown-item">
                         <span>Fixed Charges</span>
-                        <span id="fixedCharge">₹ 150</span>
+                        <span>₹ {{vm.fixedCharge | number:0}}</span>
                     </div>
                     <div class="breakdown-item">
                         <span>Subsidy</span>
-                        <span id="subsidy" class="text-success">- ₹ 0</span>
+                        <span class="text-success">- ₹ {{vm.subsidy | number:0}}</span>
                     </div>
                     <div class="breakdown-item">
                         <span>Tax (GST)</span>
-                        <span id="tax">₹ 110</span>
+                        <span>₹ {{vm.tax | number:0}}</span>
                     </div>
                 </div>
                 <div class="info-alert mt-3">
                     <span>ℹ️</span>
-                    <p id="subsidyInfo">Your consumption is in Slab 2. You can save ₹200 by reducing usage to Slab 1 (below 200 units).</p>
+                    <p>{{vm.subsidyInfo}}</p>
                 </div>
             </div>
         </div>
@@ -112,54 +109,6 @@
         </div>
     </div>
 </section>
-
-{% endblock %}
-
-{% block scripts %}
-<script>
-function calculateBill() {
-    const consumption = parseFloat(document.getElementById('consumption').value) || 0;
-    const utilityType = document.getElementById('utilityType').value;
-    const vendor = document.getElementById('vendor').value;
-    
-    let energyCharge = 0;
-    let fixedCharge = 150;
-    let subsidy = 0;
-    let tax = 0;
-    let totalBill = 0;
-    let subsidyMessage = '';
-    
-    // Calculate based on electricity tariff (simplified)
-    if (utilityType === 'electricity') {
-        if (consumption <= 200) {
-            energyCharge = consumption * 3.0;
-            subsidy = consumption * 0.5; // Example subsidy
-            subsidyMessage = 'Great! You are in Slab 1 with maximum subsidy benefits.';
-        } else if (consumption <= 400) {
-            energyCharge = (200 * 3.0) + ((consumption - 200) * 4.5);
-            subsidyMessage = `You are in Slab 2. Reduce consumption by ${Math.ceil(consumption - 200)} units to save approximately ₹${Math.ceil((consumption - 200) * 1.5)}.`;
-        } else {
-            energyCharge = (200 * 3.0) + (200 * 4.5) + ((consumption - 400) * 6.5);
-            subsidyMessage = `High consumption detected. Consider energy-saving measures to reduce your bill.`;
-        }
-    }
-    
-    // Calculate tax
-    tax = (energyCharge + fixedCharge - subsidy) * 0.10; // 10% GST
-    totalBill = energyCharge + fixedCharge - subsidy + tax;
-    
-    // Update display
-    document.getElementById('resultAmount').textContent = `₹ ${Math.round(totalBill)}`;
-    document.getElementById('energyCharge').textContent = `₹ ${Math.round(energyCharge)}`;
-    document.getElementById('fixedCharge').textContent = `₹ ${fixedCharge}`;
-    document.getElementById('subsidy').textContent = `- ₹ ${Math.round(subsidy)}`;
-    document.getElementById('tax').textContent = `₹ ${Math.round(tax)}`;
-    document.getElementById('subsidyInfo').textContent = subsidyMessage;
-}
-
-// Auto-calculate on load
-window.addEventListener('DOMContentLoaded', calculateBill);
-</script>
 
 <style>
 .result-display {
@@ -240,4 +189,3 @@ window.addEventListener('DOMContentLoaded', calculateBill);
     margin-top: 0.25rem;
 }
 </style>
-{% endblock %}

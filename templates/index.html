@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="suvidhaApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suvidha - Government Service Portal</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- AngularJS Core -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-sanitize.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Chart.js for charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Application Scripts -->
+    <script src="/static/app/app.js"></script>
+    <script src="/static/app/services/translation.service.js"></script>
+    <script src="/static/app/services/api.service.js"></script>
+    <script src="/static/app/controllers/dashboard.controller.js"></script>
+    <script src="/static/app/controllers/utilities.controller.js"></script>
+    <script src="/static/app/controllers/insights.controller.js"></script>
+    <script src="/static/app/controllers/simulator.controller.js"></script>
+    <script src="/static/app/controllers/services.controller.js"></script>
+    <script src="/static/app/controllers/community.controller.js"></script>
+    <script src="/static/app/controllers/records.controller.js"></script>
+    <script src="/static/app/controllers/profile.controller.js"></script>
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/charts.js"></script>
+</head>
+<body>
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <!-- Sidebar Header -->
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <img src="/static/images/emblem.png" alt="Government Emblem" class="sidebar-emblem">
+                <span class="sidebar-title">{{t('app_name')}}</span>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
+                <i data-lucide="panel-left-close"></i>
+            </button>
+        </div>
+
+        <!-- Global Disclaimer (Moved to Sidebar) -->
+        <div class="sidebar-notice">
+            <i data-lucide="info" class="notice-icon"></i>
+            <p class="notice-text">{{t('data_notice')}}</p>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="sidebar-nav">
+            <a href="#!/" class="sidebar-link" ng-class="{active: currentPage == 'dashboard' || currentPage == ''}">
+                <i data-lucide="layout-dashboard"></i>
+                <span class="sidebar-link-text">{{t('dashboard')}}</span>
+            </a>
+            <a href="#!/utilities" class="sidebar-link" ng-class="{active: currentPage == 'utilities'}">
+                <i data-lucide="zap"></i>
+                <span class="sidebar-link-text">{{t('utilities')}}</span>
+            </a>
+            <a href="#!/insights" class="sidebar-link" ng-class="{active: currentPage == 'insights'}">
+                <i data-lucide="line-chart"></i>
+                <span class="sidebar-link-text">{{t('insights')}}</span>
+            </a>
+            <a href="#!/simulator" class="sidebar-link" ng-class="{active: currentPage == 'simulator'}">
+                <i data-lucide="calculator"></i>
+                <span class="sidebar-link-text">{{t('simulator')}}</span>
+            </a>
+            <a href="#!/services" class="sidebar-link" ng-class="{active: currentPage == 'services'}">
+                <i data-lucide="clipboard-list"></i>
+                <span class="sidebar-link-text">{{t('services')}}</span>
+            </a>
+            <a href="#!/community" class="sidebar-link" ng-class="{active: currentPage == 'community'}">
+                <i data-lucide="users"></i>
+                <span class="sidebar-link-text">{{t('community')}}</span>
+            </a>
+            <a href="#!/records" class="sidebar-link" ng-class="{active: currentPage == 'records'}">
+                <i data-lucide="file-text"></i>
+                <span class="sidebar-link-text">{{t('records')}}</span>
+            </a>
+        </nav>
+
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <i data-lucide="user"></i>
+                </div>
+                <div class="user-info">
+                    <span class="user-name">Suhan Kumar</span>
+                    <span class="user-role">{{t('citizen')}}</span>
+                </div>
+            </div>
+            <button class="sidebar-logout" aria-label="Logout">
+                <i data-lucide="log-out"></i>
+                <span class="sidebar-link-text">{{t('logout')}}</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <button class="mobile-menu-toggle" id="mobileMenuToggle">
+            <i data-lucide="menu"></i>
+        </button>
+        <div class="mobile-logo">
+            <img src="/static/images/emblem.png" alt="Government Emblem">
+            <span>{{t('app_name')}}</span>
+        </div>
+        <div class="mobile-actions">
+            <button class="icon-btn" aria-label="{{t('notifications')}}">
+                <i data-lucide="bell"></i>
+            </button>
+            <button class="icon-btn lang-toggle-btn" aria-label="{{t('language')}}">
+                <span class="lang-text">{{currentLang | uppercase}}</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+        <!-- Top Bar (Secondary) -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <h2 class="page-title">{{t(currentPage || 'dashboard')}}</h2>
+            </div>
+            <div class="top-bar-right">
+                <button class="icon-btn" aria-label="{{t('accessibility')}}">
+                    <i data-lucide="accessibility"></i>
+                </button>
+                <div class="lang-dropdown">
+                    <button class="lang-toggle-btn" id="langDropdownBtn">
+                        <i data-lucide="languages"></i>
+                        <span>{{currentLang | uppercase}}</span>
+                        <i data-lucide="chevron-down" class="chevron-icon"></i>
+                    </button>
+                    <div class="lang-dropdown-menu" id="langDropdownMenu">
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'en'}" data-lang="en">English</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'hi'}" data-lang="hi">हिन्दी (Hindi)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'bn'}" data-lang="bn">বাংলা (Bengali)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'ta'}" data-lang="ta">தமிழ் (Tamil)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'te'}" data-lang="te">తెలుగు (Telugu)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'kn'}" data-lang="kn">ಕನ್ನಡ (Kannada)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'pa'}" data-lang="pa">ਪੰਜਾਬੀ (Punjabi)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'gu'}" data-lang="gu">ગુજરાતી (Gujarati)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'ml'}" data-lang="ml">മലയാളം (Malayalam)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'mr'}" data-lang="mr">मराठी (Marathi)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'or'}" data-lang="or">ଓଡ଼ିଆ (Odia)</a>
+                    </div>
+                </div>
+                <button class="icon-btn notification-btn" aria-label="{{t('notifications')}}">
+                    <i data-lucide="bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content Area - Angular Views Load Here -->
+        <main class="main-content" ng-view>
+        </main>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#">{{t('privacy_policy')}}</a>
+                    <a href="#">{{t('terms_of_service')}}</a>
+                    <a href="#">{{t('help_center')}}</a>
+                    <a href="#">Contact Support</a>
+                </div>
+                <div class="footer-info">
+                    <p>{{t('govt_of_nct')}}</p>
+                    <p class="footer-copyright">© 2026 All Rights Reserved</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modal Container -->
+    <div id="policyModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closePolicyModal()">
+                <i data-lucide="x"></i>
+            </button>
+            <div id="modalBody">
+                <!-- Dynamic Content injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <script>
+        // Initialize Lucide icons after Angular loads
+        angular.element(document).ready(function() {
+            lucide.createIcons();
+        });
+
+        // Sidebar toggle functionality
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+            });
+        }
+
+        // Restore sidebar state
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+            sidebar.classList.add('collapsed');
+        }
+
+        // Mobile menu toggle
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('mobile-open');
+                mobileOverlay.classList.toggle('active');
+            });
+        }
+
+        if (mobileOverlay) {
+            mobileOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('mobile-open');
+                mobileOverlay.classList.remove('active');
+            });
+        }
+    </script>
+</body>
+</html>
