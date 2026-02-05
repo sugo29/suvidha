@@ -1,44 +1,305 @@
-<section class="page-header">
-    <h1>{{t('records_history')}}</h1>
-    <p>{{t('official_meter_readings_bills')}}</p>
-</section>
-
-<div class="card full-width-card">
-    <div class="table-controls">
-        <input type="text" placeholder="{{t('search_by_bill_id')}}" class="search-input" ng-model="vm.searchQuery">
-        <select class="filter-select" ng-model="vm.utilityFilter">
-            <option value="">{{t('all_utilities')}}</option>
-            <option value="electricity">{{t('electricity')}}</option>
-            <option value="water">{{t('water')}}</option>
-            <option value="gas">{{t('gas')}}</option>
-        </select>
-        <button class="btn-secondary" ng-click="vm.downloadCSV()">{{t('download_csv')}}</button>
+<!-- Records Page Header -->
+<div class="records-header">
+    <div class="records-title-row">
+        <div>
+            <h1>{{t('records_history')}}</h1>
+            <p>{{t('official_meter_readings_bills')}}</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary" ng-click="vm.downloadCSV()">
+                <i data-lucide="download"></i>
+                {{t('download_csv')}}
+            </button>
+            <button class="btn btn-primary" ng-click="vm.exportPDF()">
+                <i data-lucide="file-text"></i>
+                {{t('export_pdf')}}
+            </button>
+        </div>
     </div>
-
-    <table class="records-table">
-        <thead>
-            <tr>
-                <th>{{t('date')}}</th>
-                <th>{{t('utility')}}</th>
-                <th>{{t('bill_id')}}</th>
-                <th>{{t('reading')}}</th>
-                <th>{{t('amount')}}</th>
-                <th>{{t('status')}}</th>
-                <th>{{t('action')}}</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="record in vm.records | filter:vm.filterRecords">
-                <td>{{record.date}}</td>
-                <td>{{record.utility}} {{record.icon}}</td>
-                <td>{{record.billId}}</td>
-                <td>{{record.reading}}</td>
-                <td>₹ {{record.amount}}</td>
-                <td><span class="status-dot" ng-class="record.statusClass"></span> {{record.status}}</td>
-                <td><a href="#" class="btn-small" ng-click="vm.viewDocument(record)">{{record.actionLabel}}</a></td>
-            </tr>
-        </tbody>
-    </table>
-    <p class="source-note" style="margin-top: 1rem;">Official meter reading data comes from the respective authority.
-    </p>
+    
+    <!-- Stats Bar -->
+    <div class="records-stats-bar">
+        <div class="stat-item">
+            <i data-lucide="receipt"></i>
+            <div class="stat-info">
+                <span class="stat-value" ng-bind="vm.stats.totalBills"></span>
+                <span class="stat-label">{{t('total_bills')}}</span>
+            </div>
+        </div>
+        <div class="stat-item">
+            <i data-lucide="indian-rupee"></i>
+            <div class="stat-info">
+                <span class="stat-value" ng-bind="vm.stats.totalAmount"></span>
+                <span class="stat-label">{{t('total_paid')}}</span>
+            </div>
+        </div>
+        <div class="stat-item">
+            <i data-lucide="calendar"></i>
+            <div class="stat-info">
+                <span class="stat-value" ng-bind="vm.stats.avgMonthly"></span>
+                <span class="stat-label">{{t('avg_monthly')}}</span>
+            </div>
+        </div>
+        <div class="stat-item">
+            <i data-lucide="clock"></i>
+            <div class="stat-info">
+                <span class="stat-value" ng-bind="vm.stats.pending"></span>
+                <span class="stat-label">{{t('pending_bills')}}</span>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Filter and Search Controls -->
+<div class="records-controls-card enhanced-card">
+    <div class="controls-row">
+        <div class="search-box">
+            <i data-lucide="search"></i>
+            <input type="text" 
+                   placeholder="{{t('search_by_bill_id')}}" 
+                   class="form-control enhanced" 
+                   ng-model="vm.searchQuery"
+                   ng-change="vm.filterRecords()">
+        </div>
+        
+        <div class="filter-group">
+            <div class="filter-item">
+                <label>
+                    <i data-lucide="zap"></i>
+                    {{t('utility')}}
+                </label>
+                <select class="form-control enhanced" ng-model="vm.utilityFilter" ng-change="vm.filterRecords()">
+                    <option value="">{{t('all_utilities')}}</option>
+                    <option value="electricity">{{t('electricity')}}</option>
+                    <option value="water">{{t('water')}}</option>
+                    <option value="gas">{{t('gas')}}</option>
+                </select>
+            </div>
+            
+            <div class="filter-item">
+                <label>
+                    <i data-lucide="calendar-range"></i>
+                    {{t('period')}}
+                </label>
+                <select class="form-control enhanced" ng-model="vm.periodFilter" ng-change="vm.filterRecords()">
+                    <option value="all">{{t('all_time')}}</option>
+                    <option value="3months">{{t('last_3_months')}}</option>
+                    <option value="6months">{{t('last_6_months')}}</option>
+                    <option value="1year">{{t('last_year')}}</option>
+                    <option value="custom">{{t('custom_range')}}</option>
+                </select>
+            </div>
+            
+            <div class="filter-item">
+                <label>
+                    <i data-lucide="check-circle"></i>
+                    {{t('status')}}
+                </label>
+                <select class="form-control enhanced" ng-model="vm.statusFilter" ng-change="vm.filterRecords()">
+                    <option value="">{{t('all_status')}}</option>
+                    <option value="paid">{{t('paid')}}</option>
+                    <option value="pending">{{t('pending')}}</option>
+                    <option value="overdue">{{t('overdue')}}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div class="active-filters" ng-if="vm.hasActiveFilters()">
+        <span class="filter-label">{{t('active_filters')}}:</span>
+        <span class="filter-tag" ng-if="vm.utilityFilter">
+            {{vm.utilityFilter}}
+            <button ng-click="vm.clearFilter('utility')">×</button>
+        </span>
+        <span class="filter-tag" ng-if="vm.statusFilter">
+            {{vm.statusFilter}}
+            <button ng-click="vm.clearFilter('status')">×</button>
+        </span>
+        <span class="filter-tag" ng-if="vm.periodFilter !== 'all'">
+            {{vm.periodFilter}}
+            <button ng-click="vm.clearFilter('period')">×</button>
+        </span>
+        <button class="clear-all-btn" ng-click="vm.clearAllFilters()">
+            <i data-lucide="x"></i>
+            {{t('clear_all')}}
+        </button>
+    </div>
+</div>
+
+<!-- Records Table -->
+<div class="enhanced-card records-table-card">
+    <div class="table-header">
+        <h3>
+            <i data-lucide="list"></i>
+            {{t('billing_records')}}
+        </h3>
+        <div class="view-toggle">
+            <button class="view-btn" ng-class="{active: vm.viewMode === 'table'}" ng-click="vm.setViewMode('table')">
+                <i data-lucide="table"></i>
+                {{t('table')}}
+            </button>
+            <button class="view-btn" ng-class="{active: vm.viewMode === 'cards'}" ng-click="vm.setViewMode('cards')">
+                <i data-lucide="layout-grid"></i>
+                {{t('cards')}}
+            </button>
+        </div>
+    </div>
+    
+    <!-- Table View -->
+    <div class="table-wrapper" ng-if="vm.viewMode === 'table'">
+        <table class="enhanced-records-table">
+            <thead>
+                <tr>
+                    <th ng-click="vm.sortBy('date')" class="sortable">
+                        {{t('date')}}
+                        <i data-lucide="chevron-up" ng-if="vm.sortColumn === 'date' && vm.sortReverse"></i>
+                        <i data-lucide="chevron-down" ng-if="vm.sortColumn === 'date' && !vm.sortReverse"></i>
+                    </th>
+                    <th>{{t('utility')}}</th>
+                    <th>{{t('bill_id')}}</th>
+                    <th ng-click="vm.sortBy('reading')" class="sortable">
+                        {{t('reading')}}
+                        <i data-lucide="chevron-up" ng-if="vm.sortColumn === 'reading' && vm.sortReverse"></i>
+                        <i data-lucide="chevron-down" ng-if="vm.sortColumn === 'reading' && !vm.sortReverse"></i>
+                    </th>
+                    <th ng-click="vm.sortBy('amount')" class="sortable">
+                        {{t('amount')}}
+                        <i data-lucide="chevron-up" ng-if="vm.sortColumn === 'amount' && vm.sortReverse"></i>
+                        <i data-lucide="chevron-down" ng-if="vm.sortColumn === 'amount' && !vm.sortReverse"></i>
+                    </th>
+                    <th>{{t('status')}}</th>
+                    <th>{{t('action')}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="record in vm.filteredRecords | orderBy:vm.sortColumn:vm.sortReverse" class="record-row">
+                    <td>
+                        <div class="date-cell">
+                            <i data-lucide="calendar"></i>
+                            <span ng-bind="record.date"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="utility-badge" ng-class="record.utilityClass">
+                            <i ng-attr-data-lucide="{{record.icon}}"></i>
+                            <span ng-bind="record.utility"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="bill-id" ng-bind="record.billId"></span>
+                    </td>
+                    <td>
+                        <span class="reading-value" ng-bind="record.reading"></span>
+                    </td>
+                    <td>
+                        <span class="amount-value">₹<span ng-bind="record.amount"></span></span>
+                    </td>
+                    <td>
+                        <span class="status-badge" ng-class="record.statusClass">
+                            <i ng-attr-data-lucide="{{record.statusIcon}}"></i>
+                            <span ng-bind="record.status"></span>
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon-small" ng-click="vm.viewDocument(record)" title="{{t('view_bill')}}">
+                                <i data-lucide="eye"></i>
+                            </button>
+                            <button class="btn-icon-small" ng-click="vm.downloadBill(record)" title="{{t('download')}}">
+                                <i data-lucide="download"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- Empty State -->
+        <div class="empty-state" ng-if="vm.filteredRecords.length === 0">
+            <i data-lucide="inbox"></i>
+            <p>{{t('no_records_found')}}</p>
+            <button class="btn btn-secondary" ng-click="vm.clearAllFilters()">
+                {{t('clear_filters')}}
+            </button>
+        </div>
+    </div>
+    
+    <!-- Card View -->
+    <div class="records-card-grid" ng-if="vm.viewMode === 'cards'">
+        <div class="record-card" ng-repeat="record in vm.filteredRecords | orderBy:vm.sortColumn:vm.sortReverse">
+            <div class="record-card-header">
+                <div class="utility-badge" ng-class="record.utilityClass">
+                    <i ng-attr-data-lucide="{{record.icon}}"></i>
+                    <span ng-bind="record.utility"></span>
+                </div>
+                <span class="status-badge" ng-class="record.statusClass">
+                    <i ng-attr-data-lucide="{{record.statusIcon}}"></i>
+                    <span ng-bind="record.status"></span>
+                </span>
+            </div>
+            <div class="record-card-body">
+                <div class="record-detail">
+                    <span class="detail-label">{{t('bill_id')}}</span>
+                    <span class="detail-value" ng-bind="record.billId"></span>
+                </div>
+                <div class="record-detail">
+                    <span class="detail-label">{{t('date')}}</span>
+                    <span class="detail-value" ng-bind="record.date"></span>
+                </div>
+                <div class="record-detail">
+                    <span class="detail-label">{{t('reading')}}</span>
+                    <span class="detail-value" ng-bind="record.reading"></span>
+                </div>
+                <div class="record-detail highlight">
+                    <span class="detail-label">{{t('amount')}}</span>
+                    <span class="detail-value amount">₹<span ng-bind="record.amount"></span></span>
+                </div>
+            </div>
+            <div class="record-card-footer">
+                <button class="btn btn-secondary btn-sm" ng-click="vm.viewDocument(record)">
+                    <i data-lucide="eye"></i>
+                    {{t('view_bill')}}
+                </button>
+                <button class="btn-icon-small" ng-click="vm.downloadBill(record)" title="{{t('download')}}">
+                    <i data-lucide="download"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Empty State -->
+        <div class="empty-state full-width" ng-if="vm.filteredRecords.length === 0">
+            <i data-lucide="inbox"></i>
+            <p>{{t('no_records_found')}}</p>
+            <button class="btn btn-secondary" ng-click="vm.clearAllFilters()">
+                {{t('clear_filters')}}
+            </button>
+        </div>
+    </div>
+    
+    <!-- Pagination -->
+    <div class="pagination-controls" ng-if="vm.filteredRecords.length > 0">
+        <div class="pagination-info">
+            {{t('showing')}} {{vm.paginationStart}} - {{vm.paginationEnd}} {{t('of')}} {{vm.filteredRecords.length}} {{t('records')}}
+        </div>
+        <div class="pagination-buttons">
+            <button class="page-btn" ng-click="vm.previousPage()" ng-disabled="vm.currentPage === 1">
+                <i data-lucide="chevron-left"></i>
+            </button>
+            <span class="page-number">{{vm.currentPage}} / {{vm.totalPages}}</span>
+            <button class="page-btn" ng-click="vm.nextPage()" ng-disabled="vm.currentPage === vm.totalPages">
+                <i data-lucide="chevron-right"></i>
+            </button>
+        </div>
+    </div>
+    
+    <p class="source-note">{{t('official_meter_reading_data')}}</p>
+</div>
+
+<!-- Initialize Lucide Icons -->
+<script>
+    if (typeof lucide !== 'undefined') {
+        setTimeout(function() {
+            lucide.createIcons();
+        }, 100);
+    }
+</script>
