@@ -1,336 +1,652 @@
-<div class="community-layout">
-    <!-- SUB-NAVIGATION SIDEBAR -->
-    <aside class="community-sidebar">
-        <div class="com-sidebar-header">
-            <h2>
-                <i data-lucide="users"></i>
-                {{t('community')}}
-            </h2>
-            <div class="ward-selector">
-                <label>{{t('your_ward')}}</label>
-                <select ng-model="vm.selectedWard">
-                    <option value="kalkaji">Kalkaji (South)</option>
-                    <option value="nehru_place">Nehru Place</option>
-                    <option value="gk2">Greater Kailash II</option>
-                </select>
+<!-- Community Page Header -->
+<div class="community-header">
+    <div class="community-title-row">
+        <div>
+            <h1>{{t('community')}}</h1>
+            <p>{{t('utility_performance_participation')}} <strong ng-bind="vm.selectedWard"></strong></p>
+        </div>
+        <div class="ward-selector-enhanced">
+            <label>
+                <i data-lucide="map-pin"></i>
+                {{t('your_ward')}}
+            </label>
+            <select ng-model="vm.selectedWard" ng-change="vm.loadWardData()" class="form-control enhanced">
+                <option value="Kalkaji">Kalkaji (South)</option>
+                <option value="Nehru Place">Nehru Place</option>
+                <option value="Greater Kailash II">Greater Kailash II</option>
+            </select>
+        </div>
+    </div>
+    
+    <!-- Stats Bar -->
+    <div class="community-stats-bar">
+        <div class="stat-item">
+            <i data-lucide="trending-up"></i>
+            <div class="stat-info">
+                <span class="stat-value" ng-bind="vm.stats.healthScore"></span>
+                <span class="stat-label">{{t('ward_health_score')}}</span>
             </div>
         </div>
-        <nav class="com-nav">
-            <button class="sidebar-nav-btn" ng-class="{active: vm.activeSection === 'overview'}" ng-click="vm.showSection('overview')">
-                <i data-lucide="layout-grid"></i>
-                <span>{{t('overview')}}</span>
-            </button>
-            <button class="sidebar-nav-btn" ng-class="{active: vm.activeSection === 'map'}" ng-click="vm.showSection('map')">
-                <i data-lucide="map"></i>
-                <span>{{t('ward_zone_map')}}</span>
-            </button>
-            <button class="sidebar-nav-btn" ng-class="{active: vm.activeSection === 'challenges'}" ng-click="vm.showSection('challenges')">
-                <i data-lucide="sprout"></i>
-                <span>{{t('civic_challenges')}}</span>
-            </button>
-            <button class="sidebar-nav-btn" ng-class="{active: vm.activeSection === 'advisories'}" ng-click="vm.showSection('advisories')">
-                <i data-lucide="megaphone"></i>
-                <span>{{t('advisories')}}</span>
-            </button>
-            <button class="sidebar-nav-btn" ng-class="{active: vm.activeSection === 'activity'}" ng-click="vm.showSection('activity')">
-                <i data-lucide="activity"></i>
-                <span>{{t('recent_activity')}}</span>
-            </button>
-            <button class="sidebar-nav-btn" ng-class="{active: vm.activeSection === 'insights'}" ng-click="vm.showSection('insights')">
-                <i data-lucide="bar-chart-3"></i>
-                <span>{{t('ward_insights')}}</span>
-            </button>
-            <button class="sidebar-nav-btn" ng-class="{active: vm.activeSection === 'learn'}" ng-click="vm.showSection('learn')">
-                <i data-lucide="book-open"></i>
-                <span>{{t('learn_faqs')}}</span>
-            </button>
-        </nav>
-    </aside>
+        <div class="stat-item">
+            <i data-lucide="users"></i>
+            <div class="stat-info">
+                <span class="stat-value" ng-bind="vm.stats.activeParticipants"></span>
+                <span class="stat-label">{{t('active_participants')}}</span>
+            </div>
+        </div>
+        <div class="stat-item">
+            <i data-lucide="activity"></i>
+            <div class="stat-info">
+                <span class="stat-value" ng-bind="vm.stats.recentReports"></span>
+                <span class="stat-label">{{t('recent_reports')}}</span>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <!-- CONTENT AREA -->
-    <main class="community-content">
+<!-- Navigation Tabs -->
+<div class="community-tabs">
+    <button class="community-tab" ng-class="{active: vm.activeSection === 'overview'}" ng-click="vm.showSection('overview')">
+        <i data-lucide="layout-grid"></i>
+        <span>{{t('overview')}}</span>
+    </button>
+    <button class="community-tab" ng-class="{active: vm.activeSection === 'challenges'}" ng-click="vm.showSection('challenges')">
+        <i data-lucide="trophy"></i>
+        <span>{{t('civic_challenges')}}</span>
+    </button>
+    <button class="community-tab" ng-class="{active: vm.activeSection === 'advisories'}" ng-click="vm.showSection('advisories')">
+        <i data-lucide="megaphone"></i>
+        <span>{{t('advisories')}}</span>
+    </button>
+    <button class="community-tab" ng-class="{active: vm.activeSection === 'activity'}" ng-click="vm.showSection('activity')">
+        <i data-lucide="rss"></i>
+        <span>{{t('activity_feed')}}</span>
+    </button>
+    <button class="community-tab" ng-class="{active: vm.activeSection === 'insights'}" ng-click="vm.showSection('insights')">
+        <i data-lucide="bar-chart-3"></i>
+        <span>{{t('ward_insights')}}</span>
+    </button>
+</div>
+
+<!-- CONTENT AREA -->
+<main class="community-content">
 
         <!-- SECTION 1: OVERVIEW -->
-        <div id="overview" class="com-section" ng-show="vm.activeSection === 'overview'">
-            <div class="section-header">
-                <h1>{{t('community_overview')}}</h1>
-                <p>{{t('utility_performance_participation')}} <strong>Kalkaji</strong>.</p>
+        <div id="overview" class="community-section" ng-show="vm.activeSection === 'overview'">
+            
+            <!-- Ward Health Score Card -->
+            <div class="enhanced-card health-score-card">
+                <div class="card-icon-header">
+                    <div class="icon-badge success">
+                        <i data-lucide="heart-pulse"></i>
+                    </div>
+                    <div>
+                        <h3>{{t('ward_health_score')}}</h3>
+                        <p>{{t('calculated_using_reliability')}}</p>
+                    </div>
+                </div>
+                <div class="score-display">
+                    <div class="score-circle">
+                        <svg viewBox="0 0 120 120" class="circular-progress">
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="#e5e7eb" stroke-width="8"/>
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="#10b981" stroke-width="8" 
+                                    stroke-dasharray="339.292" stroke-dashoffset="84.823" 
+                                    stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                        </svg>
+                        <div class="score-text">
+                            <span class="score-val">78</span>
+                            <span class="score-max">/100</span>
+                        </div>
+                    </div>
+                    <div class="score-breakdown">
+                        <div class="breakdown-item">
+                            <i data-lucide="zap"></i>
+                            <span>{{t('electricity')}}: 82/100</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <i data-lucide="droplet"></i>
+                            <span>{{t('water')}}: 85/100</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <i data-lucide="flame"></i>
+                            <span>{{t('gas')}}: 68/100</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Snapshot Cards Grid -->
+            <div class="snapshot-grid">
+                <div class="enhanced-card snapshot-card">
+                    <div class="snapshot-icon">
+                        <i data-lucide="indian-rupee"></i>
+                    </div>
+                    <div class="snapshot-content">
+                        <span class="snap-label">{{t('avg_elec_bill')}}</span>
+                        <strong class="snap-val">₹1,150</strong>
+                        <small class="snap-trend positive">
+                            <i data-lucide="trending-down"></i>
+                            -5% from last month
+                        </small>
+                    </div>
+                </div>
+                <div class="enhanced-card snapshot-card">
+                    <div class="snapshot-icon water">
+                        <i data-lucide="droplets"></i>
+                    </div>
+                    <div class="snapshot-content">
+                        <span class="snap-label">{{t('avg_water_usage')}}</span>
+                        <strong class="snap-val">19 KL</strong>
+                        <small class="snap-trend">
+                            <i data-lucide="minus"></i>
+                            Same as average
+                        </small>
+                    </div>
+                </div>
+                <div class="enhanced-card snapshot-card">
+                    <div class="snapshot-icon alert">
+                        <i data-lucide="power-off"></i>
+                    </div>
+                    <div class="snapshot-content">
+                        <span class="snap-label">{{t('power_cuts')}}</span>
+                        <strong class="snap-val">1.2 Hrs/M</strong>
+                        <small class="snap-trend negative">
+                            <i data-lucide="trending-up"></i>
+                            +15min from last month
+                        </small>
+                    </div>
+                </div>
+                <div class="enhanced-card snapshot-card">
+                    <div class="snapshot-icon success">
+                        <i data-lucide="sun"></i>
+                    </div>
+                    <div class="snapshot-content">
+                        <span class="snap-label">{{t('solar_adoption')}}</span>
+                        <strong class="snap-val">14%</strong>
+                        <small class="snap-trend positive">
+                            <i data-lucide="trending-up"></i>
+                            +3% from last year
+                        </small>
+                    </div>
+                </div>
             </div>
 
             <!-- HEATMAP -->
-            <div class="card heatmap-container">
-                <div class="heatmap-header">
-                    <h3>{{t('ward_stress_map')}}</h3>
+            <div class="enhanced-card heatmap-container">
+                <div class="card-header-with-actions">
+                    <div>
+                        <h3>{{t('ward_stress_map')}}</h3>
+                        <p>{{t('map_shows_aggregated')}}</p>
+                    </div>
                     <div class="map-toggles">
-                        <button class="map-toggle" ng-class="{active: vm.mapView === 'ward'}" ng-click="vm.mapView = 'ward'">{{t('ward')}}</button>
-                        <button class="map-toggle" ng-class="{active: vm.mapView === 'zone'}" ng-click="vm.mapView = 'zone'">{{t('zone')}}</button>
-                        <button class="map-toggle" ng-class="{active: vm.mapView === 'city'}" ng-click="vm.mapView = 'city'">{{t('city')}}</button>
+                        <button class="map-toggle-btn" ng-class="{active: vm.mapView === 'ward'}" ng-click="vm.changeMapView('ward')">
+                            <i data-lucide="home"></i>
+                            {{t('ward')}}
+                        </button>
+                        <button class="map-toggle-btn" ng-class="{active: vm.mapView === 'zone'}" ng-click="vm.changeMapView('zone')">
+                            <i data-lucide="building"></i>
+                            {{t('zone')}}
+                        </button>
+                        <button class="map-toggle-btn" ng-class="{active: vm.mapView === 'city'}" ng-click="vm.changeMapView('city')">
+                            <i data-lucide="map"></i>
+                            {{t('city')}}
+                        </button>
                     </div>
                 </div>
-                <div class="heatmap-visual" id="wardHeatmap">
-                    <!-- CSS Grid Heatmap Placeholder -->
-                    <div class="heat-zone low-stress" title="{{t('block_a')}}: {{t('stable')}}">{{t('block_a')}}</div>
-                    <div class="heat-zone med-stress" title="{{t('block_b')}}: {{t('moderate_demand')}}">{{t('block_b')}}</div>
-                    <div class="heat-zone high-stress" title="{{t('block_c')}}: {{t('high_stress')}}">{{t('block_c')}}</div>
-                    <div class="heat-zone low-stress" title="{{t('block_d')}}: {{t('stable')}}">{{t('block_d')}}</div>
+                <div class="heatmap-visual">
+                    <div class="heat-zone low-stress" ng-click="vm.showBlockDetails('A')">
+                        <span class="block-label">{{t('block_a')}}</span>
+                        <span class="stress-indicator">●</span>
+                    </div>
+                    <div class="heat-zone med-stress" ng-click="vm.showBlockDetails('B')">
+                        <span class="block-label">{{t('block_b')}}</span>
+                        <span class="stress-indicator">●</span>
+                    </div>
+                    <div class="heat-zone high-stress" ng-click="vm.showBlockDetails('C')">
+                        <span class="block-label">{{t('block_c')}}</span>
+                        <span class="stress-indicator">●</span>
+                    </div>
+                    <div class="heat-zone low-stress" ng-click="vm.showBlockDetails('D')">
+                        <span class="block-label">{{t('block_d')}}</span>
+                        <span class="stress-indicator">●</span>
+                    </div>
                 </div>
                 <div class="heatmap-legend">
-                    <span class="legend-item"><span class="dot green"></span> {{t('stable')}}</span>
-                    <span class="legend-item"><span class="dot yellow"></span> {{t('moderate')}}</span>
-                    <span class="legend-item"><span class="dot red"></span> {{t('high_stress')}}</span>
-                </div>
-                <p class="source-note">{{t('map_shows_aggregated')}}</p>
-            </div>
-
-            <!-- SNAPSHOT CARDS -->
-            <div class="snapshot-grid">
-                <div class="card snap-card">
-                    <span class="snap-label">{{t('avg_elec_bill')}}</span>
-                    <strong class="snap-val">₹ 1,150</strong>
-                </div>
-                <div class="card snap-card">
-                    <span class="snap-label">{{t('avg_water_usage')}}</span>
-                    <strong class="snap-val">19 KL</strong>
-                </div>
-                <div class="card snap-card">
-                    <span class="snap-label">{{t('power_cuts')}}</span>
-                    <strong class="snap-val">1.2 Hrs/M</strong>
-                </div>
-                <div class="card snap-card">
-                    <span class="snap-label">{{t('solar_adoption')}}</span>
-                    <strong class="snap-val">14%</strong>
-                </div>
-            </div>
-
-            <!-- WARD HEALTH SCORE -->
-            <div class="card health-score-card">
-                <div class="score-circle">
-                    <span class="score-val">78</span>
-                    <span class="score-max">/100</span>
-                </div>
-                <div class="score-info">
-                    <h3>{{t('ward_health_score')}}: {{t('stable')}} 🟢</h3>
-                    <p>{{t('calculated_using_reliability')}}</p>
+                    <span class="legend-item"><span class="dot success"></span> {{t('stable')}}</span>
+                    <span class="legend-item"><span class="dot warning"></span> {{t('moderate')}}</span>
+                    <span class="legend-item"><span class="dot danger"></span> {{t('high_stress')}}</span>
                 </div>
             </div>
         </div>
 
-        <!-- SECTION 2: MAP (DETAILED) -->
-        <div id="map" class="com-section" ng-show="vm.activeSection === 'map'">
-            <div class="section-header">
-                <h1>{{t('ward_zone_map')}}</h1>
-                <p>{{t('detailed_infrastructure_views')}}</p>
-            </div>
-            <div class="card full-map-view">
-                <div class="map-filters">
-                    <select ng-model="vm.mapLayer">
-                        <option>{{t('electricity_grid')}}</option>
-                        <option>{{t('water_pipeline')}}</option>
-                        <option>{{t('gas_network')}}</option>
-                    </select>
-                    <select ng-model="vm.mapTimeframe">
-                        <option>{{t('last_month')}}</option>
-                        <option>{{t('last_quarter')}}</option>
-                    </select>
+        <!-- SECTION 2: CHALLENGES -->
+        <div id="challenges" class="community-section" ng-show="vm.activeSection === 'challenges'">
+            
+            <!-- Participation Score -->
+            <div class="enhanced-card participation-card">
+                <div class="participation-header">
+                    <div class="participation-score">
+                        <div class="score-icon">
+                            <i data-lucide="award"></i>
+                        </div>
+                        <div>
+                            <h3>{{t('your_civic_participation')}}</h3>
+                            <div class="participation-stats">
+                                <div class="part-stat">
+                                    <strong ng-bind="vm.participation.points"></strong>
+                                    <span>{{t('points_earned')}}</span>
+                                </div>
+                                <div class="part-stat">
+                                    <strong ng-bind="vm.participation.rank"></strong>
+                                    <span>{{t('in_ward')}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="badges-display">
+                        <div class="badge-earned" ng-repeat="badge in vm.earnedBadges" title="{{badge.name}}">
+                            <i ng-attr-data-lucide="{{badge.icon}}"></i>
+                        </div>
+                    </div>
                 </div>
-                <div class="map-placeholder-large">
-                    {{t('interactive_map_container')}}
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION 3: CHALLENGES -->
-        <div id="challenges" class="com-section" ng-show="vm.activeSection === 'challenges'">
-            <div class="section-header">
-                <h1>{{t('civic_challenges')}}</h1>
-                <p>{{t('participate_without_affecting_bill')}}</p>
             </div>
 
+            <!-- Challenge Cards Grid -->
             <div class="challenge-grid">
                 <!-- Electricity Challenge -->
-                <div class="card challenge-card">
-                    <div class="chal-header elec-bg">
-                        <span>⚡ {{t('electricity')}}</span>
-                        <span class="points-badge">50 {{t('points')}}</span>
+                <div class="enhanced-card challenge-card">
+                    <div class="challenge-icon-badge elec">
+                        <i data-lucide="zap"></i>
                     </div>
-                    <div class="chal-body">
+                    <div class="challenge-header">
                         <h4>{{t('peak_hour_saver')}}</h4>
-                        <p>{{t('follow_peak_hour_advisories')}}</p>
-                        <div class="progress-bar">
-                            <div class="fill" style="width: 40%">2/5 {{t('days')}}</div>
-                        </div>
-                        <button class="btn-primary" ng-click="vm.joinChallenge('peak_hour')">{{t('join_challenge')}}</button>
+                        <span class="points-badge">
+                            <i data-lucide="coins"></i>
+                            50 {{t('points')}}
+                        </span>
                     </div>
-                    <div class="chal-footer">
+                    <p class="challenge-desc">{{t('follow_peak_hour_advisories')}}</p>
+                    <div class="challenge-progress">
+                        <div class="progress-info">
+                            <span>2/5 {{t('days')}}</span>
+                            <span>40%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 40%"></div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" ng-click="vm.joinChallenge('peak_hour')">
+                        <i data-lucide="user-plus"></i>
+                        {{t('join_challenge')}}
+                    </button>
+                    <div class="challenge-note">
+                        <i data-lucide="info"></i>
                         {{t('does_not_affect_billing')}}
                     </div>
                 </div>
 
                 <!-- Water Challenge -->
-                <div class="card challenge-card">
-                    <div class="chal-header water-bg">
-                        <span>💧 {{t('water')}}</span>
-                        <span class="points-badge">30 {{t('points')}}</span>
+                <div class="enhanced-card challenge-card">
+                    <div class="challenge-icon-badge water">
+                        <i data-lucide="droplet"></i>
                     </div>
-                    <div class="chal-body">
+                    <div class="challenge-header">
                         <h4>{{t('leak_detective')}}</h4>
-                        <p>{{t('report_visible_leaks')}}</p>
-                        <button class="btn-primary" ng-click="vm.reportLeak()">{{t('report_now')}}</button>
+                        <span class="points-badge">
+                            <i data-lucide="coins"></i>
+                            30 {{t('points')}}
+                        </span>
                     </div>
-                    <div class="chal-footer">
+                    <p class="challenge-desc">{{t('report_visible_leaks')}}</p>
+                    <div class="challenge-meta">
+                        <div class="meta-stat">
+                            <i data-lucide="users"></i>
+                            <span>42 {{t('participants')}}</span>
+                        </div>
+                        <div class="meta-stat">
+                            <i data-lucide="check-circle"></i>
+                            <span>18 {{t('leaks_fixed')}}</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" ng-click="vm.reportLeak()">
+                        <i data-lucide="flag"></i>
+                        {{t('report_now')}}
+                    </button>
+                    <div class="challenge-note">
+                        <i data-lucide="info"></i>
                         {{t('community_service_initiative')}}
                     </div>
                 </div>
 
-                <!-- Gas Challenge -->
-                <div class="card challenge-card">
-                    <div class="chal-header gas-bg">
-                        <span>🔥 {{t('gas')}}</span>
-                        <span class="points-badge">100 {{t('points')}}</span>
+                <!-- Gas Safety Challenge -->
+                <div class="enhanced-card challenge-card">
+                    <div class="challenge-icon-badge gas">
+                        <i data-lucide="flame"></i>
                     </div>
-                    <div class="chal-body">
+                    <div class="challenge-header">
                         <h4>{{t('safety_first')}}</h4>
-                        <p>{{t('complete_annual_safety')}}</p>
-                        <button class="btn-primary" ng-click="vm.startSafetyChecklist()">{{t('start_checklist')}}</button>
+                        <span class="points-badge premium">
+                            <i data-lucide="star"></i>
+                            100 {{t('points')}}
+                        </span>
                     </div>
-                    <div class="chal-footer">
+                    <p class="challenge-desc">{{t('complete_annual_safety')}}</p>
+                    <div class="challenge-checklist">
+                        <div class="checklist-item">
+                            <i data-lucide="check"></i>
+                            <span>{{t('inspect_connections')}}</span>
+                        </div>
+                        <div class="checklist-item">
+                            <i data-lucide="circle"></i>
+                            <span>{{t('test_leak_detector')}}</span>
+                        </div>
+                        <div class="checklist-item">
+                            <i data-lucide="circle"></i>
+                            <span>{{t('verify_ventilation')}}</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" ng-click="vm.startSafetyChecklist()">
+                        <i data-lucide="clipboard-check"></i>
+                        {{t('start_checklist')}}
+                    </button>
+                    <div class="challenge-note">
+                        <i data-lucide="shield"></i>
                         {{t('safety_awareness_program')}}
                     </div>
                 </div>
             </div>
 
-            <!-- PARTICIPATION SCORE -->
-            <div class="card participation-card">
-                <h3>{{t('your_civic_participation')}}</h3>
-                <div class="part-stats">
-                    <div class="stat">
-                        <strong>120</strong>
-                        <span>{{t('points_earned')}}</span>
-                    </div>
-                    <div class="stat">
-                        <strong>{{t('top')}} 15%</strong>
-                        <span>{{t('in_ward')}}</span>
-                    </div>
-                    <div class="badges">
-                        <span class="badge-icon" title="{{t('grid_supporter')}}">🗼</span>
-                        <span class="badge-icon" title="{{t('water_steward')}}">💧</span>
+            <!-- Active Challenges -->
+            <div class="enhanced-card active-challenges" ng-if="vm.activeChallenges.length > 0">
+                <h3>
+                    <i data-lucide="trophy"></i>
+                    {{t('your_active_challenges')}}
+                </h3>
+                <div class="active-challenge-list">
+                    <div class="active-challenge-item" ng-repeat="challenge in vm.activeChallenges">
+                        <div class="challenge-icon-sm" ng-class="challenge.type">
+                            <i ng-attr-data-lucide="{{challenge.icon}}"></i>
+                        </div>
+                        <div class="challenge-details">
+                            <strong ng-bind="challenge.name"></strong>
+                            <div class="mini-progress">
+                                <div class="mini-progress-bar" ng-style="{width: challenge.progress + '%'}"></div>
+                            </div>
+                        </div>
+                        <div class="challenge-status">
+                            <span class="status-text" ng-bind="challenge.daysLeft + ' ' + t('days_left')"></span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- SECTION 4: ADVISORIES -->
-        <div id="advisories" class="com-section" ng-show="vm.activeSection === 'advisories'">
-            <div class="section-header">
-                <h1>{{t('advisories_announcements')}}</h1>
-                <p>{{t('official_communication')}}</p>
+        <!-- SECTION 3: ADVISORIES -->
+        <div id="advisories" class="community-section" ng-show="vm.activeSection === 'advisories'">
+            
+            <div class="advisory-filters">
+                <button class="filter-chip" ng-class="{active: vm.advisoryFilter === 'all'}" ng-click="vm.filterAdvisories('all')">
+                    {{t('all')}}
+                </button>
+                <button class="filter-chip" ng-class="{active: vm.advisoryFilter === 'electricity'}" ng-click="vm.filterAdvisories('electricity')">
+                    <i data-lucide="zap"></i>
+                    {{t('electricity')}}
+                </button>
+                <button class="filter-chip" ng-class="{active: vm.advisoryFilter === 'water'}" ng-click="vm.filterAdvisories('water')">
+                    <i data-lucide="droplet"></i>
+                    {{t('water')}}
+                </button>
+                <button class="filter-chip" ng-class="{active: vm.advisoryFilter === 'gas'}" ng-click="vm.filterAdvisories('gas')">
+                    <i data-lucide="flame"></i>
+                    {{t('gas')}}
+                </button>
             </div>
+
             <div class="advisory-list">
-                <div class="card advisory-card">
-                    <div class="adv-header">
-                        <span class="adv-auth">{{t('issued_by')}}: BRPL</span>
-                        <span class="adv-date">{{t('valid_till')}}: 20 Jan</span>
+                <div class="enhanced-card advisory-card urgent" ng-repeat="advisory in vm.filteredAdvisories | limitTo:5">
+                    <div class="advisory-tag" ng-class="advisory.priority">
+                        <i data-lucide="alert-triangle" ng-if="advisory.priority === 'urgent'"></i>
+                        <i data-lucide="info" ng-if="advisory.priority === 'info'"></i>
+                        <span ng-bind="advisory.priority"></span>
                     </div>
-                    <h3>⚠️ {{t('planned_maintenance')}}</h3>
-                    <p>{{t('transformer_upgrade_work')}}</p>
-                    <div class="adv-footer">{{t('affected_area')}}: Block C, Kalkaji</div>
-                </div>
-                <div class="card advisory-card">
-                    <div class="adv-header">
-                        <span class="adv-auth">{{t('issued_by')}}: DJB</span>
-                        <span class="adv-date">{{t('seasonal')}}</span>
+                    <div class="advisory-header">
+                        <div class="advisory-title-row">
+                            <div class="utility-icon" ng-class="advisory.utility">
+                                <i ng-attr-data-lucide="{{advisory.utilityIcon}}"></i>
+                            </div>
+                            <h3 ng-bind="advisory.title"></h3>
+                        </div>
+                        <div class="advisory-meta">
+                            <span class="advisory-source">
+                                <i data-lucide="building"></i>
+                                {{t('issued_by')}}: <strong ng-bind="advisory.issuedBy"></strong>
+                            </span>
+                            <span class="advisory-date">
+                                <i data-lucide="calendar"></i>
+                                <span ng-bind="advisory.validTill"></span>
+                            </span>
+                        </div>
                     </div>
-                    <h3>ℹ️ {{t('winter_water_supply')}}</h3>
-                    <p>{{t('morning_supply_hours')}}</p>
+                    <p class="advisory-description" ng-bind="advisory.description"></p>
+                    <div class="advisory-footer">
+                        <div class="affected-area">
+                            <i data-lucide="map-pin"></i>
+                            {{t('affected_area')}}: <span ng-bind="advisory.affectedArea"></span>
+                        </div>
+                        <button class="btn-text" ng-click="vm.viewAdvisoryDetails(advisory)">
+                            {{t('view_details')}}
+                            <i data-lucide="arrow-right"></i>
+                        </button>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" ng-if="vm.filteredAdvisories.length === 0">
+                <i data-lucide="inbox"></i>
+                <p>{{t('no_advisories_found')}}</p>
             </div>
         </div>
 
-        <!-- SECTION 5: ACTIVITY -->
-        <div id="activity" class="com-section" ng-show="vm.activeSection === 'activity'">
-            <div class="section-header">
-                <h1>{{t('community_activity')}}</h1>
-                <p>{{t('anonymous_feed_civic')}}</p>
+        <!-- SECTION 4: ACTIVITY FEED -->
+        <div id="activity" class="community-section" ng-show="vm.activeSection === 'activity'">
+            
+            <div class="enhanced-card">
+                <h3>
+                    <i data-lucide="activity"></i>
+                    {{t('community_activity')}}
+                </h3>
+                <p class="section-desc">{{t('anonymous_feed_civic')}}</p>
             </div>
-            <div class="activity-feed">
-                <div class="feed-item">
-                    <span class="feed-icon">👥</span>
-                    <p>38 {{t('households_participated')}} "{{t('peak_hour_saver')}}" {{t('yesterday')}}.</p>
+
+            <div class="activity-timeline">
+                <div class="activity-item" ng-repeat="activity in vm.activityFeed">
+                    <div class="activity-icon" ng-class="activity.type">
+                        <i ng-attr-data-lucide="{{activity.icon}}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <p ng-bind-html="activity.message"></p>
+                        <div class="activity-meta">
+                            <span class="activity-time" ng-bind="activity.timeAgo"></span>
+                            <span class="activity-location" ng-if="activity.location">
+                                <i data-lucide="map-pin"></i>
+                                <span ng-bind="activity.location"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="activity-actions" ng-if="activity.actionable">
+                        <button class="btn-icon" ng-click="vm.likeActivity(activity)" title="{{t('helpful')}}">
+                            <i data-lucide="thumbs-up"></i>
+                            <span ng-bind="activity.likes" ng-if="activity.likes > 0"></span>
+                        </button>
+                    </div>
                 </div>
-                <div class="feed-item">
-                    <span class="feed-icon">🔧</span>
-                    <p>12 {{t('public_water_leaks')}}.</p>
-                </div>
-                <div class="feed-item">
-                    <span class="feed-icon">⚡</span>
-                    <p>5 {{t('outages_resolved_faster')}}.</p>
-                </div>
+            </div>
+
+            <!-- Load More -->
+            <div class="load-more-section" ng-if="vm.hasMoreActivity">
+                <button class="btn btn-secondary" ng-click="vm.loadMoreActivity()">
+                    <i data-lucide="refresh-cw"></i>
+                    {{t('load_more')}}
+                </button>
             </div>
         </div>
 
-        <!-- SECTION 6: INSIGHTS -->
-        <div id="insights" class="com-section" ng-show="vm.activeSection === 'insights'">
-            <div class="section-header">
-                <h1>{{t('ward_insights')}}</h1>
-                <p>{{t('comparison_ward_city')}}</p>
+        <!-- SECTION 5: INSIGHTS -->
+        <div id="insights" class="community-section" ng-show="vm.activeSection === 'insights'">
+            
+            <!-- Comparison Table -->
+            <div class="enhanced-card comparison-table-card">
+                <div class="card-header-with-actions">
+                    <div>
+                        <h3>{{t('comparison_ward_city')}}</h3>
+                        <p>{{t('how_insights_calculated')}}</p>
+                    </div>
+                    <button class="btn-icon" ng-click="vm.exportInsights()" title="{{t('export_data')}}">
+                        <i data-lucide="download"></i>
+                    </button>
+                </div>
+                <div class="comparison-table-wrapper">
+                    <table class="enhanced-table">
+                        <thead>
+                            <tr>
+                                <th>{{t('metric')}}</th>
+                                <th>
+                                    <div class="th-content">
+                                        <i data-lucide="home"></i>
+                                        <span ng-bind="vm.selectedWard"></span>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="th-content">
+                                        <i data-lucide="building"></i>
+                                        {{t('south_delhi_zone')}}
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="th-content">
+                                        <i data-lucide="map"></i>
+                                        {{t('delhi_city')}}
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="metric in vm.comparisonMetrics">
+                                <td class="metric-name">
+                                    <i ng-attr-data-lucide="{{metric.icon}}"></i>
+                                    <span ng-bind="metric.name"></span>
+                                </td>
+                                <td>
+                                    <strong ng-bind="metric.ward"></strong>
+                                    <span class="trend-indicator" ng-class="metric.wardTrend" ng-if="metric.wardTrend">
+                                        <i data-lucide="trending-up" ng-if="metric.wardTrend === 'up'"></i>
+                                        <i data-lucide="trending-down" ng-if="metric.wardTrend === 'down'"></i>
+                                    </span>
+                                </td>
+                                <td ng-bind="metric.zone"></td>
+                                <td ng-bind="metric.city"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="card insight-table-card">
-                <h3>{{t('comparison_ward_city')}}</h3>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>{{t('metric')}}</th>
-                            <th>Kalkaji ({{t('ward')}})</th>
-                            <th>{{t('south_delhi_zone')}}</th>
-                            <th>{{t('delhi_city')}}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{{t('avg_electricity_bill')}}</td>
-                            <td>₹ 1,150</td>
-                            <td>₹ 1,300</td>
-                            <td>₹ 1,050</td>
-                        </tr>
-                        <tr>
-                            <td>{{t('water_reliability')}}</td>
-                            <td>92%</td>
-                            <td>88%</td>
-                            <td>85%</td>
-                        </tr>
-                        <tr>
-                            <td>{{t('solar_penetration')}}</td>
-                            <td>14%</td>
-                            <td>10%</td>
-                            <td>8%</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <a href="#" class="link-text">{{t('how_insights_calculated')}}</a>
-            </div>
-        </div>
 
-        <!-- SECTION 7: LEARN -->
-        <div id="learn" class="com-section" ng-show="vm.activeSection === 'learn'">
-            <div class="section-header">
-                <h1>{{t('learn_faqs')}}</h1>
-                <p>{{t('understanding_civic_data')}}</p>
+            <!-- Performance Bars -->
+            <div class="performance-bars-grid">
+                <div class="enhanced-card performance-card">
+                    <h4>
+                        <i data-lucide="zap"></i>
+                        {{t('electricity')}} {{t('performance')}}
+                    </h4>
+                    <div class="performance-bar-item">
+                        <span class="bar-label">{{t('reliability')}}</span>
+                        <div class="performance-bar">
+                            <div class="bar-fill success" style="width: 92%">92%</div>
+                        </div>
+                    </div>
+                    <div class="performance-bar-item">
+                        <span class="bar-label">{{t('peak_load_management')}}</span>
+                        <div class="performance-bar">
+                            <div class="bar-fill warning" style="width: 78%">78%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="enhanced-card performance-card">
+                    <h4>
+                        <i data-lucide="droplet"></i>
+                        {{t('water')}} {{t('performance')}}
+                    </h4>
+                    <div class="performance-bar-item">
+                        <span class="bar-label">{{t('supply_consistency')}}</span>
+                        <div class="performance-bar">
+                            <div class="bar-fill success" style="width: 88%">88%</div>
+                        </div>
+                    </div>
+                    <div class="performance-bar-item">
+                        <span class="bar-label">{{t('quality_index')}}</span>
+                        <div class="performance-bar">
+                            <div class="bar-fill success" style="width: 95%">95%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="enhanced-card performance-card">
+                    <h4>
+                        <i data-lucide="flame"></i>
+                        {{t('gas')}} {{t('performance')}}
+                    </h4>
+                    <div class="performance-bar-item">
+                        <span class="bar-label">{{t('delivery_pressure')}}</span>
+                        <div class="performance-bar">
+                            <div class="bar-fill success" style="width: 85%">85%</div>
+                        </div>
+                    </div>
+                    <div class="performance-bar-item">
+                        <span class="bar-label">{{t('safety_compliance')}}</span>
+                        <div class="performance-bar">
+                            <div class="bar-fill success" style="width: 98%">98%</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card faq-card">
-                <details>
-                    <summary>{{t('how_ward_data_collected')}}</summary>
-                    <p>{{t('data_aggregated_official')}}</p>
-                </details>
-                <details>
-                    <summary>{{t('what_supply_stress_mean')}}</summary>
-                    <p>{{t('indicates_high_demand')}}</p>
-                </details>
-                <details>
-                    <summary>{{t('do_challenges_affect_bill')}}</summary>
-                    <p>{{t('no_challenges_voluntary')}}</p>
-                </details>
+
+            <!-- Insights Cards -->
+            <div class="insights-cards-grid">
+                <div class="enhanced-card insight-card">
+                    <div class="insight-badge positive">
+                        <i data-lucide="trending-up"></i>
+                    </div>
+                    <h4>{{t('improving_metrics')}}</h4>
+                    <ul class="insight-list">
+                        <li>{{t('solar_adoption_up_3_percent')}}</li>
+                        <li>{{t('water_quality_improved')}}</li>
+                        <li>{{t('fewer_power_complaints')}}</li>
+                    </ul>
+                </div>
+
+                <div class="enhanced-card insight-card">
+                    <div class="insight-badge attention">
+                        <i data-lucide="alert-circle"></i>
+                    </div>
+                    <h4>{{t('needs_attention')}}</h4>
+                    <ul class="insight-list">
+                        <li>{{t('peak_hour_stress_increasing')}}</li>
+                        <li>{{t('gas_connection_backlog')}}</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
     </main>
 </div>
+
+<!-- Initialize Lucide Icons -->
+<script>
+    if (typeof lucide !== 'undefined') {
+        setTimeout(function() {
+            lucide.createIcons();
+        }, 100);
+    }
+</script>
