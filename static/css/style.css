@@ -2053,64 +2053,295 @@ textarea.form-control {
 
 .utility-cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-top: 1.5rem;
+    max-width: 100%;
 }
 
 .utility-card {
-    background: var(--bg-card);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    transition: all var(--transition-base);
+}
+
+.utility-card:hover {
+    background: rgba(255, 255, 255, 0.80);
+    box-shadow: 0 12px 40px rgba(31, 38, 135, 0.2), inset 0 0 25px rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(20px) saturate(150%);
 }
 
 .utility-card-header {
-    padding: 1.25rem;
+    padding: 1.5rem;
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    background: var(--gray-50);
+    background: transparent;
+    border-bottom: none;
+}
+
+.utility-card-header h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
 }
 
 .utility-icon {
     width: 40px;
     height: 40px;
-    border-radius: var(--radius-md);
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
-.card-electricity .utility-icon { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
-.card-water .utility-icon { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
-.card-service .utility-icon { background: rgba(16, 185, 129, 0.1); color: #10B981; }
-.card-notification .utility-icon { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
+.card-electricity .utility-icon { background: rgba(245, 158, 11, 0.15); color: #F59E0B; }
+.card-water .utility-icon { background: rgba(59, 130, 246, 0.15); color: #3B82F6; }
+.card-service .utility-icon { background: rgba(16, 185, 129, 0.15); color: #10B981; }
+.card-notification .utility-icon { background: rgba(139, 92, 246, 0.15); color: #8B5CF6; }
 
 .utility-card-body {
-    padding: 1.25rem;
+    padding: 0 1.5rem 1.5rem 1.5rem;
     flex: 1;
 }
 
 .utility-card-footer {
-    padding: 1rem 1.25rem;
-    background: var(--gray-50);
+    padding: 1.25rem 1.5rem;
+    background: transparent;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
     display: flex;
     gap: 0.75rem;
 }
 
 .insights-preview-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    max-width: 1200px;
 }
 
 .insight-card {
-    background: var(--bg-card);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
     padding: 1.5rem;
+    transition: all var(--transition-base);
+}
+
+.insight-card:hover {
+    background: rgba(255, 255, 255, 0.80);
+    box-shadow: 0 12px 40px rgba(31, 38, 135, 0.2), inset 0 0 25px rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(20px) saturate(150%);
+}
+
+.insight-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.insight-header i {
+    width: 20px;
+    height: 20px;
+    color: var(--text-secondary);
+}
+
+.insight-header h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.insight-body {
+    position: relative;
+}
+
+.insight-legend {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    justify-content: flex-start;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.legend-item i {
+    width: 16px;
+    height: 16px;
+}
+
+.legend-electricity i {
+    color: #F59E0B;
+}
+
+.legend-water i {
+    color: #3B82F6;
+}
+
+/* Cost Breakdown Styles */
+.cost-breakdown-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.cost-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+}
+
+.cost-item-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+.cost-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.cost-icon-electricity {
+    color: #F59E0B;
+}
+
+.cost-icon-water {
+    color: #3B82F6;
+}
+
+.cost-icon-gas {
+    color: #EF4444;
+}
+
+.cost-details {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+.cost-label {
+    font-size: 0.9375rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    min-width: 90px;
+}
+
+.cost-amount {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.cost-percentage {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.cost-time {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.cost-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    margin-top: 0.5rem;
+}
+
+.total-label {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.total-amount {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.insight-footer {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.insight-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.insight-link:hover {
+    color: var(--primary-blue);
+}
+
+.insight-link i {
+    width: 16px;
+    height: 16px;
+}
+
+/* Chart Canvas Styling */
+#trendChart {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 200px;
+}
+
+/* Responsive Insights */
+@media (max-width: 1024px) {
+    .insights-preview-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .insight-card {
+        padding: 1.25rem;
+    }
+    
+    .cost-details {
+        flex-wrap: wrap;
+    }
+    
+    .cost-label {
+        min-width: auto;
+    }
 }
 
 /* ============================================
@@ -2320,8 +2551,10 @@ textarea.form-control {
     bottom: 0;
     z-index: 2000;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
+    padding: 2rem 1rem;
+    overflow-y: auto;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
@@ -2343,15 +2576,20 @@ textarea.form-control {
 
 .modal-content {
     position: relative;
+    z-index: 2001;
     background: white;
     border-radius: var(--radius-lg);
     max-width: 500px;
     width: 90%;
-    max-height: 80vh;
+    max-height: auto;
+    min-height: auto;
     overflow-y: auto;
+    overflow-x: hidden;
     box-shadow: var(--shadow-xl);
     transform: scale(0.95);
     transition: transform 0.3s ease;
+    margin: auto;
+    margin-bottom: 2rem;
 }
 
 .utility-modal.active .modal-content {
@@ -2362,14 +2600,14 @@ textarea.form-control {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.5rem;
+    padding: 1.25rem 1.5rem;
     border-bottom: 1px solid var(--border-light);
 }
 
 .modal-title {
     margin: 0;
     font-family: var(--font-heading);
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: var(--font-weight-semibold);
     color: #000000;
 }
@@ -2394,15 +2632,16 @@ textarea.form-control {
 }
 
 .modal-body {
-    padding: 2rem 1.5rem;
+    padding: 1.25rem 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
+    min-height: auto;
 }
 
 .modal-icon {
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2414,17 +2653,17 @@ textarea.form-control {
 .details-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 .detail-item {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.3rem;
 }
 
 .detail-label {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     color: var(--text-secondary);
     font-weight: var(--font-weight-medium);
     text-transform: uppercase;
@@ -2432,7 +2671,7 @@ textarea.form-control {
 }
 
 .detail-value {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: var(--font-weight-semibold);
     color: #000000;
 }
@@ -2440,7 +2679,7 @@ textarea.form-control {
 .modal-footer {
     display: flex;
     gap: 1rem;
-    padding: 1.5rem;
+    padding: 1rem 1.5rem;
     border-top: 1px solid var(--border-light);
     justify-content: flex-end;
 }
@@ -2601,5 +2840,418 @@ textarea.form-control {
         width: 100%;
         max-width: 200px;
         justify-content: center;
+    }
+}
+
+/* ============================================
+   QUICK ACTIONS CARDS - GLASSMORPHISM STYLING
+   ============================================ */
+
+/* Bill Amount Styling */
+.bill-content-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+}
+
+.bill-main-info {
+    flex: 1;
+}
+
+.bill-amount {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.bill-amount .currency {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.bill-amount .amount {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.bill-period {
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    margin: 0 0 1rem 0;
+    font-weight: 500;
+}
+
+.bill-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.bill-details .detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9375rem;
+}
+
+.bill-details .label {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.bill-details .value {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.text-warning {
+    color: #F59E0B;
+    font-weight: 600;
+}
+
+/* Billing Cycle Chart */
+.bill-cycle-chart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#billingCycleChart {
+    width: 140px;
+    height: 140px;
+}
+
+.cycle-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.cycle-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.cycle-value {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Consumption/Usage Stats */
+.consumption-stat {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.card-electricity .stat-icon {
+    background: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
+}
+
+.card-water .stat-icon {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3B82F6;
+}
+
+.stat-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Comparison Bar */
+.comparison-bar {
+    margin-bottom: 1rem;
+}
+
+.comparison-label {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.progress-bar {
+    height: 6px;
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10B981, #059669);
+    border-radius: 3px;
+}
+
+.comparison-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.text-success {
+    color: #10B981;
+}
+
+/* Service Request Summary */
+.request-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+}
+
+.summary-count {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.summary-label {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Recent Request */
+.recent-request {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.request-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.request-id {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.request-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    background: rgba(245, 158, 11, 0.1);
+    color: #F59E0B;
+    text-transform: capitalize;
+}
+
+.request-title {
+    font-size: 0.9375rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    margin: 0;
+}
+
+.request-date {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Notifications */
+.notification-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.notification-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1rem;
+}
+
+.notification-warning .notification-icon {
+    background: rgba(245, 158, 11, 0.15);
+    color: #F59E0B;
+}
+
+.notification-success .notification-icon {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10B981;
+}
+
+.notification-info .notification-icon {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3B82F6;
+}
+
+.notification-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.notification-text {
+    font-size: 0.9375rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    margin: 0;
+}
+
+.notification-time {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+/* Button Styling for Cards */
+.btn-primary-small,
+.btn-outline-small {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: none;
+    text-decoration: none;
+}
+
+.btn-primary-small {
+    background: var(--primary-blue);
+    color: white;
+}
+
+.btn-primary-small:hover {
+    background: var(--primary-blue-dark);
+}
+
+.btn-outline-small {
+    background: transparent;
+    border: 1px solid var(--border-light);
+    color: var(--text-primary);
+}
+
+.btn-outline-small:hover {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: var(--border-medium);
+}
+
+/* Responsive Layout */
+@media (max-width: 1200px) {
+    .utility-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .utility-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .utility-card-header {
+        padding: 1.25rem;
+    }
+    
+    .utility-card-body {
+        padding: 0 1.25rem 1.25rem 1.25rem;
+    }
+    
+    .utility-card-footer {
+        padding: 1rem 1.25rem;
+    }
+    
+    .consumption-stat {
+        grid-template-columns: 1fr;
+    }
+    
+    .bill-amount .amount {
+        font-size: 2.5rem;
+    }
+    
+    .bill-content-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .bill-cycle-chart {
+        align-self: center;
+        margin-top: 1rem;
     }
 }

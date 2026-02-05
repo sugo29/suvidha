@@ -110,14 +110,20 @@
             let animationId = null;
             let hoveredStrand = null;
             
+            // Store strand paths for click detection
+            let strandPaths = [];
+            
             // Draw strand
-            function drawStrand(color, phaseOffset, depthOffset, isHighlighted) {
+            function drawStrand(color, phaseOffset, depthOffset, isHighlighted, strandIndex) {
                 const centerX = canvas.width / 2;
                 const centerY = canvas.height / 2;
                 const horizontalScale = 12;
                 const segments = 80;
                 const radius = helixRadius * 18;
                 const thickness = strandThickness * (isHighlighted ? 14 : 10);
+                
+                // Store points for this strand
+                const points = [];
                 
                 ctx.beginPath();
                 for (let i = 0; i <= segments; i++) {
@@ -130,12 +136,18 @@
                     const projectedX = centerX + x * scale;
                     const projectedY = centerY + y * scale;
                     
+                    // Store point for hit detection
+                    points.push({ x: projectedX, y: projectedY, thickness: thickness });
+                    
                     if (i === 0) {
                         ctx.moveTo(projectedX, projectedY);
                     } else {
                         ctx.lineTo(projectedX, projectedY);
                     }
                 }
+                
+                // Store strand path for click detection
+                strandPaths[strandIndex] = { points: points, utility: strandKeys[strandIndex] };
                 
                 const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
                 const alpha = isHighlighted ? 1 : 0.7;
@@ -197,11 +209,14 @@
                 ctx.fillStyle = 'rgba(249, 250, 251, 0.95)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 
+                // Reset strand paths for new frame
+                strandPaths = [];
+                
                 for (let i = 0; i < strandColors.length; i++) {
                     const phaseOffset = (i / strandColors.length) * Math.PI * 2;
                     const depthOffset = (i - 1) * 12;
                     const isHighlighted = hoveredStrand === strandKeys[i];
-                    drawStrand(strandColors[i], phaseOffset, depthOffset, isHighlighted);
+                    drawStrand(strandColors[i], phaseOffset, depthOffset, isHighlighted, i);
                 }
             }
             
@@ -305,6 +320,72 @@
                 });
             });
             
+            // Canvas click detection - detect which strand was clicked
+            function getClickedStrand(mouseX, mouseY) {
+                let closestStrand = null;
+                let minDistance = Infinity;
+                const hitThreshold = 25; // pixels within strand to register click
+                
+                for (let s = 0; s < strandPaths.length; s++) {
+                    const strand = strandPaths[s];
+                    if (!strand || !strand.points) continue;
+                    
+                    for (let p = 0; p < strand.points.length; p++) {
+                        const point = strand.points[p];
+                        const dx = mouseX - point.x;
+                        const dy = mouseY - point.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < hitThreshold && distance < minDistance) {
+                            minDistance = distance;
+                            closestStrand = strand.utility;
+                        }
+                    }
+                }
+                
+                return closestStrand;
+            }
+            
+            // Canvas click handler
+            canvas.addEventListener('click', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                
+                const clickedUtility = getClickedStrand(mouseX, mouseY);
+                if (clickedUtility && utilityData[clickedUtility]) {
+                    showUtilityModal(clickedUtility, utilityData[clickedUtility]);
+                }
+            });
+            
+            // Canvas hover handler for cursor feedback
+            canvas.addEventListener('mousemove', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                
+                const nearStrand = getClickedStrand(mouseX, mouseY);
+                if (nearStrand) {
+                    canvas.style.cursor = 'pointer';
+                    hoveredStrand = nearStrand;
+                    showTooltip(nearStrand, mouseX, mouseY - 10);
+                } else {
+                    canvas.style.cursor = 'default';
+                    if (hoveredStrand && !document.querySelector('.dna-legend-item:hover')) {
+                        hoveredStrand = null;
+                        hideTooltip();
+                    }
+                }
+            });
+            
+            canvas.addEventListener('mouseleave', function() {
+                canvas.style.cursor = 'default';
+                if (!document.querySelector('.dna-legend-item:hover')) {
+                    hoveredStrand = null;
+                    hideTooltip();
+                }
+            });
+            
             // Modal close handlers
             const modal = document.getElementById('utilityModal');
             const modalClose = document.getElementById('modalClose');
@@ -325,6 +406,148 @@
                     cancelAnimationFrame(animationId);
                 } else {
                     animate();
+                }
+            });
+            
+            // Initialize trend chart
+            $timeout(function() {
+                initializeTrendChart();
+                initializeBillingCycleChart();
+            }, 200);
+        }
+        
+        function initializeBillingCycleChart() {
+            const canvas = document.getElementById('billingCycleChart');
+            if (!canvas || typeof Chart === 'undefined') {
+                console.warn('Billing cycle chart canvas not found or Chart.js not loaded');
+                return;
+            }
+            
+            const ctx = canvas.getContext('2d');
+            const currentDay = 18;
+            const totalDays = 30;
+            const percentage = (currentDay / totalDays) * 100;
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'Remaining'],
+                    datasets: [{
+                        data: [percentage, 100 - percentage],
+                        backgroundColor: [
+                            '#F59E0B', // Yellow/Orange for completed days
+                            'rgba(229, 231, 235, 0.3)' // Light gray for remaining
+                        ],
+                        borderWidth: 0,
+                        cutout: '75%',
+                        rotation: -90
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        function initializeTrendChart() {
+            const canvas = document.getElementById('trendChart');
+            if (!canvas || typeof Chart === 'undefined') {
+                console.warn('Trend chart canvas not found or Chart.js not loaded');
+                return;
+            }
+            
+            const ctx = canvas.getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Mar', 'May', 'Jul', 'Sep', 'Nov'],
+                    datasets: [{
+                        label: 'Electricity',
+                        data: [320, 310, 295, 285, 305, 342],
+                        borderColor: '#F59E0B',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#F59E0B',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }, {
+                        label: 'Water',
+                        data: [18, 17, 16, 14, 15, 15.2],
+                        borderColor: '#3B82F6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#3B82F6',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            cornerRadius: 8,
+                            titleFont: {
+                                size: 13,
+                                weight: '600'
+                            },
+                            bodyFont: {
+                                size: 12
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6B7280',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6B7280',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
                 }
             });
         }
