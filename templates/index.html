@@ -125,10 +125,10 @@
         </div>
     </header>
 
-    <!-- Main Content Wrapper -->
-    <div class="main-wrapper" ng-hide="currentPage == 'auth'">
-        <!-- Top Bar (Secondary) -->
-        <div class="top-bar">
+    <!-- Main Content Wrapper - always present, child elements toggled for auth -->
+    <div class="main-wrapper" ng-class="{'auth-mode': currentPage == 'auth'}">
+        <!-- Top Bar - hidden on auth -->
+        <div class="top-bar" ng-hide="currentPage == 'auth'">
             <div class="top-bar-left">
                 <h2 class="page-title">{{t(currentPage || 'dashboard')}}</h2>
             </div>
@@ -144,16 +144,16 @@
                     </button>
                     <div class="lang-dropdown-menu" id="langDropdownMenu">
                         <a href="#" class="lang-option" ng-class="{active: currentLang == 'en'}" data-lang="en">English</a>
-                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'hi'}" data-lang="hi">हिन्दी (Hindi)</a>
-                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'bn'}" data-lang="bn">বাংলা (Bengali)</a>
-                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'ta'}" data-lang="ta">தமிழ் (Tamil)</a>
-                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'te'}" data-lang="te">తెలుగు (Telugu)</a>
-                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'kn'}" data-lang="kn">ಕನ್ನಡ (Kannada)</a>
-                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'pa'}" data-lang="pa">ਪੰਜਾਬੀ (Punjabi)</a>
-                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'gu'}" data-lang="gu">ગુજરાતી (Gujarati)</a>
-                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'ml'}" data-lang="ml">മലയാളം (Malayalam)</a>
-                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'mr'}" data-lang="mr">मराठી (Marathi)</a>
-                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'or'}" data-lang="or">ଓଡ଼ିଆ (Odia)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'hi'}" data-lang="hi">&#2361;&#2367;&#2344;&#2381;&#2342;&#2368; (Hindi)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'bn'}" data-lang="bn">&#2476;&#2494;&#2434;&#2482;&#2494; (Bengali)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'ta'}" data-lang="ta">&#2980;&#2990;&#2991;&#2996;&#3021; (Tamil)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'te'}" data-lang="te">&#3108;&#3142;&#3122;&#3137;&#3095;&#3137; (Telugu)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'kn'}" data-lang="kn">&#3221;&#3240;&#3277;&#3240;&#3233; (Kannada)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'pa'}" data-lang="pa">&#2602;&#2672;&#2588;&#2622;&#2604;&#2624; (Punjabi)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'gu'}" data-lang="gu">&#2711;&#2753;&#2716;&#2736;&#2750;&#2724;&#2752; (Gujarati)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'ml'}" data-lang="ml">&#3374;&#3378;&#3375;&#3390;&#3379;&#3330; (Malayalam)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'mr'}" data-lang="mr">&#2350;&#2352;&#2366;&#2336;&#2368; (Marathi)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'or'}" data-lang="or">&#2835;&#2849;&#2876;&#2879;&#2822; (Odia)</a>
                     </div>
                 </div>
                 <button class="icon-btn notification-btn" aria-label="{{t('notifications')}}">
@@ -163,8 +163,12 @@
             </div>
         </div>
 
-        <!-- Footer -->
-        <footer class="main-footer">
+        <!-- Main Content Area - Angular Views Load Here -->
+        <main class="main-content" ng-view>
+        </main>
+
+        <!-- Footer - hidden on auth -->
+        <footer class="main-footer" ng-hide="currentPage == 'auth'">
             <div class="footer-content">
                 <div class="footer-links">
                     <a href="#">{{t('privacy_policy')}}</a>
@@ -174,15 +178,11 @@
                 </div>
                 <div class="footer-info">
                     <p>{{t('govt_of_nct')}}</p>
-                    <p class="footer-copyright">© 2026 All Rights Reserved</p>
+                    <p class="footer-copyright">&copy; 2026 All Rights Reserved</p>
                 </div>
             </div>
         </footer>
     </div>
-
-    <!-- Main Content Area - Angular Views Load Here (outside main-wrapper for auth) -->
-    <main class="main-content" ng-view>
-    </main>
 
     <!-- Modal Container -->
     <div id="policyModal" class="modal-overlay" style="display: none;">

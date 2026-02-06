@@ -55,18 +55,11 @@ angular.module('suvidhaApp')
          * @returns {Promise}
          */
         this.logout = function() {
-            return $http.post('/api/auth/logout')
-                .then(function(response) {
-                    currentUser = null;
-                    localStorage.removeItem('authToken');
-                    return response.data;
-                })
-                .catch(function(error) {
-                    // Still clear local data even if server request fails
-                    currentUser = null;
-                    localStorage.removeItem('authToken');
-                    return $q.reject(error);
-                });
+            // Clear local data immediately (no backend needed for now)
+            currentUser = null;
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('suvidhaUser');
+            return $q.resolve({ message: 'Logged out successfully' });
         };
         
         /**
