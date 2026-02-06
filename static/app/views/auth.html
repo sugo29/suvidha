@@ -272,16 +272,16 @@
                                required>
                     </div>
                     
-                     <div class="form-nav" style="display: flex !important; justify-content: space-between; margin-top: 1rem;">
+                    <div class="form-nav">
                         <button type="button" 
                                 class="secondary-btn" 
                                 ng-click="goToStep(3)">
-                            Back
+                            {{ 'auth.back' | translate }}
                         </button>
                         <button type="button" 
                                 class="primary-btn" 
                                 ng-click="continueToStep5()">
-                            Continue
+                            {{ 'auth.continue' | translate }}
                         </button>
                     </div>
                 </div>
