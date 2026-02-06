@@ -286,7 +286,18 @@
       "enable_alerts": "Enable SMS / App Alerts",
       "create_my_account": "Create My Account",
       "creating_account": "Creating Account...",
-      "already_have_account": "Already have an account? Log in"
+      "already_have_account": "Already have an account? Log in",
+      "back_to_home": "Back to Home"
+    },
+    "landing": {
+      "welcome": "Welcome to Suvidha",
+      "tagline": "Manage Your Utilities Smartly",
+      "subtitle": "Track bills, manage connections, and get personalized insights for your utilities - all in one place",
+      "feature1": "Track All Bills in One Place",
+      "feature2": "Get Cost-Saving Tips",
+      "feature3": "Secure Your Account",
+      "login": "Log In",
+      "create_account": "Create Account"
     }
   },
   "hi": {
@@ -576,10 +587,18 @@
       "enable_alerts": "SMS / ऐप अलर्ट सक्षम करें",
       "create_my_account": "मेरा खाता बनाएं",
       "creating_account": "खाता बनाया जा रहा है...",
-      "already_have_account": "पहले से खाता है? लॉग इन करें"
-    }
-  },
-  "bn": {
+      "already_have_account": "पहले से खाता है? लॉग इन करें",
+      "back_to_home": "होम पर वापस जाएं"
+    },
+    "landing": {
+      "welcome": "Suvidha में आपका स्वागत है",
+      "tagline": "अपनी उपयोगिताओं को स्मार्ट तरीके से प्रबंधित करें",
+      "subtitle": "एक ही स्थान पर बिल ट्रैक करें, कनेक्शन प्रबंधित करें, और अपनी उपयोगिताओं के लिए व्यक्तिगत सुझाव प्राप्त करें",
+      "feature1": "सभी बिल एक ही स्थान पर ट्रैक करें",
+      "feature2": "लागत-बचत सुझाव प्राप्त करें",
+      "feature3": "अपने खाते को सुरक्षित रखें",
+      "login": "लॉग इन करें",
+      "create_account": "खाता बनाएं"
     "app_name": "সুবিধা",
     "tagline": "সরকারি সেবা পোর্টাল",
     "dashboard": "ড্যাশবোর্ড",

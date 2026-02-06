@@ -1,0 +1,63 @@
+<div class="landing-container">
+    <!-- Hero Section -->
+    <div class="landing-hero">
+        <div class="hero-content">
+            <div class="logo-section">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-city"></i>
+                    </div>
+                    <div class="logo-text">Suvidha</div>
+                </div>
+                <p class="tagline">{{ 'landing.tagline' | translate }}</p>
+            </div>
+            
+            <div class="hero-text">
+                <h1 class="hero-title">{{ 'landing.title' | translate }}</h1>
+                <p class="hero-subtitle">{{ 'landing.subtitle' | translate }}</p>
+                
+                <div class="features-list">
+                    <div class="feature-item">
+                        <i class="fas fa-bolt"></i>
+                        <span>{{ 'landing.feature1' | translate }}</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>{{ 'landing.feature2' | translate }}</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>{{ 'landing.feature3' | translate }}</span>
+                    </div>
+                </div>
+                
+                <div class="cta-buttons">
+                    <button class="primary-btn" 
+                            ng-click="goToSignup()">
+                        {{ 'landing.create_account' | translate }}
+                    </button>
+                    <button class="secondary-btn" 
+                            ng-click="goToLogin()">
+                        {{ 'landing.login' | translate }}
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hero-image">
+            <div class="illustration">
+                <i class="fas fa-tasks"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <button class="lang-btn" 
+                ng-class="{active: currentLang === 'en'}"
+                ng-click="setLanguage('en')">EN</button>
+        <button class="lang-btn" 
+                ng-class="{active: currentLang === 'hi'}"
+                ng-click="setLanguage('hi')">हिंदी</button>
+    </div>
+</div>

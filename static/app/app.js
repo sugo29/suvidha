@@ -73,7 +73,7 @@
             // $locationProvider.html5Mode(true);
         }])
         .run(['$rootScope', '$location', 'TranslationService', 'AuthService', function($rootScope, $location, TranslationService, AuthService) {
-            // Initialize translation service
+            // Initialize translation service immediately
             TranslationService.init();
 
             // Set current language
@@ -81,7 +81,8 @@
             
             // Translation function
             $rootScope.t = function(key) {
-                return TranslationService.translate(key);
+                var result = TranslationService.translate(key);
+                return result;
             };
 
             // Logout function

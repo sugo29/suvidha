@@ -1,6 +1,6 @@
-<div class="auth-container">
+<div class="auth-container" ng-cloak>
     <!-- Language Selector -->
-    <div class="language-selector">
+    <div class="language-selector" ng-show="translationsReady">
         <button class="lang-btn" 
                 ng-class="{active: currentLang === 'en'}"
                 ng-click="setLanguage('en')">EN</button>
@@ -9,8 +9,14 @@
                 ng-click="setLanguage('hi')">हिंदी</button>
     </div>
 
-    <!-- Login Page -->
-    <div class="container" ng-show="showLogin">
+    <!-- Loading indicator -->
+    <div ng-hide="translationsReady" style="text-align: center; padding: 100px 20px; color: #666;">
+        <i class="fas fa-spinner fa-spin fa-2x"></i>
+        <p style="margin-top: 20px;">Loading...</p>
+    </div>
+
+    <!-- Landing Page -->
+    <div class="container" ng-show="currentView === 'landing' && translationsReady">
         <div class="logo">
             <div class="logo-icon">
                 <i class="fas fa-city fa-lg"></i>
@@ -19,8 +25,51 @@
         </div>
         
         <div class="glass-card">
-            <h1 class="page-title">{{ 'auth.welcome_back' | translate }}</h1>
-            <p class="page-subtitle">{{ 'auth.login_subtitle' | translate }}</p>
+            <h1 class="page-title">{{t('landing.welcome')}}</h1>
+            <p class="page-subtitle">{{t('landing.subtitle')}}</p>
+            
+            <div class="features-list">
+                <div class="feature-item">
+                    <i class="fas fa-bolt"></i>
+                    <span>{{t('landing.feature1')}}</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>{{t('landing.feature2')}}</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>{{t('landing.feature3')}}</span>
+                </div>
+            </div>
+            
+            <div class="form-nav">
+                <button type="button" 
+                        class="secondary-btn" 
+                        ng-click="setCurrentView('login')">
+                    {{t('landing.login')}}
+                </button>
+                <button type="button" 
+                        class="primary-btn" 
+                        ng-click="setCurrentView('signup')">
+                    {{t('landing.create_account')}}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Page -->
+    <div class="container" ng-show="currentView === 'login' && translationsReady">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-city fa-lg"></i>
+            </div>
+            <div class="logo-text">Suvidha</div>
+        </div>
+        
+        <div class="glass-card">
+            <h1 class="page-title">{{t('auth.welcome_back')}}</h1>
+            <p class="page-subtitle">{{t('auth.login_subtitle')}}</p>
             
             <form ng-submit="login()" name="loginForm">
                 <div class="form-group">
@@ -28,7 +77,7 @@
                         <i class="input-icon fas fa-user"></i>
                         <input type="text" 
                                ng-model="loginData.identifier"
-                               placeholder="{{ 'auth.email_or_phone' | translate }}" 
+                               placeholder="{{t('auth.email_or_phone')}}" 
                                required>
                     </div>
                 </div>
@@ -38,7 +87,7 @@
                         <i class="input-icon fas fa-lock"></i>
                         <input type="password" 
                                ng-model="loginData.password"
-                               placeholder="{{ 'auth.password' | translate }}" 
+                               placeholder="{{t('auth.password')}}" 
                                required>
                     </div>
                 </div>
@@ -46,27 +95,34 @@
                 <button type="submit" 
                         class="primary-btn" 
                         ng-disabled="isLoggingIn || loginForm.$invalid">
-                    {{ isLoggingIn ? ('auth.logging_in' | translate) : ('auth.login' | translate) }}
+                    {{isLoggingIn ? t('auth.logging_in') : t('auth.login')}}
                 </button>
                 
                 <div class="links-container">
                     <a href="javascript:void(0)" 
                        class="secondary-link" 
                        ng-click="forgotPassword()">
-                        {{ 'auth.forgot_password' | translate }}
+                        {{t('auth.forgot_password')}}
                     </a>
                     <a href="javascript:void(0)" 
                        class="secondary-link" 
-                       ng-click="goToSignup()">
-                        {{ 'auth.create_account' | translate }}
+                       ng-click="setCurrentView('signup')">
+                        {{t('auth.create_account')}}
                     </a>
                 </div>
             </form>
+            
+            <div class="back-link">
+                <a href="javascript:void(0)" 
+                   ng-click="setCurrentView('landing')">
+                    ← {{t('auth.back_to_home')}}
+                </a>
+            </div>
         </div>
     </div>
 
     <!-- Signup Page -->
-    <div class="container signup-container" ng-show="!showLogin">
+    <div class="container signup-container" ng-show="currentView === 'signup' && translationsReady">
         <div class="logo">
             <div class="logo-icon">
                 <i class="fas fa-user-plus fa-lg"></i>
@@ -85,32 +141,32 @@
                 <div class="step" 
                      ng-class="{active: isStepActive(1), completed: isStepCompleted(1)}">
                     <div class="step-circle">1</div>
-                    <div class="step-label">{{ 'auth.identity' | translate }}</div>
+                    <div class="step-label">{{t('auth.identity')}}</div>
                 </div>
                 <div class="step" 
                      ng-class="{active: isStepActive(2), completed: isStepCompleted(2)}">
                     <div class="step-circle">2</div>
-                    <div class="step-label">{{ 'auth.contact' | translate }}</div>
+                    <div class="step-label">{{t('auth.contact')}}</div>
                 </div>
                 <div class="step" 
                      ng-class="{active: isStepActive(3), completed: isStepCompleted(3)}">
                     <div class="step-circle">3</div>
-                    <div class="step-label">{{ 'auth.govt_id' | translate }}</div>
+                    <div class="step-label">{{t('auth.govt_id')}}</div>
                 </div>
                 <div class="step" 
                      ng-class="{active: isStepActive(4), completed: isStepCompleted(4)}">
                     <div class="step-circle">4</div>
-                    <div class="step-label">{{ 'auth.location' | translate }}</div>
+                    <div class="step-label">{{t('auth.location')}}</div>
                 </div>
                 <div class="step" 
                      ng-class="{active: isStepActive(5), completed: isStepCompleted(5)}">
                     <div class="step-circle">5</div>
-                    <div class="step-label">{{ 'auth.services' | translate }}</div>
+                    <div class="step-label">{{t('auth.services')}}</div>
                 </div>
                 <div class="step" 
                      ng-class="{active: isStepActive(6), completed: isStepCompleted(6)}">
                     <div class="step-circle">6</div>
-                    <div class="step-label">{{ 'auth.security' | translate }}</div>
+                    <div class="step-label">{{t('auth.security')}}</div>
                 </div>
             </div>
             
@@ -119,15 +175,15 @@
                 <!-- Step 1: Identity & Language -->
                 <div class="form-step" 
                      ng-class="{active: isStepActive(1), previous: currentStep > 1}">
-                    <h2 class="page-title">{{ 'auth.personal_info' | translate }}</h2>
-                    <p class="page-subtitle">{{ 'auth.personal_info_subtitle' | translate }}</p>
+                    <h2 class="page-title">{{t('auth.personal_info')}}</h2>
+                    <p class="page-subtitle">{{t('auth.personal_info_subtitle')}}</p>
                     
                     <div class="form-group">
                         <div class="input-with-icon">
                             <i class="input-icon fas fa-user"></i>
                             <input type="text" 
                                    ng-model="signupData.fullName"
-                                   placeholder="{{ 'auth.full_name' | translate }}" 
+                                   placeholder="{{t('auth.full_name')}}" 
                                    required>
                         </div>
                     </div>
@@ -136,12 +192,12 @@
                         <div class="input-with-icon">
                             <i class="input-icon fas fa-globe"></i>
                             <select ng-model="signupData.language" required>
-                                <option value="" disabled>{{ 'auth.preferred_language' | translate }}</option>
+                                <option value="" disabled>{{t('auth.preferred_language')}}</option>
                                 <option ng-repeat="lang in languages" 
                                         value="{{lang.value}}">{{lang.label}}</option>
                             </select>
                         </div>
-                        <p class="microcopy">{{ 'auth.language_helper' | translate }}</p>
+                        <p class="microcopy">{{t('auth.language_helper')}}</p>
                     </div>
                     
                     <div class="form-nav">
@@ -149,7 +205,7 @@
                         <button type="button" 
                                 class="primary-btn" 
                                 ng-click="continueToStep2()">
-                            {{ 'auth.continue' | translate }}
+                            {{t('auth.continue')}}
                         </button>
                     </div>
                 </div>
@@ -157,15 +213,15 @@
                 <!-- Step 2: Contact Information -->
                 <div class="form-step" 
                      ng-class="{active: isStepActive(2), previous: currentStep > 2}">
-                    <h2 class="page-title">{{ 'auth.contact_info' | translate }}</h2>
-                    <p class="page-subtitle">{{ 'auth.contact_info_subtitle' | translate }}</p>
+                    <h2 class="page-title">{{t('auth.contact_info')}}</h2>
+                    <p class="page-subtitle">{{t('auth.contact_info_subtitle')}}</p>
                     
                     <div class="form-group">
                         <div class="input-with-icon">
                             <i class="input-icon fas fa-envelope"></i>
                             <input type="email" 
                                    ng-model="signupData.email"
-                                   placeholder="{{ 'auth.email_address' | translate }}" 
+                                   placeholder="{{t('auth.email_address')}}" 
                                    required>
                         </div>
                     </div>
@@ -175,22 +231,22 @@
                             <i class="input-icon fas fa-phone"></i>
                             <input type="tel" 
                                    ng-model="signupData.phone"
-                                   placeholder="{{ 'auth.phone_number' | translate }}" 
+                                   placeholder="{{t('auth.phone_number')}}" 
                                    required>
                         </div>
-                        <p class="microcopy">{{ 'auth.otp_helper' | translate }}</p>
+                        <p class="microcopy">{{t('auth.otp_helper')}}</p>
                     </div>
                     
                     <div class="form-nav">
                         <button type="button" 
                                 class="secondary-btn" 
                                 ng-click="goToStep(1)">
-                            {{ 'auth.back' | translate }}
+                            {{t('auth.back')}}
                         </button>
                         <button type="button" 
                                 class="primary-btn" 
                                 ng-click="continueToStep3()">
-                            {{ 'auth.continue' | translate }}
+                            {{t('auth.continue')}}
                         </button>
                     </div>
                 </div>
@@ -198,8 +254,8 @@
                 <!-- Step 3: Government Identity -->
                 <div class="form-step" 
                      ng-class="{active: isStepActive(3), previous: currentStep > 3}">
-                    <h2 class="page-title">{{ 'auth.govt_id_optional' | translate }}</h2>
-                    <p class="page-subtitle">{{ 'auth.govt_id_subtitle' | translate }}</p>
+                    <h2 class="page-title">{{t('auth.govt_id_optional')}}</h2>
+                    <p class="page-subtitle">{{t('auth.govt_id_subtitle')}}</p>
                     
                     <div class="form-group">
                         <div class="input-with-icon">
@@ -211,26 +267,26 @@
                                    placeholder="XXXX-XXXX-XXXX" 
                                    maxlength="14">
                         </div>
-                        <p class="microcopy">{{ 'auth.aadhaar_helper' | translate }}</p>
+                        <p class="microcopy">{{t('auth.aadhaar_helper')}}</p>
                     </div>
                     
                     <div class="checkbox-container">
                         <input type="checkbox" 
                                id="consent" 
                                ng-model="signupData.consent">
-                        <label for="consent">{{ 'auth.aadhaar_consent' | translate }}</label>
+                        <label for="consent">{{t('auth.aadhaar_consent')}}</label>
                     </div>
                     
                     <div class="form-nav">
                         <button type="button" 
                                 class="secondary-btn" 
                                 ng-click="goToStep(2)">
-                            {{ 'auth.back' | translate }}
+                            {{t('auth.back')}}
                         </button>
                         <button type="button" 
                                 class="primary-btn" 
                                 ng-click="continueToStep4()">
-                            {{ 'auth.continue' | translate }}
+                            {{t('auth.continue')}}
                         </button>
                     </div>
                 </div>
@@ -238,12 +294,12 @@
                 <!-- Step 4: Location Details -->
                 <div class="form-step" 
                      ng-class="{active: isStepActive(4), previous: currentStep > 4}">
-                    <h2 class="page-title">{{ 'auth.location_details' | translate }}</h2>
-                    <p class="page-subtitle">{{ 'auth.location_subtitle' | translate }}</p>
+                    <h2 class="page-title">{{t('auth.location_details')}}</h2>
+                    <p class="page-subtitle">{{t('auth.location_subtitle')}}</p>
                     
                     <div class="form-group">
                         <select ng-model="signupData.state" required>
-                            <option value="" disabled>{{ 'auth.state' | translate }}</option>
+                            <option value="" disabled>{{t('auth.state')}}</option>
                             <option ng-repeat="state in states" 
                                     value="{{state.value}}">{{state.label}}</option>
                         </select>
@@ -251,7 +307,7 @@
                     
                     <div class="form-group">
                         <select ng-model="signupData.city" required>
-                            <option value="" disabled>{{ 'auth.city' | translate }}</option>
+                            <option value="" disabled>{{t('auth.city')}}</option>
                             <option ng-repeat="city in cities" 
                                     value="{{city.value}}">{{city.label}}</option>
                         </select>
@@ -259,7 +315,7 @@
                     
                     <div class="form-group">
                         <select ng-model="signupData.ward" required>
-                            <option value="" disabled>{{ 'auth.ward' | translate }}</option>
+                            <option value="" disabled>{{t('auth.ward')}}</option>
                             <option ng-repeat="ward in wards" 
                                     value="{{ward.value}}">{{ward.label}}</option>
                         </select>
@@ -268,7 +324,7 @@
                     <div class="form-group">
                         <input type="text" 
                                ng-model="signupData.locality"
-                               placeholder="{{ 'auth.locality' | translate }}" 
+                               placeholder="{{t('auth.locality')}}" 
                                required>
                     </div>
                     
@@ -276,12 +332,12 @@
                         <button type="button" 
                                 class="secondary-btn" 
                                 ng-click="goToStep(3)">
-                            {{ 'auth.back' | translate }}
+                            {{t('auth.back')}}
                         </button>
                         <button type="button" 
                                 class="primary-btn" 
                                 ng-click="continueToStep5()">
-                            {{ 'auth.continue' | translate }}
+                            {{t('auth.continue')}}
                         </button>
                     </div>
                 </div>
@@ -289,12 +345,12 @@
                 <!-- Step 5: Utility Service Providers -->
                 <div class="form-step" 
                      ng-class="{active: isStepActive(5), previous: currentStep > 5}">
-                    <h2 class="page-title">{{ 'auth.utility_providers' | translate }}</h2>
-                    <p class="page-subtitle">{{ 'auth.utility_subtitle' | translate }}</p>
+                    <h2 class="page-title">{{t('auth.utility_providers')}}</h2>
+                    <p class="page-subtitle">{{t('auth.utility_subtitle')}}</p>
                     
                     <div class="form-group">
                         <select ng-model="signupData.electricityProvider" required>
-                            <option value="" disabled>{{ 'auth.electricity_provider' | translate }}</option>
+                            <option value="" disabled>{{t('auth.electricity_provider')}}</option>
                             <option ng-repeat="provider in electricityProviders" 
                                     value="{{provider.value}}">{{provider.label}}</option>
                         </select>
@@ -302,7 +358,7 @@
                     
                     <div class="form-group">
                         <select ng-model="signupData.waterProvider" required>
-                            <option value="" disabled>{{ 'auth.water_provider' | translate }}</option>
+                            <option value="" disabled>{{t('auth.water_provider')}}</option>
                             <option ng-repeat="provider in waterProviders" 
                                     value="{{provider.value}}">{{provider.label}}</option>
                         </select>
@@ -310,24 +366,24 @@
                     
                     <div class="form-group">
                         <select ng-model="signupData.gasProvider" required>
-                            <option value="" disabled>{{ 'auth.gas_service' | translate }}</option>
+                            <option value="" disabled>{{t('auth.gas_service')}}</option>
                             <option ng-repeat="provider in gasProviders" 
                                     value="{{provider.value}}">{{provider.label}}</option>
                         </select>
                     </div>
                     
-                    <p class="microcopy">{{ 'auth.providers_helper' | translate }}</p>
+                    <p class="microcopy">{{t('auth.providers_helper')}}</p>
                     
                     <div class="form-nav">
                         <button type="button" 
                                 class="secondary-btn" 
                                 ng-click="goToStep(4)">
-                            {{ 'auth.back' | translate }}
+                            {{t('auth.back')}}
                         </button>
                         <button type="button" 
                                 class="primary-btn" 
                                 ng-click="continueToStep6()">
-                            {{ 'auth.continue' | translate }}
+                            {{t('auth.continue')}}
                         </button>
                     </div>
                 </div>
@@ -335,15 +391,15 @@
                 <!-- Step 6: Security Setup -->
                 <div class="form-step" 
                      ng-class="{active: isStepActive(6)}">
-                    <h2 class="page-title">{{ 'auth.security_setup' | translate }}</h2>
-                    <p class="page-subtitle">{{ 'auth.security_subtitle' | translate }}</p>
+                    <h2 class="page-title">{{t('auth.security_setup')}}</h2>
+                    <p class="page-subtitle">{{t('auth.security_subtitle')}}</p>
                     
                     <div class="form-group">
                         <div class="input-with-icon">
                             <i class="input-icon fas fa-lock"></i>
                             <input type="password" 
                                    ng-model="signupData.password"
-                                   placeholder="{{ 'auth.create_password' | translate }}" 
+                                   placeholder="{{t('auth.create_password')}}" 
                                    required>
                         </div>
                     </div>
@@ -353,13 +409,13 @@
                             <i class="input-icon fas fa-lock"></i>
                             <input type="password" 
                                    ng-model="signupData.confirmPassword"
-                                   placeholder="{{ 'auth.confirm_password' | translate }}" 
+                                   placeholder="{{t('auth.confirm_password')}}" 
                                    required>
                         </div>
                     </div>
                     
                     <div class="toggle-container">
-                        <span>{{ 'auth.enable_alerts' | translate }}</span>
+                        <span>{{t('auth.enable_alerts')}}</span>
                         <label class="toggle-switch">
                             <input type="checkbox" 
                                    ng-model="signupData.alertsEnabled">
@@ -371,7 +427,7 @@
                         <button type="button" 
                                 class="secondary-btn" 
                                 ng-click="goToStep(5)">
-                            {{ 'auth.back' | translate }}
+                            {{t('auth.back')}}
                         </button>
                         <button type="button" 
                                 class="primary-btn" 
@@ -387,7 +443,7 @@
         <a href="javascript:void(0)" 
            class="secondary-link" 
            ng-click="goToLogin()">
-            {{ 'auth.already_have_account' | translate }}
+            {{t('auth.already_have_account')}}
         </a>
     </div>
 </div>

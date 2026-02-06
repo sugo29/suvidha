@@ -1,11 +1,31 @@
 angular.module('suvidhaApp')
-    .controller('AuthController', ['$scope', '$location', '$rootScope', 'AuthService', 'TranslationService', 
-        function($scope, $location, $rootScope, AuthService, TranslationService) {
+    .controller('AuthController', ['$scope', '$location', '$rootScope', 'AuthService', 'TranslationService', '$timeout',
+        function($scope, $location, $rootScope, AuthService, TranslationService, $timeout) {
+            
+            // Loading state
+            $scope.translationsReady = false;
+            
+            // Ensure translations are loaded
+            TranslationService.initAsync().then(function() {
+                console.log('Translations ready in controller');
+                $scope.translationsReady = true;
+            });
+            
+            // Translate function
+            $scope.t = function(key) {
+                return TranslationService.translate(key);
+            };
+            
+            // Listen for translations loaded event
+            $scope.$on('translationsLoaded', function() {
+                console.log('Translations loaded event received');
+                $scope.translationsReady = true;
+            });
             
             // Current state
+            $scope.currentView = 'landing'; // 'landing', 'login', or 'signup'
             $scope.currentStep = 1;
             $scope.totalSteps = 6;
-            $scope.showLogin = true;
             
             // Language handling
             $scope.currentLang = $rootScope.currentLang || 'en';
@@ -14,6 +34,14 @@ angular.module('suvidhaApp')
                 $scope.currentLang = lang;
                 $rootScope.currentLang = lang;
                 TranslationService.setLanguage(lang);
+            };
+            
+            // View navigation
+            $scope.setCurrentView = function(view) {
+                $scope.currentView = view;
+                if (view === 'signup') {
+                    $scope.currentStep = 1;
+                }
             };
             
             // Form data
@@ -96,13 +124,11 @@ angular.module('suvidhaApp')
             
             // Navigation functions
             $scope.goToSignup = function() {
-                $scope.showLogin = false;
-                $scope.currentStep = 1;
+                $scope.setCurrentView('signup');
             };
             
             $scope.goToLogin = function() {
-                $scope.showLogin = true;
-                $scope.currentStep = 1;
+                $scope.setCurrentView('login');
             };
             
             // Progress calculation
@@ -235,24 +261,27 @@ angular.module('suvidhaApp')
                 
                 $scope.isLoggingIn = true;
                 
-                // For now, simulate login without backend
-                // Accept any credentials for testing
-                var storedUser = localStorage.getItem('suvidhaUser');
-                var mockUser = storedUser ? JSON.parse(storedUser) : {
-                    fullName: 'Test User',
-                    email: $scope.loginData.identifier
-                };
-                
-                localStorage.setItem('authToken', 'mock-token-' + Date.now());
-                
-                // Short delay for UI feedback
-                setTimeout(function() {
-                    $scope.$apply(function() {
+                // Call backend API
+                AuthService.login($scope.loginData)
+                    .then(function(response) {
+                        if (response.success) {
+                            // Store user data
+                            localStorage.setItem('suvidhaUser', JSON.stringify(response.user));
+                            localStorage.setItem('user_id', response.user_id);
+                            
+                            $scope.isLoggingIn = false;
+                            alert('Login successful! Welcome to Suvidha Dashboard.');
+                            $location.path('/dashboard');
+                        } else {
+                            $scope.isLoggingIn = false;
+                            alert(response.message || 'Login failed');
+                        }
+                    })
+                    .catch(function(error) {
                         $scope.isLoggingIn = false;
-                        alert('Login successful! Welcome to Suvidha Dashboard.');
-                        $location.path('/dashboard');
+                        var errorMsg = error.data?.message || 'Login failed. Please check your credentials.';
+                        alert(errorMsg);
                     });
-                }, 500);
             };
             
             $scope.signup = function() {
@@ -262,31 +291,27 @@ angular.module('suvidhaApp')
                 
                 $scope.isCreatingAccount = true;
                 
-                // For now, simulate account creation without backend
-                // Store user data locally and proceed to dashboard
-                var mockUser = {
-                    fullName: $scope.signupData.fullName,
-                    email: $scope.signupData.email,
-                    phone: $scope.signupData.phone,
-                    language: $scope.signupData.language,
-                    state: $scope.signupData.state,
-                    city: $scope.signupData.city,
-                    ward: $scope.signupData.ward,
-                    locality: $scope.signupData.locality
-                };
-                
-                // Store in localStorage for persistence
-                localStorage.setItem('suvidhaUser', JSON.stringify(mockUser));
-                localStorage.setItem('authToken', 'mock-token-' + Date.now());
-                
-                // Short delay for UI feedback
-                setTimeout(function() {
-                    $scope.$apply(function() {
+                // Call backend API with form data
+                AuthService.signup($scope.signupData)
+                    .then(function(response) {
+                        if (response.success) {
+                            // Store user data
+                            localStorage.setItem('suvidhaUser', JSON.stringify(response.user));
+                            localStorage.setItem('user_id', response.user_id);
+                            
+                            $scope.isCreatingAccount = false;
+                            alert('Account created successfully! Welcome to Suvidha Dashboard.');
+                            $location.path('/dashboard');
+                        } else {
+                            $scope.isCreatingAccount = false;
+                            alert(response.message || 'Account creation failed');
+                        }
+                    })
+                    .catch(function(error) {
                         $scope.isCreatingAccount = false;
-                        alert('Account created successfully! Welcome to Suvidha Dashboard.');
-                        $location.path('/dashboard');
+                        var errorMsg = error.data?.message || 'Account creation failed. Please try again.';
+                        alert(errorMsg);
                     });
-                }, 500);
             };
             
             $scope.forgotPassword = function() {
