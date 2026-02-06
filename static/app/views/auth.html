@@ -1,4 +1,4 @@
-<div class="auth-container" ng-controller="AuthController">
+<div class="auth-container">
     <!-- Language Selector -->
     <div class="language-selector">
         <button class="lang-btn" 
@@ -50,12 +50,12 @@
                 </button>
                 
                 <div class="links-container">
-                    <a href="#" 
+                    <a href="javascript:void(0)" 
                        class="secondary-link" 
                        ng-click="forgotPassword()">
                         {{ 'auth.forgot_password' | translate }}
                     </a>
-                    <a href="#" 
+                    <a href="javascript:void(0)" 
                        class="secondary-link" 
                        ng-click="goToSignup()">
                         {{ 'auth.create_account' | translate }}
@@ -272,16 +272,16 @@
                                required>
                     </div>
                     
-                    <div class="form-nav">
+                     <div class="form-nav" style="display: flex !important; justify-content: space-between; margin-top: 1rem;">
                         <button type="button" 
                                 class="secondary-btn" 
                                 ng-click="goToStep(3)">
-                            {{ 'auth.back' | translate }}
+                            Back
                         </button>
                         <button type="button" 
                                 class="primary-btn" 
                                 ng-click="continueToStep5()">
-                            {{ 'auth.continue' | translate }}
+                            Continue
                         </button>
                     </div>
                 </div>
@@ -384,7 +384,7 @@
             </div>
         </div>
         
-        <a href="#" 
+        <a href="javascript:void(0)" 
            class="secondary-link" 
            ng-click="goToLogin()">
             {{ 'auth.already_have_account' | translate }}

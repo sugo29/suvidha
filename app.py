@@ -23,7 +23,9 @@ def index():
 @app.route('/<path:path>')
 def catch_all(path):
     # If it's a static file, serve it normally
-    if path.startswith('static/') or path.startswith('api/'):
+    if path.startswith('static/'):
+        return app.send_static_file(path[7:])
+    elif path.startswith('api/'):
         return app.send_static_file(path)
     # Otherwise, serve index.html for Angular to handle routing
     return render_template('index.html')

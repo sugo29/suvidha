@@ -1,41 +1,53 @@
 // Translation Service
-(function() {
+(function () {
     'use strict';
 
     angular.module('suvidhaApp')
-        .service('TranslationService', ['$http', function($http) {
+        .service('TranslationService', ['$http', function ($http) {
             var self = this;
             self.translations = {};
             self.currentLang = 'en';
 
-            self.init = function() {
+            self.init = function () {
                 // Load translations from JSON file
                 $http.get('/static/translations.json')
-                    .then(function(response) {
+                    .then(function (response) {
                         self.translations = response.data;
                     })
-                    .catch(function() {
+                    .catch(function () {
                         console.warn('Could not load translations');
                     });
             };
 
-            self.translate = function(key) {
-                if (self.translations[self.currentLang] && self.translations[self.currentLang][key]) {
-                    return self.translations[self.currentLang][key];
+            self.translate = function (key) {
+                if (!self.translations[self.currentLang]) {
+                    return key;
                 }
-                return key; // Fallback to key if translation not found
+
+                var keys = key.split('.');
+                var value = self.translations[self.currentLang];
+
+                for (var i = 0; i < keys.length; i++) {
+                    if (value) {
+                        value = value[keys[i]];
+                    } else {
+                        return key;
+                    }
+                }
+
+                return value !== undefined ? value : key;
             };
 
-            self.setLanguage = function(lang) {
+            self.setLanguage = function (lang) {
                 self.currentLang = lang;
             };
 
-            self.getLanguage = function() {
+            self.getLanguage = function () {
                 return self.currentLang;
             };
         }])
-        .filter('translate', ['TranslationService', function(TranslationService) {
-            return function(key) {
+        .filter('translate', ['TranslationService', function (TranslationService) {
+            return function (key) {
                 return TranslationService.translate(key);
             };
         }]);
