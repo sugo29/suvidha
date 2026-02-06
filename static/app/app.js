@@ -5,6 +5,11 @@
     angular.module('suvidhaApp', ['ngRoute', 'ngSanitize'])
         .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
             $routeProvider
+                .when('/auth', {
+                    templateUrl: '/static/app/views/auth.html',
+                    controller: 'AuthController',
+                    controllerAs: 'vm'
+                })
                 .when('/', {
                     templateUrl: '/static/app/views/dashboard.html',
                     controller: 'DashboardController',
