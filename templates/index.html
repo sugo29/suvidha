@@ -36,9 +36,9 @@
     <script src="/static/js/main.js"></script>
     <script src="/static/js/charts.js"></script>
 </head>
-<body>
+<body ng-attr-data-page="{{currentPage}}">
     <!-- Left Sidebar Navigation -->
-    <aside class="sidebar" id="sidebar">
+    <aside class="sidebar" id="sidebar" ng-hide="currentPage == 'auth'">
         <!-- Sidebar Header -->
         <div class="sidebar-header">
             <div class="sidebar-logo">
@@ -99,7 +99,7 @@
                     <span class="user-role">{{t('citizen')}}</span>
                 </div>
             </div>
-            <button class="sidebar-logout" aria-label="Logout">
+            <button class="sidebar-logout" ng-click="logout()" aria-label="Logout">
                 <i data-lucide="log-out"></i>
                 <span class="sidebar-link-text">{{t('logout')}}</span>
             </button>
@@ -107,7 +107,7 @@
     </aside>
 
     <!-- Mobile Header -->
-    <header class="mobile-header">
+    <header class="mobile-header" ng-hide="currentPage == 'auth'">
         <button class="mobile-menu-toggle" id="mobileMenuToggle">
             <i data-lucide="menu"></i>
         </button>
@@ -126,7 +126,7 @@
     </header>
 
     <!-- Main Content Wrapper -->
-    <div class="main-wrapper">
+    <div class="main-wrapper" ng-hide="currentPage == 'auth'">
         <!-- Top Bar (Secondary) -->
         <div class="top-bar">
             <div class="top-bar-left">
@@ -152,7 +152,7 @@
                         <a href="#" class="lang-option" ng-class="{active: currentLang == 'pa'}" data-lang="pa">ਪੰਜਾਬੀ (Punjabi)</a>
                         <a href="#" class="lang-option" ng-class="{active: currentLang == 'gu'}" data-lang="gu">ગુજરાતી (Gujarati)</a>
                         <a href="#" class="lang-option" ng-class="{active: currentLang == 'ml'}" data-lang="ml">മലയാളം (Malayalam)</a>
-                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'mr'}" data-lang="mr">मराठी (Marathi)</a>
+                        <a href="#" class="lang-option" ng-class="{active: currentLang == 'mr'}" data-lang="mr">मराठી (Marathi)</a>
                         <a href="#" class="lang-option" ng-class="{active: currentLang == 'or'}" data-lang="or">ଓଡ଼ିଆ (Odia)</a>
                     </div>
                 </div>
@@ -162,10 +162,6 @@
                 </button>
             </div>
         </div>
-
-        <!-- Main Content Area - Angular Views Load Here -->
-        <main class="main-content" ng-view>
-        </main>
 
         <!-- Footer -->
         <footer class="main-footer">
@@ -183,6 +179,10 @@
             </div>
         </footer>
     </div>
+
+    <!-- Main Content Area - Angular Views Load Here -->
+    <main class="main-content" ng-view>
+    </main>
 
     <!-- Modal Container -->
     <div id="policyModal" class="modal-overlay" style="display: none;">

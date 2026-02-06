@@ -415,9 +415,17 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 0 2rem;
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: var(--sidebar-width);
+    right: 0;
     z-index: 100;
+    transition: left var(--transition-base);
+}
+
+.sidebar.collapsed ~ .main-wrapper .top-bar {
+    left: var(--sidebar-collapsed-width);
+}
     box-shadow: var(--shadow-xs);
 }
 
@@ -578,11 +586,33 @@ body {
 
 /* Main Content */
 .main-content {
-    flex: 1;
+    margin-left: var(--sidebar-width);
+    margin-top: var(--topbar-height);
+    min-height: calc(100vh - var(--topbar-height));
     padding: 2rem;
     max-width: 1400px;
+    width: calc(100% - var(--sidebar-width));
+    transition: all var(--transition-base);
+}
+
+.sidebar.collapsed ~ * .main-content {
+    margin-left: var(--sidebar-collapsed-width);
+    width: calc(100% - var(--sidebar-collapsed-width));
+}
+
+/* Full screen for auth page - when sidebar and top-bar are hidden */
+body[data-page="auth"] .main-content {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
     width: 100%;
-    margin: 0 auto;
+    height: 100vh;
+    overflow: auto;
 }
 
 /* ============================================
@@ -1207,9 +1237,19 @@ body {
         display: none;
     }
     
-    /* Adjust main content padding */
+    /* Adjust main content for mobile */
     .main-content {
+        margin-left: 0;
+        margin-top: var(--mobile-header-height);
+        width: 100%;
+        min-height: calc(100vh - var(--mobile-header-height));
         padding: 1rem;
+    }
+    
+    /* Auth page stays fullscreen on mobile too */
+    body[data-page="auth"] .main-content {
+        margin-top: 0;
+        min-height: 100vh;
     }
     
     /* Dashboard grid to single column */

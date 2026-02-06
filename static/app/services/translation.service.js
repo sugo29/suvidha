@@ -33,5 +33,10 @@
             self.getLanguage = function() {
                 return self.currentLang;
             };
+        }])
+        .filter('translate', ['TranslationService', function(TranslationService) {
+            return function(key) {
+                return TranslationService.translate(key);
+            };
         }]);
 })();

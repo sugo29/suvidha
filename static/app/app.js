@@ -8,61 +8,71 @@
                 .when('/auth', {
                     templateUrl: '/static/app/views/auth.html',
                     controller: 'AuthController',
-                    controllerAs: 'vm'
+                    controllerAs: 'vm',
+                    requireAuth: false
                 })
                 .when('/', {
                     templateUrl: '/static/app/views/dashboard.html',
                     controller: 'DashboardController',
-                    controllerAs: 'vm'
+                    controllerAs: 'vm',
+                    requireAuth: true
                 })
                 .when('/dashboard', {
                     templateUrl: '/static/app/views/dashboard.html',
                     controller: 'DashboardController',
-                    controllerAs: 'vm'
+                    controllerAs: 'vm',
+                    requireAuth: true
                 })
                 .when('/utilities', {
                     templateUrl: '/static/app/views/utilities.html',
                     controller: 'UtilitiesController',
-                    controllerAs: 'vm'
+                    controllerAs: 'vm',
+                    requireAuth: true
                 })
                 .when('/insights', {
                     templateUrl: '/static/app/views/insights.html',
                     controller: 'InsightsController',
-                    controllerAs: 'vm'
+                    controllerAs: 'vm',
+                    requireAuth: true
                 })
                 .when('/simulator', {
                     templateUrl: '/static/app/views/simulator.html',
                     controller: 'SimulatorController',
-                    controllerAs: 'vm'
+                    controllerAs: 'vm',
+                    requireAuth: true
                 })
                 .when('/services', {
                     templateUrl: '/static/app/views/services.html',
                     controller: 'ServicesController',
-                    controllerAs: 'vm'
+                    controllerAs: 'vm',
+                    requireAuth: true
                 })
                 .when('/community', {
                     templateUrl: '/static/app/views/community.html',
                     controller: 'CommunityController',
-                    controllerAs: 'vm'
+                    controllerAs: 'vm',
+                    requireAuth: true
                 })
                 .when('/records', {
                     templateUrl: '/static/app/views/records.html',
                     controller: 'RecordsController',
-                    controllerAs: 'vm'
+                    controllerAs: 'vm',
+                    requireAuth: true
                 })
                 .when('/profile', {
                     templateUrl: '/static/app/views/profile.html',
                     controller: 'ProfileController',
-                    controllerAs: 'vm'
+                    controllerAs: 'vm',
+                    requireAuth: true
                 })
                 .otherwise({
-                    redirectTo: '/'
+                    redirectTo: '/auth'
                 });
 
             // Use HTML5 mode (optional - removes # from URLs)
             // $locationProvider.html5Mode(true);
         }])
-        .run(['$rootScope', '$location', 'TranslationService', function($rootScope, $location, TranslationService) {
+        .run(['$rootScope', '$location', 'TranslationService', 'AuthService', function($rootScope, $location, TranslationService, AuthService) {
             // Initialize translation service
             TranslationService.init();
 
@@ -73,6 +83,32 @@
             $rootScope.t = function(key) {
                 return TranslationService.translate(key);
             };
+
+            // Logout function
+            $rootScope.logout = function() {
+                AuthService.logout()
+                    .then(function() {
+                        $location.path('/auth');
+                    })
+                    .catch(function() {
+                        // Even if logout fails on server, redirect to auth
+                        $location.path('/auth');
+                    });
+            };
+
+            // Authentication check on route change
+            $rootScope.$on('$routeChangeStart', function(event, next) {
+                // Check if route requires authentication
+                if (next.requireAuth && !AuthService.isAuthenticated()) {
+                    // Redirect to login page
+                    event.preventDefault();
+                    $location.path('/auth');
+                } else if (next.$$route && next.$$route.originalPath === '/auth' && AuthService.isAuthenticated()) {
+                    // If already authenticated and trying to access auth page, redirect to dashboard
+                    event.preventDefault();
+                    $location.path('/dashboard');
+                }
+            });
 
             // Track current page for sidebar active state
             $rootScope.$on('$routeChangeSuccess', function() {

@@ -257,32 +257,8 @@ angular.module('suvidhaApp')
                 
                 AuthService.signup($scope.signupData)
                     .then(function(response) {
-                        alert('Account created successfully! Redirecting to dashboard...');
-                        
-                        // Reset form and go back to login
-                        setTimeout(function() {
-                            $scope.$apply(function() {
-                                $scope.goToLogin();
-                                $scope.signupData = {
-                                    fullName: '',
-                                    language: '',
-                                    email: '',
-                                    phone: '',
-                                    aadhaar: '',
-                                    consent: false,
-                                    state: '',
-                                    city: '',
-                                    ward: '',
-                                    locality: '',
-                                    electricityProvider: '',
-                                    waterProvider: '',
-                                    gasProvider: '',
-                                    password: '',
-                                    confirmPassword: '',
-                                    alertsEnabled: true
-                                };
-                            });
-                        }, 1500);
+                        alert('Account created successfully! Welcome to Suvidha Dashboard.');
+                        $location.path('/dashboard');
                     })
                     .catch(function(error) {
                         alert('Account creation failed. Please try again.');
