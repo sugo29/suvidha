@@ -43,7 +43,7 @@
         <div class="sidebar-header">
             <div class="sidebar-logo">
                 <img src="/static/images/emblem.png" alt="Government Emblem" class="sidebar-emblem">
-                <span class="sidebar-title">{{t('app_name')}}</span>
+                <span class="sidebar-title">Suvidha</span>
             </div>
             <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
                 <i data-lucide="panel-left-close"></i>
@@ -53,38 +53,38 @@
         <!-- Global Disclaimer (Moved to Sidebar) -->
         <div class="sidebar-notice">
             <i data-lucide="info" class="notice-icon"></i>
-            <p class="notice-text">{{t('data_notice')}}</p>
+            <p class="notice-text">This data is for demonstration purposes only</p>
         </div>
 
         <!-- Navigation Menu -->
         <nav class="sidebar-nav">
             <a href="#!/" class="sidebar-link" ng-class="{active: currentPage == 'dashboard' || currentPage == ''}">
                 <i data-lucide="layout-dashboard"></i>
-                <span class="sidebar-link-text">{{t('dashboard')}}</span>
+                <span class="sidebar-link-text">Dashboard</span>
             </a>
             <a href="#!/utilities" class="sidebar-link" ng-class="{active: currentPage == 'utilities'}">
                 <i data-lucide="zap"></i>
-                <span class="sidebar-link-text">{{t('utilities')}}</span>
+                <span class="sidebar-link-text">Utilities</span>
             </a>
             <a href="#!/insights" class="sidebar-link" ng-class="{active: currentPage == 'insights'}">
                 <i data-lucide="line-chart"></i>
-                <span class="sidebar-link-text">{{t('insights')}}</span>
+                <span class="sidebar-link-text">Insights</span>
             </a>
             <a href="#!/simulator" class="sidebar-link" ng-class="{active: currentPage == 'simulator'}">
                 <i data-lucide="calculator"></i>
-                <span class="sidebar-link-text">{{t('simulator')}}</span>
+                <span class="sidebar-link-text">Simulator</span>
             </a>
             <a href="#!/services" class="sidebar-link" ng-class="{active: currentPage == 'services'}">
                 <i data-lucide="clipboard-list"></i>
-                <span class="sidebar-link-text">{{t('services')}}</span>
+                <span class="sidebar-link-text">Services</span>
             </a>
             <a href="#!/community" class="sidebar-link" ng-class="{active: currentPage == 'community'}">
                 <i data-lucide="users"></i>
-                <span class="sidebar-link-text">{{t('community')}}</span>
+                <span class="sidebar-link-text">Community</span>
             </a>
             <a href="#!/records" class="sidebar-link" ng-class="{active: currentPage == 'records'}">
                 <i data-lucide="file-text"></i>
-                <span class="sidebar-link-text">{{t('records')}}</span>
+                <span class="sidebar-link-text">Records</span>
             </a>
         </nav>
 
@@ -96,12 +96,12 @@
                 </div>
                 <div class="user-info">
                     <span class="user-name">Suhan Kumar</span>
-                    <span class="user-role">{{t('citizen')}}</span>
+                    <span class="user-role">Citizen</span>
                 </div>
             </div>
             <button class="sidebar-logout" ng-click="logout()" aria-label="Logout">
                 <i data-lucide="log-out"></i>
-                <span class="sidebar-link-text">{{t('logout')}}</span>
+                <span class="sidebar-link-text">Logout</span>
             </button>
         </div>
     </aside>
@@ -113,10 +113,10 @@
         </button>
         <div class="mobile-logo">
             <img src="/static/images/emblem.png" alt="Government Emblem">
-            <span>{{t('app_name')}}</span>
+            <span>Suvidha</span>
         </div>
         <div class="mobile-actions">
-            <button class="icon-btn" aria-label="{{t('notifications')}}">
+            <button class="icon-btn" aria-label="Notifications">
                 <i data-lucide="bell"></i>
             </button>
             <button class="icon-btn lang-toggle-btn" aria-label="{{t('language')}}">

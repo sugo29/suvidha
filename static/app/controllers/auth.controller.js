@@ -1,26 +1,6 @@
 angular.module('suvidhaApp')
-    .controller('AuthController', ['$scope', '$location', '$rootScope', 'AuthService', 'TranslationService', '$timeout',
-        function($scope, $location, $rootScope, AuthService, TranslationService, $timeout) {
-            
-            // Loading state
-            $scope.translationsReady = false;
-            
-            // Ensure translations are loaded
-            TranslationService.initAsync().then(function() {
-                console.log('Translations ready in controller');
-                $scope.translationsReady = true;
-            });
-            
-            // Translate function
-            $scope.t = function(key) {
-                return TranslationService.translate(key);
-            };
-            
-            // Listen for translations loaded event
-            $scope.$on('translationsLoaded', function() {
-                console.log('Translations loaded event received');
-                $scope.translationsReady = true;
-            });
+    .controller('AuthController', ['$scope', '$location', '$rootScope', 'AuthService', '$timeout',
+        function($scope, $location, $rootScope, AuthService, $timeout) {
             
             // Current state
             $scope.currentView = 'landing'; // 'landing', 'login', or 'signup'
@@ -33,7 +13,6 @@ angular.module('suvidhaApp')
             $scope.setLanguage = function(lang) {
                 $scope.currentLang = lang;
                 $rootScope.currentLang = lang;
-                TranslationService.setLanguage(lang);
             };
             
             // View navigation

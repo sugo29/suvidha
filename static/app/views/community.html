@@ -2,13 +2,13 @@
 <div class="community-header">
     <div class="community-title-row">
         <div>
-            <h1>{{t('community')}}</h1>
-            <p>{{t('utility_performance_participation')}} <strong ng-bind="vm.selectedWard"></strong></p>
+            <h1>Community</h1>
+            <p>Utility performance and community participation for <strong ng-bind="vm.selectedWard"></strong></p>
         </div>
         <div class="ward-selector-enhanced">
             <label>
                 <i data-lucide="map-pin"></i>
-                {{t('your_ward')}}
+                Your Ward
             </label>
             <select ng-model="vm.selectedWard" ng-change="vm.loadWardData()" class="form-control enhanced">
                 <option value="Kalkaji">Kalkaji (South)</option>
@@ -24,21 +24,21 @@
             <i data-lucide="trending-up"></i>
             <div class="stat-info">
                 <span class="stat-value" ng-bind="vm.stats.healthScore"></span>
-                <span class="stat-label">{{t('ward_health_score')}}</span>
+                <span class="stat-label">Ward Health Score</span>
             </div>
         </div>
         <div class="stat-item">
             <i data-lucide="users"></i>
             <div class="stat-info">
                 <span class="stat-value" ng-bind="vm.stats.activeParticipants"></span>
-                <span class="stat-label">{{t('active_participants')}}</span>
+                <span class="stat-label">Active Participants</span>
             </div>
         </div>
         <div class="stat-item">
             <i data-lucide="activity"></i>
             <div class="stat-info">
                 <span class="stat-value" ng-bind="vm.stats.recentReports"></span>
-                <span class="stat-label">{{t('recent_reports')}}</span>
+                <span class="stat-label">Recent Reports</span>
             </div>
         </div>
     </div>
@@ -48,23 +48,23 @@
 <div class="community-tabs">
     <button class="community-tab" ng-class="{active: vm.activeSection === 'overview'}" ng-click="vm.showSection('overview')">
         <i data-lucide="layout-grid"></i>
-        <span>{{t('overview')}}</span>
+        <span>Overview</span>
     </button>
     <button class="community-tab" ng-class="{active: vm.activeSection === 'challenges'}" ng-click="vm.showSection('challenges')">
         <i data-lucide="trophy"></i>
-        <span>{{t('civic_challenges')}}</span>
+        <span>Civic Challenges</span>
     </button>
     <button class="community-tab" ng-class="{active: vm.activeSection === 'advisories'}" ng-click="vm.showSection('advisories')">
         <i data-lucide="megaphone"></i>
-        <span>{{t('advisories')}}</span>
+        <span>Advisories</span>
     </button>
     <button class="community-tab" ng-class="{active: vm.activeSection === 'activity'}" ng-click="vm.showSection('activity')">
         <i data-lucide="rss"></i>
-        <span>{{t('activity_feed')}}</span>
+        <span>Activity Feed</span>
     </button>
     <button class="community-tab" ng-class="{active: vm.activeSection === 'insights'}" ng-click="vm.showSection('insights')">
         <i data-lucide="bar-chart-3"></i>
-        <span>{{t('ward_insights')}}</span>
+        <span>Ward Insights</span>
     </button>
 </div>
 
@@ -81,8 +81,8 @@
                         <i data-lucide="heart-pulse"></i>
                     </div>
                     <div>
-                        <h3>{{t('ward_health_score')}}</h3>
-                        <p>{{t('calculated_using_reliability')}}</p>
+                        <h3>Ward Health Score</h3>
+                        <p>Calculated using reliability, quality, and service metrics</p>
                     </div>
                 </div>
                 <div class="score-display">
@@ -101,15 +101,15 @@
                     <div class="score-breakdown">
                         <div class="breakdown-item electric">
                             <i data-lucide="zap"></i>
-                            <span>{{t('electricity')}}: 82/100</span>
+                            <span>Electricity: 82/100</span>
                         </div>
                         <div class="breakdown-item water">
                             <i data-lucide="droplet"></i>
-                            <span>{{t('water')}}: 85/100</span>
+                            <span>Water: 85/100</span>
                         </div>
                         <div class="breakdown-item gas">
                             <i data-lucide="flame"></i>
-                            <span>{{t('gas')}}: 68/100</span>
+                            <span>Gas: 68/100</span>
                         </div>
                     </div>
                 </div>
@@ -122,7 +122,7 @@
                         <i data-lucide="indian-rupee"></i>
                     </div>
                     <div class="snapshot-content">
-                        <span class="snap-label">{{t('avg_elec_bill')}}</span>
+                        <span class="snap-label">Avg Electricity Bill</span>
                         <strong class="snap-val">₹1,150</strong>
                         <small class="snap-trend positive">
                             <i data-lucide="trending-down"></i>
@@ -135,7 +135,7 @@
                         <i data-lucide="droplets"></i>
                     </div>
                     <div class="snapshot-content">
-                        <span class="snap-label">{{t('avg_water_usage')}}</span>
+                        <span class="snap-label">Avg Water Usage</span>
                         <strong class="snap-val">19 KL</strong>
                         <small class="snap-trend">
                             <i data-lucide="minus"></i>
@@ -148,7 +148,7 @@
                         <i data-lucide="power-off"></i>
                     </div>
                     <div class="snapshot-content">
-                        <span class="snap-label">{{t('power_cuts')}}</span>
+                        <span class="snap-label">Power Cuts</span>
                         <strong class="snap-val">1.2 Hrs/M</strong>
                         <small class="snap-trend negative">
                             <i data-lucide="trending-up"></i>
@@ -161,7 +161,7 @@
                         <i data-lucide="sun"></i>
                     </div>
                     <div class="snapshot-content">
-                        <span class="snap-label">{{t('solar_adoption')}}</span>
+                        <span class="snap-label">Solar Adoption</span>
                         <strong class="snap-val">14%</strong>
                         <small class="snap-trend positive">
                             <i data-lucide="trending-up"></i>
@@ -175,46 +175,46 @@
             <div class="enhanced-card heatmap-container">
                 <div class="card-header-with-actions">
                     <div>
-                        <h3>{{t('ward_stress_map')}}</h3>
-                        <p>{{t('map_shows_aggregated')}}</p>
+                        <h3>Ward Stress Map</h3>
+                        <p>Map shows aggregated service reliability by block</p>
                     </div>
                     <div class="map-toggles">
                         <button class="map-toggle-btn" ng-class="{active: vm.mapView === 'ward'}" ng-click="vm.changeMapView('ward')">
                             <i data-lucide="home"></i>
-                            {{t('ward')}}
+                            Ward
                         </button>
                         <button class="map-toggle-btn" ng-class="{active: vm.mapView === 'zone'}" ng-click="vm.changeMapView('zone')">
                             <i data-lucide="building"></i>
-                            {{t('zone')}}
+                            Zone
                         </button>
                         <button class="map-toggle-btn" ng-class="{active: vm.mapView === 'city'}" ng-click="vm.changeMapView('city')">
                             <i data-lucide="map"></i>
-                            {{t('city')}}
+                            City
                         </button>
                     </div>
                 </div>
                 <div class="heatmap-visual">
                     <div class="heat-zone low-stress" ng-click="vm.showBlockDetails('A')">
-                        <span class="block-label">{{t('block_a')}}</span>
+                        <span class="block-label">Block A</span>
                         <span class="stress-indicator">●</span>
                     </div>
                     <div class="heat-zone med-stress" ng-click="vm.showBlockDetails('B')">
-                        <span class="block-label">{{t('block_b')}}</span>
+                        <span class="block-label">Block B</span>
                         <span class="stress-indicator">●</span>
                     </div>
                     <div class="heat-zone high-stress" ng-click="vm.showBlockDetails('C')">
-                        <span class="block-label">{{t('block_c')}}</span>
+                        <span class="block-label">Block C</span>
                         <span class="stress-indicator">●</span>
                     </div>
                     <div class="heat-zone low-stress" ng-click="vm.showBlockDetails('D')">
-                        <span class="block-label">{{t('block_d')}}</span>
+                        <span class="block-label">Block D</span>
                         <span class="stress-indicator">●</span>
                     </div>
                 </div>
                 <div class="heatmap-legend">
-                    <span class="legend-item"><span class="dot success"></span> {{t('stable')}}</span>
-                    <span class="legend-item"><span class="dot warning"></span> {{t('moderate')}}</span>
-                    <span class="legend-item"><span class="dot danger"></span> {{t('high_stress')}}</span>
+                    <span class="legend-item"><span class="dot success"></span> Stable</span>
+                    <span class="legend-item"><span class="dot warning"></span> Moderate</span>
+                    <span class="legend-item"><span class="dot danger"></span> High Stress</span>
                 </div>
             </div>
         </div>
@@ -230,15 +230,15 @@
                             <i data-lucide="award"></i>
                         </div>
                         <div>
-                            <h3>{{t('your_civic_participation')}}</h3>
+                            <h3>Your Civic Participation</h3>
                             <div class="participation-stats">
                                 <div class="part-stat">
                                     <strong ng-bind="vm.participation.points"></strong>
-                                    <span>{{t('points_earned')}}</span>
+                                    <span>Points Earned</span>
                                 </div>
                                 <div class="part-stat">
                                     <strong ng-bind="vm.participation.rank"></strong>
-                                    <span>{{t('in_ward')}}</span>
+                                    <span>In Ward</span>
                                 </div>
                             </div>
                         </div>
@@ -259,16 +259,16 @@
                         <i data-lucide="zap"></i>
                     </div>
                     <div class="challenge-header">
-                        <h4>{{t('peak_hour_saver')}}</h4>
+                        <h4>Peak Hour Saver</h4>
                         <span class="points-badge">
                             <i data-lucide="coins"></i>
-                            50 {{t('points')}}
+                            50 Points
                         </span>
                     </div>
-                    <p class="challenge-desc">{{t('follow_peak_hour_advisories')}}</p>
+                    <p class="challenge-desc">Follow peak hour advisories to reduce grid stress</p>
                     <div class="challenge-progress">
                         <div class="progress-info">
-                            <span>2/5 {{t('days')}}</span>
+                            <span>2/5 Days</span>
                             <span>40%</span>
                         </div>
                         <div class="progress-bar">
@@ -277,11 +277,11 @@
                     </div>
                     <button class="btn btn-primary" ng-click="vm.joinChallenge('peak_hour')">
                         <i data-lucide="user-plus"></i>
-                        {{t('join_challenge')}}
+                        Join Challenge
                     </button>
                     <div class="challenge-note">
                         <i data-lucide="info"></i>
-                        {{t('does_not_affect_billing')}}
+                        Does not affect billing
                     </div>
                 </div>
 
@@ -291,30 +291,30 @@
                         <i data-lucide="droplet"></i>
                     </div>
                     <div class="challenge-header">
-                        <h4>{{t('leak_detective')}}</h4>
+                        <h4>Leak Detective</h4>
                         <span class="points-badge">
                             <i data-lucide="coins"></i>
-                            30 {{t('points')}}
+                            30 Points
                         </span>
                     </div>
-                    <p class="challenge-desc">{{t('report_visible_leaks')}}</p>
+                    <p class="challenge-desc">Report visible leaks in your neighborhood</p>
                     <div class="challenge-meta">
                         <div class="meta-stat">
                             <i data-lucide="users"></i>
-                            <span>42 {{t('participants')}}</span>
+                            <span>42 Participants</span>
                         </div>
                         <div class="meta-stat">
                             <i data-lucide="check-circle"></i>
-                            <span>18 {{t('leaks_fixed')}}</span>
+                            <span>18 Leaks Fixed</span>
                         </div>
                     </div>
                     <button class="btn btn-primary" ng-click="vm.reportLeak()">
                         <i data-lucide="flag"></i>
-                        {{t('report_now')}}
+                        Report Now
                     </button>
                     <div class="challenge-note">
                         <i data-lucide="info"></i>
-                        {{t('community_service_initiative')}}
+                        Community service initiative
                     </div>
                 </div>
 
@@ -324,34 +324,34 @@
                         <i data-lucide="flame"></i>
                     </div>
                     <div class="challenge-header">
-                        <h4>{{t('safety_first')}}</h4>
+                        <h4>Safety First</h4>
                         <span class="points-badge premium">
                             <i data-lucide="star"></i>
-                            100 {{t('points')}}
+                            100 Points
                         </span>
                     </div>
-                    <p class="challenge-desc">{{t('complete_annual_safety')}}</p>
+                    <p class="challenge-desc">Complete annual safety inspection checklist</p>
                     <div class="challenge-checklist">
                         <div class="checklist-item">
                             <i data-lucide="check"></i>
-                            <span>{{t('inspect_connections')}}</span>
+                            <span>Inspect connections</span>
                         </div>
                         <div class="checklist-item">
                             <i data-lucide="circle"></i>
-                            <span>{{t('test_leak_detector')}}</span>
+                            <span>Test leak detector</span>
                         </div>
                         <div class="checklist-item">
                             <i data-lucide="circle"></i>
-                            <span>{{t('verify_ventilation')}}</span>
+                            <span>Verify ventilation</span>
                         </div>
                     </div>
                     <button class="btn btn-primary" ng-click="vm.startSafetyChecklist()">
                         <i data-lucide="clipboard-check"></i>
-                        {{t('start_checklist')}}
+                        Start Checklist
                     </button>
                     <div class="challenge-note">
                         <i data-lucide="shield"></i>
-                        {{t('safety_awareness_program')}}
+                        Safety awareness program
                     </div>
                 </div>
             </div>
@@ -360,7 +360,7 @@
             <div class="enhanced-card active-challenges" ng-if="vm.activeChallenges.length > 0">
                 <h3>
                     <i data-lucide="trophy"></i>
-                    {{t('your_active_challenges')}}
+                    Your Active Challenges
                 </h3>
                 <div class="active-challenge-list">
                     <div class="active-challenge-item" ng-repeat="challenge in vm.activeChallenges">
@@ -386,19 +386,19 @@
             
             <div class="advisory-filters">
                 <button class="filter-chip" ng-class="{active: vm.advisoryFilter === 'all'}" ng-click="vm.filterAdvisories('all')">
-                    {{t('all')}}
+                    All
                 </button>
                 <button class="filter-chip" ng-class="{active: vm.advisoryFilter === 'electricity'}" ng-click="vm.filterAdvisories('electricity')">
                     <i data-lucide="zap"></i>
-                    {{t('electricity')}}
+                    Electricity
                 </button>
-                <button class="filter-chip" ng-class="{active: vm.advisoryFilter === 'water'}" ng-click="vm.filterAdvisories('water')">
+                <button class="filter-chip" ng-class="{active: vm. advisoryFilter === 'water'}" ng-click="vm.filterAdvisories('water')">
                     <i data-lucide="droplet"></i>
-                    {{t('water')}}
+                    Water
                 </button>
                 <button class="filter-chip" ng-class="{active: vm.advisoryFilter === 'gas'}" ng-click="vm.filterAdvisories('gas')">
                     <i data-lucide="flame"></i>
-                    {{t('gas')}}
+                    Gas
                 </button>
             </div>
 
@@ -419,7 +419,7 @@
                         <div class="advisory-meta">
                             <span class="advisory-source">
                                 <i data-lucide="building"></i>
-                                {{t('issued_by')}}: <strong ng-bind="advisory.issuedBy"></strong>
+                                Issued By: <strong ng-bind="advisory.issuedBy"></strong>
                             </span>
                             <span class="advisory-date">
                                 <i data-lucide="calendar"></i>
@@ -431,10 +431,10 @@
                     <div class="advisory-footer">
                         <div class="affected-area">
                             <i data-lucide="map-pin"></i>
-                            {{t('affected_area')}}: <span ng-bind="advisory.affectedArea"></span>
+                            Affected Area: <span ng-bind="advisory.affectedArea"></span>
                         </div>
                         <button class="btn-text" ng-click="vm.viewAdvisoryDetails(advisory)">
-                            {{t('view_details')}}
+                            View Details
                             <i data-lucide="arrow-right"></i>
                         </button>
                     </div>
@@ -444,7 +444,7 @@
             <!-- Empty State -->
             <div class="empty-state" ng-if="vm.filteredAdvisories.length === 0">
                 <i data-lucide="inbox"></i>
-                <p>{{t('no_advisories_found')}}</p>
+                <p>No Advisories Found</p>
             </div>
         </div>
 
@@ -454,9 +454,9 @@
             <div class="enhanced-card">
                 <h3>
                     <i data-lucide="activity"></i>
-                    {{t('community_activity')}}
+                    Community Activity
                 </h3>
-                <p class="section-desc">{{t('anonymous_feed_civic')}}</p>
+                <p class="section-desc">Anonymous feed of civic participation and improvements</p>
             </div>
 
             <div class="activity-timeline">
@@ -475,7 +475,7 @@
                         </div>
                     </div>
                     <div class="activity-actions" ng-if="activity.actionable">
-                        <button class="btn-icon" ng-click="vm.likeActivity(activity)" title="{{t('helpful')}}">
+                        <button class="btn-icon" ng-click="vm.likeActivity(activity)" title="Helpful">
                             <i data-lucide="thumbs-up"></i>
                             <span ng-bind="activity.likes" ng-if="activity.likes > 0"></span>
                         </button>
@@ -487,7 +487,7 @@
             <div class="load-more-section" ng-if="vm.hasMoreActivity">
                 <button class="btn btn-secondary" ng-click="vm.loadMoreActivity()">
                     <i data-lucide="refresh-cw"></i>
-                    {{t('load_more')}}
+                    Load More
                 </button>
             </div>
         </div>
@@ -499,10 +499,10 @@
             <div class="enhanced-card comparison-table-card">
                 <div class="card-header-with-actions">
                     <div>
-                        <h3>{{t('comparison_ward_city')}}</h3>
-                        <p>{{t('how_insights_calculated')}}</p>
+                        <h3>Comparison with Ward and City</h3>
+                        <p>How these insights are calculated</p>
                     </div>
-                    <button class="btn-icon" ng-click="vm.exportInsights()" title="{{t('export_data')}}">
+                    <button class="btn-icon" ng-click="vm.exportInsights()" title="Export Data">
                         <i data-lucide="download"></i>
                     </button>
                 </div>
@@ -510,7 +510,7 @@
                     <table class="enhanced-table">
                         <thead>
                             <tr>
-                                <th>{{t('metric')}}</th>
+                                <th>Metric</th>
                                 <th>
                                     <div class="th-content">
                                         <i data-lucide="home"></i>
@@ -520,13 +520,13 @@
                                 <th>
                                     <div class="th-content">
                                         <i data-lucide="building"></i>
-                                        {{t('south_delhi_zone')}}
+                                        South Delhi Zone
                                     </div>
                                 </th>
                                 <th>
                                     <div class="th-content">
                                         <i data-lucide="map"></i>
-                                        {{t('delhi_city')}}
+                                        Delhi City
                                     </div>
                                 </th>
                             </tr>
@@ -557,16 +557,16 @@
                 <div class="enhanced-card performance-card">
                     <h4>
                         <i data-lucide="zap"></i>
-                        {{t('electricity')}} {{t('performance')}}
+                        Electricity Performance
                     </h4>
                     <div class="performance-bar-item">
-                        <span class="bar-label">{{t('reliability')}}</span>
+                        <span class="bar-label">Reliability</span>
                         <div class="performance-bar">
                             <div class="bar-fill success" style="width: 92%">92%</div>
                         </div>
                     </div>
                     <div class="performance-bar-item">
-                        <span class="bar-label">{{t('peak_load_management')}}</span>
+                        <span class="bar-label">Peak Load Management</span>
                         <div class="performance-bar">
                             <div class="bar-fill warning" style="width: 78%">78%</div>
                         </div>
@@ -576,16 +576,16 @@
                 <div class="enhanced-card performance-card">
                     <h4>
                         <i data-lucide="droplet"></i>
-                        {{t('water')}} {{t('performance')}}
+                        Water Performance
                     </h4>
                     <div class="performance-bar-item">
-                        <span class="bar-label">{{t('supply_consistency')}}</span>
+                        <span class="bar-label">Supply Consistency</span>
                         <div class="performance-bar">
                             <div class="bar-fill success" style="width: 88%">88%</div>
                         </div>
                     </div>
                     <div class="performance-bar-item">
-                        <span class="bar-label">{{t('quality_index')}}</span>
+                        <span class="bar-label">Quality Index</span>
                         <div class="performance-bar">
                             <div class="bar-fill success" style="width: 95%">95%</div>
                         </div>
@@ -595,16 +595,16 @@
                 <div class="enhanced-card performance-card">
                     <h4>
                         <i data-lucide="flame"></i>
-                        {{t('gas')}} {{t('performance')}}
+                        Gas Performance
                     </h4>
                     <div class="performance-bar-item">
-                        <span class="bar-label">{{t('delivery_pressure')}}</span>
+                        <span class="bar-label">Delivery Pressure</span>
                         <div class="performance-bar">
                             <div class="bar-fill success" style="width: 85%">85%</div>
                         </div>
                     </div>
                     <div class="performance-bar-item">
-                        <span class="bar-label">{{t('safety_compliance')}}</span>
+                        <span class="bar-label">Safety Compliance</span>
                         <div class="performance-bar">
                             <div class="bar-fill success" style="width: 98%">98%</div>
                         </div>
@@ -618,11 +618,11 @@
                     <div class="insight-badge positive">
                         <i data-lucide="trending-up"></i>
                     </div>
-                    <h4>{{t('improving_metrics')}}</h4>
+                    <h4>Improving Metrics</h4>
                     <ul class="insight-list">
-                        <li>{{t('solar_adoption_up_3_percent')}}</li>
-                        <li>{{t('water_quality_improved')}}</li>
-                        <li>{{t('fewer_power_complaints')}}</li>
+                        <li>Solar adoption up 3% year-on-year</li>
+                        <li>Water quality index improved</li>
+                        <li>Fewer power outage complaints</li>
                     </ul>
                 </div>
 
@@ -630,10 +630,10 @@
                     <div class="insight-badge attention">
                         <i data-lucide="alert-circle"></i>
                     </div>
-                    <h4>{{t('needs_attention')}}</h4>
+                    <h4>Needs Attention</h4>
                     <ul class="insight-list">
-                        <li>{{t('peak_hour_stress_increasing')}}</li>
-                        <li>{{t('gas_connection_backlog')}}</li>
+                        <li>Peak hour stress increasing</li>
+                        <li>Gas connection backlog remains</li>
                     </ul>
                 </div>
             </div>

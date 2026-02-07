@@ -9,6 +9,22 @@
         var vm = this;
         vm.loading = true;
         vm.userData = {};
+        
+        // Helper functions for cost calculations
+        vm.getTotalCost = function() {
+            if (!vm.userData.consumption) return 0;
+            var elec = vm.userData.consumption.electricity?.current_bill || 0;
+            var water = vm.userData.consumption.water?.current_bill || 0;
+            var gas = vm.userData.consumption.gas?.current_bill || 0;
+            return elec + water + gas;
+        };
+        
+        vm.getPercentage = function(utility) {
+            var total = vm.getTotalCost();
+            if (total === 0) return 0;
+            var amount = vm.userData.consumption?.[utility]?.current_bill || 0;
+            return Math.round((amount / total) * 100);
+        };
 
         // Initialize
         function init() {

@@ -247,8 +247,19 @@
             ApiService.getCommunityData()
                 .then(function(response) {
                     if (response.data) {
-                        // Merge API data if available
-                        angular.extend(vm, response.data);
+                        // Update stats from API
+                        if (response.data.health_score !== undefined) {
+                            vm.stats.healthScore = response.data.health_score;
+                        }
+                        if (response.data.active_participants !== undefined) {
+                            vm.stats.activeParticipants = response.data.active_participants.toString();
+                        }
+                        if (response.data.recent_reports !== undefined) {
+                            vm.stats.recentReports = response.data.recent_reports;
+                        }
+                        if (response.data.ward) {
+                            vm.selectedWard = response.data.ward;
+                        }
                     }
                     vm.loading = false;
                 })

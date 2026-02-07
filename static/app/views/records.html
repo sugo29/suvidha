@@ -2,17 +2,17 @@
 <div class="records-header">
     <div class="records-title-row">
         <div>
-            <h1>{{t('records_history')}}</h1>
-            <p>{{t('official_meter_readings_bills')}}</p>
+            <h1>Records & History</h1>
+            <p>Official meter readings and billing records</p>
         </div>
         <div class="header-actions">
             <button class="btn btn-secondary" ng-click="vm.downloadCSV()">
                 <i data-lucide="download"></i>
-                {{t('download_csv')}}
+                Download CSV
             </button>
             <button class="btn btn-primary" ng-click="vm.exportPDF()">
                 <i data-lucide="file-text"></i>
-                {{t('export_pdf')}}
+                Export PDF
             </button>
         </div>
     </div>
@@ -23,28 +23,28 @@
             <i data-lucide="receipt"></i>
             <div class="stat-info">
                 <span class="stat-value" ng-bind="vm.stats.totalBills"></span>
-                <span class="stat-label">{{t('total_bills')}}</span>
+                <span class="stat-label">Total Bills</span>
             </div>
         </div>
         <div class="stat-item">
             <i data-lucide="indian-rupee"></i>
             <div class="stat-info">
                 <span class="stat-value" ng-bind="vm.stats.totalAmount"></span>
-                <span class="stat-label">{{t('total_paid')}}</span>
+                <span class="stat-label">Total Paid</span>
             </div>
         </div>
         <div class="stat-item">
             <i data-lucide="calendar"></i>
             <div class="stat-info">
                 <span class="stat-value" ng-bind="vm.stats.avgMonthly"></span>
-                <span class="stat-label">{{t('avg_monthly')}}</span>
+                <span class="stat-label">Avg Monthly</span>
             </div>
         </div>
         <div class="stat-item">
             <i data-lucide="clock"></i>
             <div class="stat-info">
                 <span class="stat-value" ng-bind="vm.stats.pending"></span>
-                <span class="stat-label">{{t('pending_bills')}}</span>
+                <span class="stat-label">Pending Bills</span>
             </div>
         </div>
     </div>
@@ -56,7 +56,7 @@
         <div class="search-box">
             <i data-lucide="search"></i>
             <input type="text" 
-                   placeholder="{{t('search_by_bill_id')}}" 
+                   placeholder="Search by Bill ID or Date" 
                    class="form-control enhanced" 
                    ng-model="vm.searchQuery"
                    ng-change="vm.filterRecords()">
@@ -66,47 +66,47 @@
             <div class="filter-item">
                 <label>
                     <i data-lucide="zap"></i>
-                    {{t('utility')}}
+                    Utility
                 </label>
                 <select class="form-control enhanced" ng-model="vm.utilityFilter" ng-change="vm.filterRecords()">
-                    <option value="">{{t('all_utilities')}}</option>
-                    <option value="electricity">{{t('electricity')}}</option>
-                    <option value="water">{{t('water')}}</option>
-                    <option value="gas">{{t('gas')}}</option>
+                    <option value="">All Utilities</option>
+                    <option value="electricity">Electricity</option>
+                    <option value="water">Water</option>
+                    <option value="gas">Gas</option>
                 </select>
             </div>
             
             <div class="filter-item">
                 <label>
                     <i data-lucide="calendar-range"></i>
-                    {{t('period')}}
+                    Period
                 </label>
                 <select class="form-control enhanced" ng-model="vm.periodFilter" ng-change="vm.filterRecords()">
-                    <option value="all">{{t('all_time')}}</option>
-                    <option value="3months">{{t('last_3_months')}}</option>
-                    <option value="6months">{{t('last_6_months')}}</option>
-                    <option value="1year">{{t('last_year')}}</option>
-                    <option value="custom">{{t('custom_range')}}</option>
+                    <option value="all">All Time</option>
+                    <option value="3months">Last 3 Months</option>
+                    <option value="6months">Last 6 Months</option>
+                    <option value="1year">Last Year</option>
+                    <option value="custom">Custom Range</option>
                 </select>
             </div>
             
             <div class="filter-item">
                 <label>
                     <i data-lucide="check-circle"></i>
-                    {{t('status')}}
+                    Status
                 </label>
                 <select class="form-control enhanced" ng-model="vm.statusFilter" ng-change="vm.filterRecords()">
-                    <option value="">{{t('all_status')}}</option>
-                    <option value="paid">{{t('paid')}}</option>
-                    <option value="pending">{{t('pending')}}</option>
-                    <option value="overdue">{{t('overdue')}}</option>
+                    <option value="">All Status</option>
+                    <option value="paid">Paid</option>
+                    <option value="pending">Pending</option>
+                    <option value="overdue">Overdue</option>
                 </select>
             </div>
         </div>
     </div>
     
     <div class="active-filters" ng-if="vm.hasActiveFilters()">
-        <span class="filter-label">{{t('active_filters')}}:</span>
+        <span class="filter-label">Active Filters:</span>
         <span class="filter-tag" ng-if="vm.utilityFilter">
             {{vm.utilityFilter}}
             <button ng-click="vm.clearFilter('utility')">×</button>
@@ -121,7 +121,7 @@
         </span>
         <button class="clear-all-btn" ng-click="vm.clearAllFilters()">
             <i data-lucide="x"></i>
-            {{t('clear_all')}}
+            Clear All
         </button>
     </div>
 </div>
@@ -131,16 +131,16 @@
     <div class="table-header">
         <h3>
             <i data-lucide="list"></i>
-            {{t('billing_records')}}
+            Billing Records
         </h3>
         <div class="view-toggle">
             <button class="view-btn" ng-class="{active: vm.viewMode === 'table'}" ng-click="vm.setViewMode('table')">
                 <i data-lucide="table"></i>
-                {{t('table')}}
+                Table
             </button>
             <button class="view-btn" ng-class="{active: vm.viewMode === 'cards'}" ng-click="vm.setViewMode('cards')">
                 <i data-lucide="layout-grid"></i>
-                {{t('cards')}}
+                Cards
             </button>
         </div>
     </div>
@@ -151,24 +151,24 @@
             <thead>
                 <tr>
                     <th ng-click="vm.sortBy('date')" class="sortable">
-                        {{t('date')}}
+                        Date
                         <i data-lucide="chevron-up" ng-if="vm.sortColumn === 'date' && vm.sortReverse"></i>
                         <i data-lucide="chevron-down" ng-if="vm.sortColumn === 'date' && !vm.sortReverse"></i>
                     </th>
-                    <th>{{t('utility')}}</th>
-                    <th>{{t('bill_id')}}</th>
+                    <th>Utility</th>
+                    <th>Bill ID</th>
                     <th ng-click="vm.sortBy('reading')" class="sortable">
-                        {{t('reading')}}
+                        Reading
                         <i data-lucide="chevron-up" ng-if="vm.sortColumn === 'reading' && vm.sortReverse"></i>
                         <i data-lucide="chevron-down" ng-if="vm.sortColumn === 'reading' && !vm.sortReverse"></i>
                     </th>
                     <th ng-click="vm.sortBy('amount')" class="sortable">
-                        {{t('amount')}}
+                        Amount
                         <i data-lucide="chevron-up" ng-if="vm.sortColumn === 'amount' && vm.sortReverse"></i>
                         <i data-lucide="chevron-down" ng-if="vm.sortColumn === 'amount' && !vm.sortReverse"></i>
                     </th>
-                    <th>{{t('status')}}</th>
-                    <th>{{t('action')}}</th>
+                    <th>Status</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -202,10 +202,10 @@
                     </td>
                     <td>
                         <div class="action-buttons">
-                            <button class="btn-icon-small" ng-click="vm.viewDocument(record)" title="{{t('view_bill')}}">
+                            <button class="btn-icon-small" ng-click="vm.viewDocument(record)" title="View Bill">
                                 <i data-lucide="eye"></i>
                             </button>
-                            <button class="btn-icon-small" ng-click="vm.downloadBill(record)" title="{{t('download')}}">
+                            <button class="btn-icon-small" ng-click="vm.downloadBill(record)" title="Download">
                                 <i data-lucide="download"></i>
                             </button>
                         </div>
@@ -217,9 +217,9 @@
         <!-- Empty State -->
         <div class="empty-state" ng-if="vm.filteredRecords.length === 0">
             <i data-lucide="inbox"></i>
-            <p>{{t('no_records_found')}}</p>
+            <p>No Records Found</p>
             <button class="btn btn-secondary" ng-click="vm.clearAllFilters()">
-                {{t('clear_filters')}}
+                Clear Filters
             </button>
         </div>
     </div>
@@ -239,28 +239,28 @@
             </div>
             <div class="record-card-body">
                 <div class="record-detail">
-                    <span class="detail-label">{{t('bill_id')}}</span>
+                    <span class="detail-label">Bill ID</span>
                     <span class="detail-value" ng-bind="record.billId"></span>
                 </div>
                 <div class="record-detail">
-                    <span class="detail-label">{{t('date')}}</span>
+                    <span class="detail-label">Date</span>
                     <span class="detail-value" ng-bind="record.date"></span>
                 </div>
                 <div class="record-detail">
-                    <span class="detail-label">{{t('reading')}}</span>
+                    <span class="detail-label">Reading</span>
                     <span class="detail-value" ng-bind="record.reading"></span>
                 </div>
                 <div class="record-detail highlight">
-                    <span class="detail-label">{{t('amount')}}</span>
+                    <span class="detail-label">Amount</span>
                     <span class="detail-value amount">₹<span ng-bind="record.amount"></span></span>
                 </div>
             </div>
             <div class="record-card-footer">
                 <button class="btn btn-secondary btn-sm" ng-click="vm.viewDocument(record)">
                     <i data-lucide="eye"></i>
-                    {{t('view_bill')}}
+                    View Bill
                 </button>
-                <button class="btn-icon-small" ng-click="vm.downloadBill(record)" title="{{t('download')}}">
+                <button class="btn-icon-small" ng-click="vm.downloadBill(record)" title="Download">
                     <i data-lucide="download"></i>
                 </button>
             </div>
@@ -269,9 +269,9 @@
         <!-- Empty State -->
         <div class="empty-state full-width" ng-if="vm.filteredRecords.length === 0">
             <i data-lucide="inbox"></i>
-            <p>{{t('no_records_found')}}</p>
+            <p>No Records Found</p>
             <button class="btn btn-secondary" ng-click="vm.clearAllFilters()">
-                {{t('clear_filters')}}
+                Clear Filters
             </button>
         </div>
     </div>
@@ -279,7 +279,7 @@
     <!-- Pagination -->
     <div class="pagination-controls" ng-if="vm.filteredRecords.length > 0">
         <div class="pagination-info">
-            {{t('showing')}} {{vm.paginationStart}} - {{vm.paginationEnd}} {{t('of')}} {{vm.filteredRecords.length}} {{t('records')}}
+            Showing {{vm.paginationStart}} - {{vm.paginationEnd}} of {{vm.filteredRecords.length}} records
         </div>
         <div class="pagination-buttons">
             <button class="page-btn" ng-click="vm.previousPage()" ng-disabled="vm.currentPage === 1">
@@ -292,7 +292,7 @@
         </div>
     </div>
     
-    <p class="source-note">{{t('official_meter_reading_data')}}</p>
+    <p class="source-note">All data is sourced from official meter readings and validated billing records</p>
 </div>
 
 <!-- Initialize Lucide Icons -->

@@ -2,8 +2,9 @@ from flask import Flask, render_template, session, request, jsonify, send_from_d
 from flask_cors import CORS
 import os
 import secrets
+from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import db, User, Vendor, Community, CommunityStats
+from models import db, User, Vendor, Community, CommunityStats, Bill, ServiceReport
 
 # Configure Flask to use different delimiters to avoid conflict with AngularJS
 class CustomFlask(Flask):
@@ -76,6 +77,14 @@ def catch_all(path):
     elif path.startswith('api/'):
         return app.send_static_file(path)
     return render_template('index.html')
+
+@app.after_request
+def add_header(response):
+    """Add headers to prevent caching during development"""
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '-1'
+    return response
 
 # ============================================
 # AUTHENTICATION ENDPOINTS
@@ -381,35 +390,204 @@ def api_update_user(user_id):
 # ============================================
 @app.route('/api/dashboard')
 def api_dashboard():
-    # Mock data - replace with actual database queries
-    data = {
-        'username': session.get('username', 'Suhan Kumar'),
-        'electricity': {
-            'current_bill': 2450,
-            'due_date': '25 Jan 2025',
-            'consumption': 245,
-            'status': 'pending'
-        },
-        'gas': {
-            'current_bill': 850,
-            'consumption': 18,
-            'status': 'paid'
-        },
-        'water': {
-            'current_bill': 420,
-            'consumption': 22,
-            'status': 'paid'
+    """Get comprehensive dashboard data for logged-in user"""
+    user_id = session.get('user_id')
+    
+    # For demo purposes, use a default user if not logged in
+    if not user_id:
+        # Try to get first user from database for demo
+        demo_user = User.query.first()
+        if demo_user:
+            user_id = demo_user.id
+        else:
+            # Return empty data structure
+            return jsonify({
+                'username': 'Guest User',
+                'user': {
+                    'full_name': 'Guest User',
+                    'email': 'guest@example.com',
+                    'phone': 'N/A',
+                    'state': 'N/A',
+                    'city': 'N/A',
+                    'ward': 'N/A',
+                    'locality': 'N/A'
+                },
+                'consumption': {
+                    'electricity': {'current': 0, 'unit': 'kWh', 'current_bill': 0, 'due_date': 'N/A', 'status': 'none'},
+                    'gas': {'current': 0, 'unit': 'SCM', 'current_bill': 0, 'status': 'none'},
+                    'water': {'current': 0, 'unit': 'kL', 'current_bill': 0, 'status': 'none'}
+                },
+                'reports': {'total': 0, 'open': 0, 'resolved': 0, 'in_progress': 0},
+                'community': {'points': 0, 'challenges': 0, 'reports_submitted': 0, 'badges': []}
+            })
+    
+    try:
+        # Get user details
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'success': False, 'message': 'User not found'}), 404
+        
+        # Get recent bills for each utility type
+        electricity_bill = Bill.query.filter_by(
+            user_id=user_id, 
+            utility_type='electricity'
+        ).order_by(Bill.created_at.desc()).first()
+        
+        water_bill = Bill.query.filter_by(
+            user_id=user_id,
+            utility_type='water'
+        ).order_by(Bill.created_at.desc()).first()
+        
+        gas_bill = Bill.query.filter_by(
+            user_id=user_id,
+            utility_type='gas'
+        ).order_by(Bill.created_at.desc()).first()
+        
+        # Get service reports stats
+        total_reports = ServiceReport.query.filter_by(user_id=user_id).count()
+        open_reports = ServiceReport.query.filter_by(user_id=user_id, status='open').count()
+        resolved_reports = ServiceReport.query.filter_by(user_id=user_id, status='resolved').count()
+        in_progress_reports = ServiceReport.query.filter_by(user_id=user_id, status='in_progress').count()
+        
+        # Get community data
+        community = Community.query.filter_by(user_id=user_id).first()
+        
+        # Prepare response with actual DB values (0 if no data)
+        data = {
+            'username': user.full_name,
+            'user': {
+                'id': user.id,
+                'full_name': user.full_name,
+                'email': user.email,
+                'phone': user.phone,
+                'state': user.state,
+                'city': user.city,
+                'ward': user.ward,
+                'locality': user.locality,
+                'account_created': user.account_created.isoformat() if user.account_created else None
+            },
+            'consumption': {
+                'electricity': {
+                    'current': electricity_bill.consumption if electricity_bill else 0,
+                    'unit': 'kWh',
+                    'current_bill': electricity_bill.amount if electricity_bill else 0,
+                    'due_date': electricity_bill.due_date.strftime('%d %b %Y') if electricity_bill else 'N/A',
+                    'status': electricity_bill.status if electricity_bill else 'none'
+                },
+                'gas': {
+                    'current': gas_bill.consumption if gas_bill else 0,
+                    'unit': 'SCM',
+                    'current_bill': gas_bill.amount if gas_bill else 0,
+                    'status': gas_bill.status if gas_bill else 'none'
+                },
+                'water': {
+                    'current': water_bill.consumption if water_bill else 0,
+                    'unit': 'kL',
+                    'current_bill': water_bill.amount if water_bill else 0,
+                    'status': water_bill.status if water_bill else 'none'
+                }
+            },
+            'reports': {
+                'total': total_reports,
+                'open': open_reports,
+                'resolved': resolved_reports,
+                'in_progress': in_progress_reports
+            },
+            'community': {
+                'points': community.points_earned if community else 0,
+                'challenges': community.challenges_participated if community else 0,
+                'reports_submitted': community.reports_submitted if community else 0,
+                'badges': community.badges.split(',') if (community and community.badges) else []
+            }
         }
-    }
-    return jsonify(data)
+        
+        return jsonify(data)
+        
+    except Exception as e:
+        print(f"Dashboard error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 @app.route('/api/utilities')
 def api_utilities():
+    """Get utility consumption data from database"""
+    user_id = session.get('user_id')
+    
+    # For demo, get first user if not logged in
+    if not user_id:
+        demo_user = User.query.first()
+        if demo_user:
+            user_id = demo_user.id
+    
+    if user_id:
+        try:
+            # Get last 12 months of electricity bills
+            electricity_bills = Bill.query.filter_by(
+                user_id=user_id,
+                utility_type='electricity'
+            ).order_by(Bill.billing_period_end.desc()).limit(12).all()
+            
+            # Get last 12 months of gas bills
+            gas_bills = Bill.query.filter_by(
+                user_id=user_id,
+                utility_type='gas'
+            ).order_by(Bill.billing_period_end.desc()).limit(12).all()
+            
+            # Get last 12 months of water bills
+            water_bills = Bill.query.filter_by(
+                user_id=user_id,
+                utility_type='water'
+            ).order_by(Bill.billing_period_end.desc()).limit(12).all()
+            
+            # Prepare monthly data (reverse to show oldest first)
+            electricity_data = [b.consumption for b in reversed(electricity_bills)] if electricity_bills else [0]
+            gas_data = [b.consumption for b in reversed(gas_bills)] if gas_bills else [0]
+            water_data = [b.consumption for b in reversed(water_bills)] if water_bills else [0]
+            
+            # Get user details for provider info
+            user = User.query.get(user_id)
+            
+            # Get provider names
+            elec_provider = Vendor.query.get(user.electricity_provider_id) if user.electricity_provider_id else None
+            gas_provider = Vendor.query.get(user.gas_provider_id) if user.gas_provider_id else None
+            water_provider = Vendor.query.get(user.water_provider_id) if user.water_provider_id else None
+            
+            data = {
+                'electricity': {
+                    'monthly_data': electricity_data,
+                    'months': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][-len(electricity_data):],
+                    'provider': elec_provider.name if elec_provider else 'Not Set',
+                    'tariff': {
+                        'slab1': 3.00,
+                        'slab2': 4.50,
+                        'slab3': 6.50
+                    }
+                },
+                'gas': {
+                    'monthly_data': gas_data,
+                    'months': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][-len(gas_data):],
+                    'provider': gas_provider.name if gas_provider else 'Not Set'
+                },
+                'water': {
+                    'monthly_data': water_data,
+                    'months': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][-len(water_data):],
+                    'provider': water_provider.name if water_provider else 'Not Set'
+                }
+            }
+            return jsonify(data)
+            
+        except Exception as e:
+            print(f"Utilities API error: {str(e)}")
+            import traceback
+            traceback.print_exc()
+    
+    # Fallback to empty data
     data = {
         'electricity': {
-            'monthly_data': [210, 235, 198, 245, 220, 250, 230, 215, 240, 225, 235, 245],
-            'months': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            'provider': 'BSES Rajdhani (BRPL)',
+            'monthly_data': [0],
+            'months': ['No Data'],
+            'provider': 'Not Set',
             'tariff': {
                 'slab1': 3.00,
                 'slab2': 4.50,
@@ -417,92 +595,457 @@ def api_utilities():
             }
         },
         'gas': {
-            'monthly_data': [15, 18, 16, 19, 17, 20, 18, 16, 19, 17, 18, 18],
-            'provider': 'Indraprastha Gas Limited (IGL)'
+            'monthly_data': [0],
+            'months': ['No Data'],
+            'provider': 'Not Set'
         },
         'water': {
-            'monthly_data': [20, 22, 21, 24, 23, 25, 22, 21, 23, 22, 22, 22],
-            'provider': 'Delhi Jal Board (DJB)'
+            'monthly_data': [0],
+            'months': ['No Data'],
+            'provider': 'Not Set'
         }
     }
     return jsonify(data)
 
 @app.route('/api/insights')
 def api_insights():
-    data = {
-        'efficiency': {
-            'electricity': 'efficient',
-            'gas': 'average',
-            'water': 'efficient'
-        },
-        'comparisons': {
-            'ward_avg': 250,
-            'user_avg': 225
+    """Get insights data calculated from user's consumption"""
+    user_id = session.get('user_id')
+    
+    # For demo, use first user if not logged in
+    if not user_id:
+        demo_user = User.query.first()
+        if demo_user:
+            user_id = demo_user.id
+    
+    if not user_id:
+        return jsonify({
+            'efficiency': {'electricity': 'unknown', 'gas': 'unknown', 'water': 'unknown'},
+            'comparisons': {'ward_avg': 0, 'user_avg': 0},
+            'profile': {
+                'electricity': {'score': 0, 'avgMonthly': 0, 'trend': 'stable'},
+                'water': {'score': 0, 'avgMonthly': 0, 'trend': 'stable'},
+                'gas': {'score': 0, 'avgMonthly': 0, 'trend': 'stable'}
+            },
+            'recommendations': {'electricity': {'savings': 0}}
+        })
+    
+    try:
+        user = User.query.get(user_id)
+        
+        # Calculate electricity insights
+        elec_bills = Bill.query.filter_by(user_id=user_id, utility_type='electricity').order_by(Bill.created_at.desc()).limit(6).all()
+        elec_avg = sum(b.consumption for b in elec_bills) / len(elec_bills) if elec_bills else 0
+        if not elec_bills or elec_avg == 0:
+            elec_efficiency = 'unknown'
+            elec_score = 0
+        else:
+            elec_efficiency = 'efficient' if elec_avg < 200 else 'average' if elec_avg < 300 else 'high'
+            elec_score = max(0, min(10, 10 - (elec_avg / 30)))  # Score out of 10
+        
+        # Determine trend (comparing first 3 vs last 3 bills)
+        if len(elec_bills) >= 3:
+            recent_avg = sum(b.consumption for b in elec_bills[:3]) / 3
+            older_avg = sum(b.consumption for b in elec_bills[3:6]) / len(elec_bills[3:6]) if len(elec_bills) > 3 else recent_avg
+            elec_trend = 'improving' if recent_avg < older_avg else 'warning' if recent_avg > older_avg else 'stable'
+        else:
+            elec_trend = 'stable'
+        
+        # Calculate water insights
+        water_bills = Bill.query.filter_by(user_id=user_id, utility_type='water').order_by(Bill.created_at.desc()).limit(6).all()
+        water_avg = sum(b.consumption for b in water_bills) / len(water_bills) if water_bills else 0
+        if not water_bills or water_avg == 0:
+            water_efficiency = 'unknown'
+            water_score = 0
+        else:
+            water_efficiency = 'efficient' if water_avg < 15 else 'average' if water_avg < 25 else 'high'
+            water_score = max(0, min(10, 10 - (water_avg / 3)))  # Score out of 10
+        
+        if len(water_bills) >= 3:
+            recent_avg = sum(b.consumption for b in water_bills[:3]) / 3
+            older_avg = sum(b.consumption for b in water_bills[3:6]) / len(water_bills[3:6]) if len(water_bills) > 3 else recent_avg
+            water_trend = 'improving' if recent_avg < older_avg else 'warning' if recent_avg > older_avg else 'stable'
+        else:
+            water_trend = 'stable'
+        
+        # Calculate gas insights
+        gas_bills = Bill.query.filter_by(user_id=user_id, utility_type='gas').order_by(Bill.created_at.desc()).limit(6).all()
+        gas_avg = sum(b.consumption for b in gas_bills) / len(gas_bills) if gas_bills else 0
+        if not gas_bills or gas_avg == 0:
+            gas_efficiency = 'unknown'
+            gas_score = 0
+        else:
+            gas_efficiency = 'efficient' if gas_avg < 20 else 'average' if gas_avg < 30 else 'high'
+            gas_score = max(0, min(10, 10 - (gas_avg / 4)))  # Score out of 10
+        
+        if len(gas_bills) >= 3:
+            recent_avg = sum(b.consumption for b in gas_bills[:3]) / 3
+            older_avg = sum(b.consumption for b in gas_bills[3:6]) / len(gas_bills[3:6]) if len(gas_bills) > 3 else recent_avg
+            gas_trend = 'improving' if recent_avg < older_avg else 'warning' if recent_avg > older_avg else 'stable'
+        else:
+            gas_trend = 'stable'
+        
+        # Calculate ward average (from all users in same ward)
+        ward_bills = db.session.query(Bill).join(User).filter(
+            User.ward == user.ward,
+            Bill.utility_type == 'electricity'
+        ).all()
+        ward_avg = sum(b.consumption for b in ward_bills) / len(ward_bills) if ward_bills else 0
+        
+        # Calculate potential savings
+        if elec_avg > 200:
+            potential_savings = (elec_avg - 200) * 5 * 12  # Assuming ₹5 per unit saved over a year
+        else:
+            potential_savings = 0
+        
+        data = {
+            'efficiency': {
+                'electricity': elec_efficiency,
+                'gas': gas_efficiency,
+                'water': water_efficiency
+            },
+            'comparisons': {
+                'ward_avg': round(ward_avg, 1),
+                'user_avg': round(elec_avg, 1)
+            },
+            'profile': {
+                'electricity': {
+                    'score': round(elec_score, 1),
+                    'avgMonthly': round(elec_avg, 1),
+                    'trend': elec_trend
+                },
+                'water': {
+                    'score': round(water_score, 1),
+                    'avgMonthly': round(water_avg, 1),
+                    'trend': water_trend
+                },
+                'gas': {
+                    'score': round(gas_score, 1),
+                    'avgMonthly': round(gas_avg, 1),
+                    'trend': gas_trend
+                }
+            },
+            'recommendations': {
+                'electricity': {
+                    'savings': round(potential_savings, 0)
+                }
+            }
         }
-    }
-    return jsonify(data)
+        return jsonify(data)
+        
+    except Exception as e:
+        print(f"Insights API error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'efficiency': {'electricity': 'unknown', 'gas': 'unknown', 'water': 'unknown'},
+            'comparisons': {'ward_avg': 0, 'user_avg': 0},
+            'profile': {
+                'electricity': {'score': 0, 'avgMonthly': 0, 'trend': 'stable'},
+                'water': {'score': 0, 'avgMonthly': 0, 'trend': 'stable'},
+                'gas': {'score': 0, 'avgMonthly': 0, 'trend': 'stable'}
+            },
+            'recommendations': {'electricity': {'savings': 0}}
+        })
 
 @app.route('/api/records')
 def api_records():
-    data = {
-        'bills': [
-            {
-                'date': 'Jan 05, 2026',
-                'utility': 'electricity',
-                'bill_id': 'BRPL-JAN-001',
-                'reading': '24500 (245 units)',
-                'amount': '₹ 1,240',
-                'status': 'pending'
-            },
-            {
-                'date': 'Jan 03, 2026',
-                'utility': 'gas',
-                'bill_id': 'IGL-JAN-889',
-                'reading': '4502 (18 units)',
-                'amount': '₹ 850',
-                'status': 'paid'
-            },
-            {
-                'date': 'Dec 31, 2025',
-                'utility': 'water',
-                'bill_id': 'DJB-DEC-667',
-                'reading': '998 (20 kl)',
-                'amount': '₹ 380',
-                'status': 'paid'
-            }
-        ]
-    }
-    return jsonify(data)
+    """Get billing records from database"""
+    user_id = session.get('user_id')
+    
+    # For demo, get first user if not logged in
+    if not user_id:
+        demo_user = User.query.first()
+        if demo_user:
+            user_id = demo_user.id
+    
+    if user_id:
+        try:
+            # Get all bills for the user
+            bills = Bill.query.filter_by(user_id=user_id).order_by(Bill.created_at.desc()).limit(50).all()
+            
+            bills_data = []
+            for bill in bills:
+                bills_data.append({
+                    'date': bill.created_at.strftime('%b %d, %Y'),
+                    'utility': bill.utility_type,
+                    'bill_id': bill.bill_id,
+                    'reading': f'{bill.consumption} {bill.consumption_unit}',
+                    'amount': f'₹ {bill.amount:,.0f}',
+                    'status': bill.status
+                })
+            
+            return jsonify({'bills': bills_data})
+            
+        except Exception as e:
+            print(f"Records API error: {str(e)}")
+            import traceback
+            traceback.print_exc()
+    
+    # Fallback to empty data
+    return jsonify({'bills': []})
 
 @app.route('/api/community')
 def api_community():
-    data = {
-        'ward': 'Kalkaji',
-        'health_score': 78,
-        'stress_map': ['low', 'medium', 'high', 'low']
-    }
-    return jsonify(data)
+    """Get community data from database"""
+    user_id = session.get('user_id')
+    
+    # For demo, use first user if not logged in
+    if not user_id:
+        demo_user = User.query.first()
+        if demo_user:
+            user_id = demo_user.id
+    
+    if not user_id:
+        return jsonify({
+            'ward': 'Unknown',
+            'health_score': 0,
+            'stress_map': [0, 0, 0, 0],
+            'active_participants': 0,
+            'recent_reports': 0
+        })
+    
+    try:
+        user = User.query.get(user_id)
+        
+        # Get community stats for this ward
+        ward_stats = CommunityStats.query.filter_by(
+            ward=user.ward,
+            city=user.city
+        ).first()
+        
+        # Calculate health score based on available data
+        if ward_stats:
+            # Health score calculation (0-100)
+            # Based on: active participation, low stress levels, member engagement
+            stress_weights = {
+                'low': 100,
+                'medium': 60,
+                'high': 20
+            }
+            elec_score = stress_weights.get(ward_stats.electricity_stress_level, 60)
+            water_score = stress_weights.get(ward_stats.water_stress_level, 60)
+            gas_score = stress_weights.get(ward_stats.gas_stress_level, 60)
+            
+            # Average the scores
+            health_score = round((elec_score + water_score + gas_score) / 3)
+            
+            # Stress map (numeric representation for charts)
+            stress_map = [
+                stress_weights.get(ward_stats.electricity_stress_level, 60),
+                stress_weights.get(ward_stats.water_stress_level, 60),
+                stress_weights.get(ward_stats.gas_stress_level, 60),
+                health_score
+            ]
+            
+            active_participants = ward_stats.active_members
+        else:
+            health_score = 0
+            stress_map = [0, 0, 0, 0]
+            active_participants = 0
+        
+        # Get recent reports count for this ward (last 7 days)
+        from datetime import timedelta
+        seven_days_ago = datetime.utcnow() - timedelta(days=7)
+        recent_reports = db.session.query(ServiceReport).join(User).filter(
+            User.ward == user.ward,
+            ServiceReport.created_at >= seven_days_ago
+        ).count()
+        
+        data = {
+            'ward': user.ward,
+            'health_score': health_score,
+            'stress_map': stress_map,
+            'active_participants': active_participants,
+            'recent_reports': recent_reports
+        }
+        return jsonify(data)
+        
+    except Exception as e:
+        print(f"Community API error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'ward': 'Unknown',
+            'health_score': 0,
+            'stress_map': [0, 0, 0, 0],
+            'active_participants': 0,
+            'recent_reports': 0
+        })
 
 @app.route('/api/profile')
 def api_profile():
-    data = {
-        'name': 'Suhan Kumar',
-        'phone': '+91 98765 43210',
-        'address': 'Flat 402, Kaveri Apartments, Kalkaji, New Delhi - 110019',
-        'email': 'suhan.kumar@example.com'
-    }
-    return jsonify(data)
+    """Get user profile from database"""
+    user_id = session.get('user_id')
+    
+    # For demo, use first user if not logged in
+    if not user_id:
+        demo_user = User.query.first()
+        if demo_user:
+            user_id = demo_user.id
+    
+    if not user_id:
+        return jsonify({
+            'name': 'Guest User',
+            'phone': 'N/A',
+            'address': 'N/A',
+            'email': 'N/A'
+        })
+    
+    try:
+        user = User.query.get(user_id)
+        
+        if not user:
+            return jsonify({'success': False, 'message': 'User not found'}), 404
+        
+        # Construct full address
+        address = f"{user.locality}, {user.ward}, {user.city}, {user.state}"
+        
+        data = {
+            'name': user.full_name,
+            'phone': user.phone,
+            'address': address,
+            'email': user.email,
+            'state': user.state,
+            'city': user.city,
+            'ward': user.ward,
+            'locality': user.locality,
+            'alerts_enabled': user.alerts_enabled,
+            'preferred_language': user.preferred_language
+        }
+        return jsonify(data)
+        
+    except Exception as e:
+        print(f"Profile API error: {str(e)}")
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 @app.route('/api/services/submit', methods=['POST'])
 def api_submit_service():
-    request_data = request.get_json()
-    # Process the service request here
-    # Save to database, etc.
-    return jsonify({
-        'success': True,
-        'message': 'Service request submitted successfully',
-        'request_id': 'SR-2026-001'
-    })
+    """Submit a new service request"""
+    user_id = session.get('user_id')
+    
+    # For demo, use first user if not logged in
+    if not user_id:
+        demo_user = User.query.first()
+        if demo_user:
+            user_id = demo_user.id
+        else:
+            return jsonify({'success': False, 'message': 'No user found'}), 400
+    
+    try:
+        data = request.get_json()
+        
+        # Create service report
+        report = ServiceReport(
+            user_id=user_id,
+            report_type=data.get('report_type', 'general'),
+            utility_type=data.get('utility_type', 'general'),
+            title=data.get('title', 'Service Request'),
+            description=data.get('description', ''),
+            status='open',
+            priority=data.get('priority', 'medium'),
+            location=data.get('location', '')
+        )
+        db.session.add(report)
+        
+        # Update community report count
+        community = Community.query.filter_by(user_id=user_id).first()
+        if community:
+            community.reports_submitted += 1
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Service request submitted successfully',
+            'request_id': report.id
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Service submit error: {str(e)}")
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# ============================================
+# BILL MANAGEMENT ENDPOINTS
+# ============================================
+@app.route('/api/bills/add', methods=['POST'])
+def api_add_bill():
+    """Add a new bill (for testing/demo purposes)"""
+    user_id = session.get('user_id')
+    
+    # For demo, use first user if not logged in
+    if not user_id:
+        demo_user = User.query.first()
+        if demo_user:
+            user_id = demo_user.id
+        else:
+            return jsonify({'success': False, 'message': 'No user found'}), 400
+    
+    try:
+        data = request.get_json()
+        
+        bill = Bill(
+            user_id=user_id,
+            utility_type=data['utility_type'],
+            bill_id=data.get('bill_id', f'{data["utility_type"].upper()}-{datetime.now().strftime("%Y%m%d")}'),
+            amount=float(data['amount']),
+            consumption=float(data['consumption']),
+            consumption_unit=data['consumption_unit'],
+            billing_period_start=datetime.strptime(data['billing_period_start'], '%Y-%m-%d') if 'billing_period_start' in data else datetime.now() - timedelta(days=30),
+            billing_period_end=datetime.strptime(data['billing_period_end'], '%Y-%m-%d') if 'billing_period_end' in data else datetime.now(),
+            due_date=datetime.strptime(data['due_date'], '%Y-%m-%d') if 'due_date' in data else datetime.now() + timedelta(days=15),
+            status=data.get('status', 'pending')
+        )
+        
+        db.session.add(bill)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Bill added successfully',
+            'bill': bill.to_dict()
+        }), 201
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Add bill error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/bills', methods=['GET'])
+def api_get_bills():
+    """Get all bills for current user"""
+    user_id = session.get('user_id')
+    
+    # For demo, use first user if not logged in
+    if not user_id:
+        demo_user = User.query.first()
+        if demo_user:
+            user_id = demo_user.id
+    
+    if user_id:
+        try:
+            utility_type = request.args.get('utility_type')
+            
+            query = Bill.query.filter_by(user_id=user_id)
+            if utility_type:
+                query = query.filter_by(utility_type=utility_type)
+            
+            bills = query.order_by(Bill.created_at.desc()).all()
+            
+            return jsonify({
+                'success': True,
+                'bills': [bill.to_dict() for bill in bills]
+            })
+        except Exception as e:
+            return jsonify({'success': False, 'message': str(e)}), 500
+    
+    return jsonify({'success': False, 'message': 'No user found'}), 400
+
 
 if __name__ == '__main__':
     app.run(debug=True)

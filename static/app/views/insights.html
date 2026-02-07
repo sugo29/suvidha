@@ -1,7 +1,7 @@
 <!-- Insights Header with Stats -->
 <div class="insights-header">
     <div class="header-content">
-        <h1>{{t('insights')}}</h1>
+        <h1>Insights</h1>
         <p>Understanding your household patterns, trends, and civic context.</p>
     </div>
     <div class="insights-stats-bar">
@@ -69,27 +69,27 @@
                         <i data-lucide="zap"></i>
                     </div>
                     <div>
-                        <h3>{{t('electricity_efficiency')}}</h3>
+                        <h3>Electricity Efficiency</h3>
                         <p class="card-subtitle">Based on 12 months data</p>
                     </div>
                 </div>
                 <div class="header-right">
-                    <span class="badge success">{{t('efficient')}}</span>
+                    <span class="badge" ng-class="{'success': vm.getEfficiencyLabel('electricity') === 'efficient', 'warning': vm.getEfficiencyLabel('electricity') === 'average', 'error': vm.getEfficiencyLabel('electricity') === 'high'}">{{vm.getEfficiencyLabel('electricity') | uppercase}}</span>
                 </div>
             </div>
             <div class="card-body">
                 <div class="profile-metric">
                     <div class="metric-value">{{vm.profile.electricity.score}}<span class="metric-unit">/10</span></div>
-                    <p class="metric-desc">{{t('you_consume_less')}}</p>
+                    <p class="metric-desc">You consume less than average</p>
                 </div>
                 <div class="profile-details">
                     <div class="detail-row">
                         <span class="detail-label">Avg Monthly</span>
-                        <span class="detail-value">{{vm.profile.electricity.avgMonthly}} kWh</span>
+                        <span class="detail-value">{{vm.profile.electricity.avgMonthly || 0}} kWh</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">vs Ward Avg</span>
-                        <span class="detail-value trend-down">-15%</span>
+                        <span class="detail-value" ng-class="{'trend-down': vm.getWardComparison('electricity').indexOf('-') === 0, 'trend-up': vm.getWardComparison('electricity').indexOf('+') === 0}">{{vm.getWardComparison('electricity')}}</span>
                     </div>
                 </div>
             </div>
@@ -105,27 +105,27 @@
                         <i data-lucide="droplet"></i>
                     </div>
                     <div>
-                        <h3>{{t('water_usage_category')}}</h3>
+                        <h3>Water Usage Category</h3>
                         <p class="card-subtitle">Based on 6 months data</p>
                     </div>
                 </div>
                 <div class="header-right">
-                    <span class="badge warning">{{t('moderate_high')}}</span>
+                    <span class="badge" ng-class="{'success': vm.getEfficiencyLabel('water') === 'efficient', 'warning': vm.getEfficiencyLabel('water') === 'average', 'error': vm.getEfficiencyLabel('water') === 'high'}">{{vm.getEfficiencyLabel('water') | uppercase}}</span>
                 </div>
             </div>
             <div class="card-body">
                 <div class="profile-metric">
                     <div class="metric-value">{{vm.profile.water.score}}<span class="metric-unit">/10</span></div>
-                    <p class="metric-desc">{{t('usage_peaks_weekends')}}</p>
+                    <p class="metric-desc">Usage peaks on weekends</p>
                 </div>
                 <div class="profile-details">
                     <div class="detail-row">
                         <span class="detail-label">Avg Monthly</span>
-                        <span class="detail-value">{{vm.profile.water.avgMonthly}} L</span>
+                        <span class="detail-value">{{vm.profile.water.avgMonthly || 0}} L</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">vs Ward Avg</span>
-                        <span class="detail-value trend-up">+15%</span>
+                        <span class="detail-value" ng-class="{'trend-down': vm.getWardComparison('water').indexOf('-') === 0, 'trend-up': vm.getWardComparison('water').indexOf('+') === 0}">{{vm.getWardComparison('water')}}</span>
                     </div>
                 </div>
             </div>
@@ -141,27 +141,27 @@
                         <i data-lucide="flame"></i>
                     </div>
                     <div>
-                        <h3>{{t('gas_stability_index')}}</h3>
+                        <h3>Gas Stability Index</h3>
                         <p class="card-subtitle">Based on 6 months data</p>
                     </div>
                 </div>
                 <div class="header-right">
-                    <span class="badge success">{{t('stable')}}</span>
+                    <span class="badge" ng-class="{'success': vm.getEfficiencyLabel('gas') === 'efficient', 'warning': vm.getEfficiencyLabel('gas') === 'average', 'error': vm.getEfficiencyLabel('gas') === 'high'}">{{vm.getEfficiencyLabel('gas') | uppercase}}</span>
                 </div>
             </div>
             <div class="card-body">
                 <div class="profile-metric">
                     <div class="metric-value">{{vm.profile.gas.score}}<span class="metric-unit">/10</span></div>
-                    <p class="metric-desc">{{t('consistent_usage_pattern')}}</p>
+                    <p class="metric-desc">Consistent usage pattern</p>
                 </div>
                 <div class="profile-details">
                     <div class="detail-row">
                         <span class="detail-label">Avg Monthly</span>
-                        <span class="detail-value">{{vm.profile.gas.avgMonthly}} m³</span>
+                        <span class="detail-value">{{vm.profile.gas.avgMonthly || 0}} m³</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">vs Ward Avg</span>
-                        <span class="detail-value">±0%</span>
+                        <span class="detail-value" ng-class="{'trend-down': vm.getWardComparison('gas').indexOf('-') === 0, 'trend-up': vm.getWardComparison('gas').indexOf('+') === 0}">{{vm.getWardComparison('gas')}}</span>
                     </div>
                 </div>
             </div>
@@ -179,7 +179,7 @@
 
 <div ng-show="vm.activeSection === 'trends'" class="insight-section">
     <div class="section-header-enhanced">
-        <h2>{{t('your_consumption_trend')}}</h2>
+        <h2>Your Consumption Trend</h2>
         <button class="action-btn" ng-click="vm.exportTrendData()">
             <i data-lucide="download"></i>
             <span>Export Data</span>
@@ -194,15 +194,15 @@
             <div class="card-body">
                 <div class="trend-items">
                     <div class="trend-item">
-                        <div class="trend-icon improving">
+                        <div class="trend-icon" ng-class="vm.getTrendLabel('electricity')">
                             <i data-lucide="zap"></i>
                         </div>
                         <div class="trend-content">
                             <div class="trend-header">
-                                <strong>{{t('electricity')}}</strong>
-                                <span class="trend-badge improving">{{t('improving')}} <i data-lucide="trending-down"></i></span>
+                                <strong>Electricity</strong>
+                                <span class="trend-badge" ng-class="vm.getTrendLabel('electricity')">{{vm.getTrendBadgeText('electricity')}} <i data-lucide="{{vm.getTrendIcon('electricity')}}"></i></span>
                             </div>
-                            <p class="trend-desc">{{t('usage_reduced_consistently')}}</p>
+                            <p class="trend-desc">{{vm.getTrendDescription('electricity')}}</p>
                             <div class="trend-chart">
                                 <canvas id="electricityTrendChart" width="400" height="100"></canvas>
                             </div>
@@ -210,15 +210,15 @@
                     </div>
 
                     <div class="trend-item">
-                        <div class="trend-icon warning">
+                        <div class="trend-icon" ng-class="vm.getTrendLabel('water')">
                             <i data-lucide="droplet"></i>
                         </div>
                         <div class="trend-content">
                             <div class="trend-header">
-                                <strong>{{t('water')}}</strong>
-                                <span class="trend-badge warning">{{t('increasing')}} <i data-lucide="trending-up"></i></span>
+                                <strong>Water</strong>
+                                <span class="trend-badge" ng-class="vm.getTrendLabel('water')">{{vm.getTrendBadgeText('water')}} <i data-lucide="{{vm.getTrendIcon('water')}}"></i></span>
                             </div>
-                            <p class="trend-desc">{{t('steady_increase_observed')}}</p>
+                            <p class="trend-desc">{{vm.getTrendDescription('water')}}</p>
                             <div class="trend-chart">
                                 <canvas id="waterTrendChart" width="400" height="100"></canvas>
                             </div>
@@ -226,15 +226,15 @@
                     </div>
 
                     <div class="trend-item">
-                        <div class="trend-icon stable">
+                        <div class="trend-icon" ng-class="vm.getTrendLabel('gas')">
                             <i data-lucide="flame"></i>
                         </div>
                         <div class="trend-content">
                             <div class="trend-header">
-                                <strong>{{t('gas')}}</strong>
-                                <span class="trend-badge stable">{{t('stable')}} <i data-lucide="minus"></i></span>
+                                <strong>Gas</strong>
+                                <span class="trend-badge" ng-class="vm.getTrendLabel('gas')">{{vm.getTrendBadgeText('gas')}} <i data-lucide="{{vm.getTrendIcon('gas')}}"></i></span>
                             </div>
-                            <p class="trend-desc">{{t('consumption_variance')}}</p>
+                            <p class="trend-desc">{{vm.getTrendDescription('gas')}}</p>
                             <div class="trend-chart">
                                 <canvas id="gasTrendChart" width="400" height="100"></canvas>
                             </div>
@@ -450,14 +450,16 @@
                         <span>Max</span>
                     </div>
                     <div class="comparison-bar">
-                        <div class="bar-fill your-position" style="width: 60%;"></div>
-                        <div class="bar-marker avg-marker" style="left: 70%;">
+                        <div class="bar-fill your-position" ng-style="{width: vm.getUserPositionPercent() + '%'}"></div>
+                        <div class="bar-marker avg-marker" style="left: 50%;">
                             <span>Avg</span>
                         </div>
                     </div>
-                    <div class="comparison-result success">
-                        <i data-lucide="trophy"></i>
-                        <span>Better than 40% of nearby households</span>
+                    <div class="comparison-result" ng-class="{'success': vm.getUserPercentile() < 50, 'warning': vm.getUserPercentile() >= 50}">
+                        <i data-lucide="trophy" ng-if="vm.getUserPercentile() < 50"></i>
+                        <i data-lucide="info" ng-if="vm.getUserPercentile() >= 50"></i>
+                        <span ng-if="vm.insightsData.comparisons.ward_avg > 0">Better than {{100 - vm.getUserPercentile()}}% of nearby households</span>
+                        <span ng-if="vm.insightsData.comparisons.ward_avg === 0">No comparison data available</span>
                     </div>
                 </div>
             </div>
@@ -507,11 +509,12 @@
                             <i data-lucide="map-pin"></i>
                         </div>
                         <div class="context-content">
-                            <h4>Ward Trend (Kalkaji)</h4>
-                            <p>The ward has observed increased water demand during the current quarter.</p>
+                            <h4>Ward Trend ({{vm.wardName}})</h4>
+                            <p ng-if="vm.insightsData.comparisons.ward_avg > 0">The ward has consumption data based on available records.</p>
+                            <p ng-if="vm.insightsData.comparisons.ward_avg === 0">No ward consumption data available yet.</p>
                             <div class="context-stats">
-                                <span class="stat-chip">+12% vs last quarter</span>
-                                <span class="stat-chip">Above city avg</span>
+                                <span class="stat-chip" ng-if="vm.insightsData.comparisons.ward_avg > 0">Ward Avg: {{vm.insightsData.comparisons.ward_avg}} kWh</span>
+                                <span class="stat-chip" ng-if="vm.insightsData.comparisons.ward_avg === 0">Awaiting data</span>
                             </div>
                         </div>
                     </div>

@@ -5,6 +5,12 @@
     angular.module('suvidhaApp', ['ngRoute', 'ngSanitize'])
         .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
             $routeProvider
+                .when('/landing', {
+                    templateUrl: '/static/app/views/landing.html',
+                    controller: 'AuthController',
+                    controllerAs: 'vm',
+                    requireAuth: false
+                })
                 .when('/auth', {
                     templateUrl: '/static/app/views/auth.html',
                     controller: 'AuthController',
@@ -72,18 +78,9 @@
             // Use HTML5 mode (optional - removes # from URLs)
             // $locationProvider.html5Mode(true);
         }])
-        .run(['$rootScope', '$location', 'TranslationService', 'AuthService', function($rootScope, $location, TranslationService, AuthService) {
-            // Initialize translation service immediately
-            TranslationService.init();
-
-            // Set current language
+        .run(['$rootScope', '$location', 'AuthService', function($rootScope, $location, AuthService) {
+            // Set current language (for backward compatibility)
             $rootScope.currentLang = 'en';
-            
-            // Translation function
-            $rootScope.t = function(key) {
-                var result = TranslationService.translate(key);
-                return result;
-            };
 
             // Logout function
             $rootScope.logout = function() {

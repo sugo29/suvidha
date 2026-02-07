@@ -44,6 +44,7 @@
 
             self.translate = function (key) {
                 if (!self.translations || !self.translations[self.currentLang]) {
+                    console.warn('Translations not loaded or language not set:', self.currentLang);
                     return key;
                 }
 
@@ -54,6 +55,7 @@
                     if (value && typeof value === 'object') {
                         value = value[keys[i]];
                     } else {
+                        console.warn('Translation key not found:', key);
                         return key;
                     }
                 }

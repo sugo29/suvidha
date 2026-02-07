@@ -1863,6 +1863,170 @@ textarea.form-control {
     margin: 0 auto;
 }
 
+/* User Profile Card */
+.user-profile-card {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    color: white;
+}
+
+.profile-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.profile-avatar i {
+    width: 40px;
+    height: 40px;
+    color: white;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: white;
+}
+
+.profile-location,
+.profile-contact {
+    font-size: 0.95rem;
+    margin: 0.25rem 0;
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.profile-location i,
+.profile-contact i {
+    width: 16px;
+    height: 16px;
+}
+
+.separator {
+    margin: 0 0.5rem;
+}
+
+.profile-stats {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.stat-box {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 150px;
+    transition: all 0.3s ease;
+}
+
+.stat-box:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon.electricity {
+    background: rgba(34, 197, 94, 0.2);
+}
+
+.stat-icon.water {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+.stat-icon.gas {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+.stat-icon.reports {
+    background: rgba(245, 158, 11, 0.2);
+}
+
+.stat-icon.community {
+    background: rgba(168, 85, 247, 0.2);
+}
+
+.stat-icon i {
+    width: 20px;
+    height: 20px;
+    color: white;
+}
+
+.stat-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    color: white;
+}
+
+@media (max-width: 1200px) {
+    .profile-header {
+        flex-direction: column;
+    }
+    
+    .profile-stats {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .user-profile-card {
+        padding: 1.5rem;
+    }
+    
+    .profile-name {
+        font-size: 1.5rem;
+    }
+    
+    .stat-box {
+        min-width: 120px;
+    }
+}
+
 .policy-banner-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));

@@ -1,7 +1,7 @@
 <section class="page-header utilities-header">
     <div class="header-content">
-        <h1>{{t('utilities_view')}}</h1>
-        <p>{{t('utilities_subtitle')}}</p>
+        <h1>Utilities</h1>
+        <p>Manage your utility bills and consumption</p>
     </div>
     <div class="utility-stats-bar">
         <div class="stat-item">
@@ -27,17 +27,17 @@
     <div class="tabs">
         <button class="tab-btn utility-tab" ng-class="{active: vm.activeTab === 'electricity'}" ng-click="vm.switchTab('electricity')">
             <i data-lucide="zap"></i>
-            <span class="tab-label">{{t('electricity')}}</span>
+            <span class="tab-label">Electricity</span>
             <span class="tab-badge" ng-if="vm.activeTab === 'electricity'">Active</span>
         </button>
         <button class="tab-btn utility-tab" ng-class="{active: vm.activeTab === 'gas'}" ng-click="vm.switchTab('gas')">
             <i data-lucide="flame"></i>
-            <span class="tab-label">{{t('gas')}}</span>
+            <span class="tab-label">Gas</span>
             <span class="tab-badge" ng-if="vm.activeTab === 'gas'">Active</span>
         </button>
         <button class="tab-btn utility-tab" ng-class="{active: vm.activeTab === 'water'}" ng-click="vm.switchTab('water')">
             <i data-lucide="droplet"></i>
-            <span class="tab-label">{{t('water')}}</span>
+            <span class="tab-label">Water</span>
             <span class="tab-badge" ng-if="vm.activeTab === 'water'">Active</span>
         </button>
     </div>
@@ -49,7 +49,7 @@
     <div class="utility-actions">
         <button class="action-btn primary" ng-click="vm.payBill('electricity')">
             <i data-lucide="credit-card"></i>
-            Pay Bill (₹1,240)
+            Pay Bill (₹{{vm.getCurrentBill('electricity') || 0}})
         </button>
         <button class="action-btn" ng-click="vm.downloadBill('electricity')">
             <i data-lucide="download"></i>
@@ -72,12 +72,12 @@
                 <div class="header-left">
                     <i data-lucide="bar-chart-2" class="header-icon"></i>
                     <div>
-                        <h3>{{t('monthly_consumption_last_12')}}</h3>
+                        <h3>Monthly Consumption (Last 12 Months)</h3>
                         <p class="card-subtitle">Trend analysis for the past year</p>
                     </div>
                 </div>
                 <div class="header-right">
-                    <span class="badge success">{{t('avg')}}: 210 {{t('kwh')}}</span>
+                    <span class="badge success">AVG: {{vm.getAverage('electricity') || 0}} kWh</span>
                     <button class="icon-btn" ng-click="vm.toggleChartType('electricity')">
                         <i data-lucide="more-vertical"></i>
                     </button>
@@ -110,47 +110,47 @@
         <div class="card info-card enhanced">
             <div class="card-header">
                 <i data-lucide="layers" class="header-icon"></i>
-                <h3>{{t('current_tariff_plan')}}</h3>
+                <h3>Current Tariff Plan</h3>
             </div>
             <div class="provider-info">
                 <div class="provider-logo">
                     <i data-lucide="building"></i>
                 </div>
                 <div class="provider-details">
-                    <h4>BSES Rajdhani Power Limited</h4>
-                    <p>Connection ID: BRPL-2024-001</p>
+                    <h4>{{vm.utilitiesData.electricity.provider || 'Not Set'}}</h4>
+                    <p>Connection ID: {{vm.connectionId || 'Not Available'}}</p>
                 </div>
             </div>
             <div class="tariff-slabs">
                 <div class="slab-item">
                     <div class="slab-header">
-                        <span class="slab-title">{{t('slab_1')}} (0-200 units)</span>
+                        <span class="slab-title">Slab 1 (0-200 units)</span>
                         <span class="slab-badge subsidy">Subsidized</span>
                     </div>
-                    <div class="slab-rate">₹3.00 {{t('per_unit')}}</div>
+                    <div class="slab-rate">₹3.00 per unit</div>
                 </div>
                 <div class="slab-item active">
                     <div class="slab-header">
-                        <span class="slab-title">{{t('slab_2')}} (201-400 units)</span>
+                        <span class="slab-title">Slab 2 (201-400 units)</span>
                         <span class="slab-badge current">Your Current</span>
                     </div>
-                    <div class="slab-rate">₹4.50 {{t('per_unit')}}</div>
+                    <div class="slab-rate">₹4.50 per unit</div>
                 </div>
                 <div class="slab-item">
                     <div class="slab-header">
-                        <span class="slab-title">{{t('slab_3')}} (401+ units)</span>
+                        <span class="slab-title">Slab 3 (401+ units)</span>
                     </div>
-                    <div class="slab-rate">₹6.50 {{t('per_unit')}}</div>
+                    <div class="slab-rate">₹6.50 per unit</div>
                 </div>
             </div>
             <div class="info-alert enhanced">
                 <i data-lucide="info"></i>
-                <p>Your current usage places you in <strong>{{t('slab_2')}}</strong>. Save 45 units to get subsidized rates!</p>
+                <p>Your current usage places you in <strong>Slab 2</strong>. Save 45 units to get subsidized rates!</p>
             </div>
             <div class="card-actions">
                 <a href="#!/services" class="btn-primary full-width">
                     <i data-lucide="credit-card"></i>
-                    {{t('pay_bill')}} (₹ 1,240)
+                    Pay Bill (₹ {{vm.getCurrentBill('electricity') || 0}})
                 </a>
                 <button class="btn-secondary full-width" ng-click="vm.viewTariffDetails()">
                     <i data-lucide="file-text"></i>
@@ -189,12 +189,12 @@
                 <div class="header-left">
                     <i data-lucide="activity" class="header-icon"></i>
                     <div>
-                        <h3>{{t('gas_usage_trend')}}</h3>
-                        <p class="card-subtitle">Monthly consumption pattern</p>
+                        <h3>Gas Usage Trend</h3>
+                        <p class="card-subtitle">Your monthly gas consumption</p>
                     </div>
                 </div>
                 <div class="header-right">
-                    <span class="badge warning">{{t('avg')}}: 16 SCM</span>
+                    <span class="badge warning">AVG: {{vm.getAverage('gas') || 0}} SCM</span>
                     <button class="icon-btn" ng-click="vm.toggleChartType('gas')">
                         <i data-lucide="more-vertical"></i>
                     </button>
@@ -226,15 +226,15 @@
         <div class="card info-card enhanced">
             <div class="card-header">
                 <i data-lucide="shield" class="header-icon"></i>
-                <h3>{{t('safety_efficiency')}}</h3>
+                <h3>Safety & Efficiency</h3>
             </div>
             <div class="provider-info">
                 <div class="provider-logo">
                     <i data-lucide="building"></i>
                 </div>
                 <div class="provider-details">
-                    <h4>Indraprastha Gas Limited</h4>
-                    <p>Connection ID: IGL-2024-445</p>
+                    <h4>{{vm.utilitiesData.gas.provider || 'Not Set'}}</h4>
+                    <p>Connection ID: {{vm.connectionId || 'Not Available'}}</p>
                 </div>
             </div>
             <div class="safety-checks">
@@ -305,12 +305,12 @@
                 <div class="header-left">
                     <i data-lucide="bar-chart" class="header-icon"></i>
                     <div>
-                        <h3>{{t('water_consumption')}}</h3>
-                        <p class="card-subtitle">Monthly usage in kiloliters</p>
+                        <h3>Water Consumption</h3>
+                        <p class="card-subtitle">Track your water usage</p>
                     </div>
                 </div>
                 <div class="header-right">
-                    <span class="badge info">{{t('avg')}}: 20 {{t('kl')}}</span>
+                    <span class="badge info">AVG: {{vm.getAverage('water') || 0}} kL</span>
                     <button class="icon-btn" ng-click="vm.toggleChartType('water')">
                         <i data-lucide="more-vertical"></i>
                     </button>
@@ -342,15 +342,15 @@
         <div class="card info-card enhanced">
             <div class="card-header">
                 <i data-lucide="droplet" class="header-icon"></i>
-                <h3>{{t('water_quality_ward')}}</h3>
+                <h3>Water Quality in Your Ward</h3>
             </div>
             <div class="provider-info">
                 <div class="provider-logo">
                     <i data-lucide="building"></i>
                 </div>
                 <div class="provider-details">
-                    <h4>Delhi Jal Board</h4>
-                    <p>Connection ID: DJB-2024-778</p>
+                    <h4>{{vm.utilitiesData.water.provider || 'Not Set'}}</h4>
+                    <p>Connection ID: {{vm.connectionId || 'Not Available'}}</p>
                 </div>
             </div>
             <div class="quality-score-card">
@@ -367,7 +367,7 @@
                 </div>
                 <div class="quality-details">
                     <h4>Excellent Water Quality</h4>
-                    <p>{{t('ward_quality_score')}}: Above Average</p>
+                    <p>Ward Quality Score: Above Average</p>
                 </div>
             </div>
             <div class="supply-info">

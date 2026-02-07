@@ -182,3 +182,97 @@ class CommunityStats(db.Model):
             'electricity_stress_level': self.electricity_stress_level,
             'gas_stress_level': self.gas_stress_level
         }
+
+
+# ============================================
+# BILLS TABLE (for tracking utility consumption)
+# ============================================
+class Bill(db.Model):
+    __tablename__ = 'bills'
+    
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    
+    # Bill details
+    utility_type = db.Column(db.String(50), nullable=False)  # 'electricity', 'water', 'gas'
+    bill_id = db.Column(db.String(100), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    consumption = db.Column(db.Float, nullable=False)  # units/kL/SCM
+    consumption_unit = db.Column(db.String(20), nullable=False)  # 'kWh', 'kL', 'SCM'
+    
+    # Dates
+    billing_period_start = db.Column(db.DateTime, nullable=False)
+    billing_period_end = db.Column(db.DateTime, nullable=False)
+    due_date = db.Column(db.DateTime, nullable=False)
+    paid_date = db.Column(db.DateTime, nullable=True)
+    
+    # Status
+    status = db.Column(db.String(20), default='pending')  # 'pending', 'paid', 'overdue'
+    
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    user = db.relationship('User', backref='bills')
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'utility_type': self.utility_type,
+            'bill_id': self.bill_id,
+            'amount': self.amount,
+            'consumption': self.consumption,
+            'consumption_unit': self.consumption_unit,
+            'billing_period_start': self.billing_period_start.isoformat(),
+            'billing_period_end': self.billing_period_end.isoformat(),
+            'due_date': self.due_date.isoformat(),
+            'paid_date': self.paid_date.isoformat() if self.paid_date else None,
+            'status': self.status
+        }
+
+
+# ============================================
+# SERVICE REPORTS TABLE (for tracking complaints/requests)
+# ============================================
+class ServiceReport(db.Model):
+    __tablename__ = 'service_reports'
+    
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    
+    # Report details
+    report_type = db.Column(db.String(50), nullable=False)  # 'power_outage', 'water_supply', 'gas_leakage', etc.
+    utility_type = db.Column(db.String(50), nullable=False)  # 'electricity', 'water', 'gas', 'general'
+    title = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    
+    # Status tracking
+    status = db.Column(db.String(20), default='open')  # 'open', 'in_progress', 'resolved', 'closed'
+    priority = db.Column(db.String(20), default='medium')  # 'low', 'medium', 'high', 'urgent'
+    
+    # Location
+    location = db.Column(db.String(500), nullable=True)
+    
+    # Timestamps
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    resolved_at = db.Column(db.DateTime, nullable=True)
+    
+    # Relationships
+    user = db.relationship('User', backref='service_reports')
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'report_type': self.report_type,
+            'utility_type': self.utility_type,
+            'title': self.title,
+            'description': self.description,
+            'status': self.status,
+            'priority': self.priority,
+            'location': self.location,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat(),
+            'resolved_at': self.resolved_at.isoformat() if self.resolved_at else None
+        }

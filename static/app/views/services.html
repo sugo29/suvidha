@@ -1,8 +1,8 @@
 <!-- Services Header with Stats -->
 <div class="services-header">
     <div class="header-content">
-        <h1>{{t('services_grievances')}}</h1>
-        <p>{{t('single_window_complaints')}}</p>
+        <h1>Services & Grievances</h1>
+        <p>Single window for complaints and service requests</p>
     </div>
     <div class="services-stats-bar">
         <div class="stat-item">
@@ -37,8 +37,8 @@
                 <i data-lucide="zap"></i>
             </div>
             <div>
-                <h3>{{t('quick_report')}}</h3>
-                <p class="card-subtitle">{{t('fast_track_common')}}</p>
+                <h3>Quick Report</h3>
+                <p class="card-subtitle">Fast track for common issues</p>
             </div>
         </div>
     </div>
@@ -48,37 +48,37 @@
                 <div class="action-icon">
                     <i data-lucide="alert-triangle"></i>
                 </div>
-                <span>{{t('report_power_theft')}}</span>
+                <span>Report Power Theft</span>
             </button>
             <button class="quick-action-card warning" ng-click="vm.quickReport('power_outage')">
                 <div class="action-icon">
                     <i data-lucide="zap-off"></i>
                 </div>
-                <span>{{t('power_outage')}}</span>
+                <span>Power Outage</span>
             </button>
             <button class="quick-action-card" ng-click="vm.quickReport('street_light')">
                 <div class="action-icon">
                     <i data-lucide="lightbulb"></i>
                 </div>
-                <span>{{t('street_light')}}</span>
+                <span>Street Light</span>
             </button>
             <button class="quick-action-card" ng-click="vm.quickReport('water_supply')">
                 <div class="action-icon">
                     <i data-lucide="droplet"></i>
                 </div>
-                <span>{{t('water_supply')}}</span>
+                <span>Water Supply</span>
             </button>
             <button class="quick-action-card" ng-click="vm.quickReport('gas_leakage')">
                 <div class="action-icon">
                     <i data-lucide="flame"></i>
                 </div>
-                <span>{{t('gas_leakage')}}</span>
+                <span>Gas Leakage</span>
             </button>
             <button class="quick-action-card" ng-click="vm.quickReport('bill_issue')">
                 <div class="action-icon">
                     <i data-lucide="file-text"></i>
                 </div>
-                <span>{{t('bill_issue')}}</span>
+                <span>Bill Issue</span>
             </button>
         </div>
     </div>
@@ -89,11 +89,11 @@
     <div class="tabs">
         <button class="service-tab" ng-class="{active: vm.serviceMode === 'complaint'}" ng-click="vm.toggleServiceMode('complaint')">
             <i data-lucide="alert-circle"></i>
-            <span>{{t('raise_a_complaint')}}</span>
+            <span>Raise a Complaint</span>
         </button>
         <button class="service-tab" ng-class="{active: vm.serviceMode === 'service'}" ng-click="vm.toggleServiceMode('service')">
             <i data-lucide="clipboard-check"></i>
-            <span>{{t('apply_for_service')}}</span>
+            <span>Apply for Service</span>
         </button>
         <button class="service-tab" ng-class="{active: vm.serviceMode === 'track'}" ng-click="vm.toggleServiceMode('track')">
             <i data-lucide="search"></i>

@@ -18,17 +18,17 @@
         <div class="dna-legend">
             <div class="dna-legend-item" data-utility="electricity">
                 <div class="dna-color-box electricity"></div>
-                <span>{{t('electricity_services')}}</span>
+                <span>Electricity Services</span>
                 <i data-lucide="zap" class="legend-icon electricity-icon"></i>
             </div>
             <div class="dna-legend-item" data-utility="gas">
                 <div class="dna-color-box gas"></div>
-                <span>{{t('gas_services')}}</span>
+                <span>Gas Services</span>
                 <i data-lucide="flame" class="legend-icon gas-icon"></i>
             </div>
             <div class="dna-legend-item" data-utility="water">
                 <div class="dna-color-box water"></div>
-                <span>{{t('water_services')}}</span>
+                <span>Water Services</span>
                 <i data-lucide="droplet" class="legend-icon water-icon"></i>
             </div>
         </div>
@@ -85,11 +85,83 @@
         <div class="page-title-group">
             <h1 class="page-title">
                 <i data-lucide="layout-dashboard"></i>
-                {{t('dashboard')}}
+                Dashboard
             </h1>
-            <p class="page-subtitle">{{t('your_personalized_hub')}}</p>
+            <p class="page-subtitle">Your Personalized Hub</p>
         </div>
     </div>
+
+    <!-- User Profile Card -->
+    <section class="dashboard-section">
+        <div class="user-profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i data-lucide="user"></i>
+                </div>
+                <div class="profile-info">
+                    <h2 class="profile-name">{{vm.userData.username || 'Guest User'}}</h2>
+                    <p class="profile-location">
+                        <i data-lucide="map-pin"></i>
+                        {{vm.userData.user.locality || 'N/A'}}, {{vm.userData.user.ward || 'N/A'}}, {{vm.userData.user.city || 'N/A'}}
+                    </p>
+                    <p class="profile-contact">
+                        <i data-lucide="mail"></i>
+                        {{vm.userData.user.email || 'No email'}}
+                        <span class="separator">•</span>
+                        <i data-lucide="phone"></i>
+                        {{vm.userData.user.phone || 'No phone'}}
+                    </p>
+                </div>
+                <div class="profile-stats">
+                    <div class="stat-box">
+                        <div class="stat-icon electricity">
+                            <i data-lucide="zap"></i>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-value">{{vm.userData.consumption.electricity.current || 0}} {{vm.userData.consumption.electricity.unit}}</span>
+                            <span class="stat-label">Electricity</span>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon water">
+                            <i data-lucide="droplet"></i>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-value">{{vm.userData.consumption.water.current || 0}} {{vm.userData.consumption.water.unit}}</span>
+                            <span class="stat-label">Water</span>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon gas">
+                            <i data-lucide="flame"></i>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-value">{{vm.userData.consumption.gas.current || 0}} {{vm.userData.consumption.gas.unit}}</span>
+                            <span class="stat-label">Gas</span>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon reports">
+                            <i data-lucide="file-text"></i>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-value">{{vm.userData.reports.total || 0}}</span>
+                            <span class="stat-label">Reports Filed</span>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon community">
+                            <i data-lucide="award"></i>
+                        </div>
+                        <div class="stat-details">
+                            <span class="stat-value">{{vm.userData.community.points || 0}}</span>
+                            <span class="stat-label">Community Points</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Quick Access Policies -->
     <div class="policy-banner-grid">
@@ -102,8 +174,8 @@
                     <i data-lucide="zap"></i>
                 </div>
                 <div class="policy-content">
-                    <h3>{{t('electricity_services')}}</h3>
-                    <p>{{t('bill_payments')}}</p>
+                    <h3>Electricity Services</h3>
+                    <p>Bill Payments</p>
                 </div>
                 <a href="#!/utilities" class="policy-btn-primary">Pay Bills</a>
             </div>
@@ -118,8 +190,8 @@
                     <i data-lucide="droplet"></i>
                 </div>
                 <div class="policy-content">
-                    <h3>{{t('water_services')}}</h3>
-                    <p>{{t('view_usage')}}</p>
+                    <h3>Water Services</h3>
+                    <p>View Usage</p>
                 </div>
                 <a href="#!/utilities" class="policy-btn-primary">View Usage</a>
             </div>
@@ -134,8 +206,8 @@
                     <i data-lucide="flame"></i>
                 </div>
                 <div class="policy-content">
-                    <h3>{{t('gas_services')}}</h3>
-                    <p>{{t('check_tariffs')}}</p>
+                    <h3>Gas Services</h3>
+                    <p>Check Tariffs</p>
                 </div>
                 <a href="#!/utilities" class="policy-btn-primary">Check Tariffs</a>
             </div>
@@ -150,8 +222,8 @@
                     <i data-lucide="wrench"></i>
                 </div>
                 <div class="policy-content">
-                    <h3>{{t('services')}}</h3>
-                    <p>{{t('submit_complaints')}}</p>
+                    <h3>Services</h3>
+                    <p>Submit Complaints</p>
                 </div>
                 <a href="#!/services" class="policy-btn-primary">Submit Request</a>
             </div>
@@ -163,9 +235,9 @@
         <div class="section-header">
             <h2 class="section-title">
                 <i data-lucide="building-2"></i>
-                {{t('know_your_vendor')}}
+                Know Your Vendor
             </h2>
-            <p class="section-subtitle">{{t('vendor_subtitle')}}</p>
+            <p class="section-subtitle">Information about your utility providers</p>
         </div>
 
         <div class="vendor-grid">
@@ -176,32 +248,32 @@
                         <i data-lucide="zap"></i>
                     </div>
                     <div class="vendor-title-group">
-                        <h3>{{t('electricity_board')}}</h3>
-                        <span class="vendor-badge">{{t('active')}}</span>
+                        <h3>Electricity Board</h3>
+                        <span class="vendor-badge">Active</span>
                     </div>
                 </div>
                 <div class="vendor-details">
                     <div class="detail-row">
-                        <span class="detail-label">{{t('service_provider')}}:</span>
+                        <span class="detail-label">Service Provider:</span>
                         <span class="detail-value">State Electricity Board</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">{{t('customer_id')}}:</span>
+                        <span class="detail-label">Customer ID:</span>
                         <span class="detail-value">{{username || 'Not assigned'}}</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">{{t('connection_type')}}:</span>
-                        <span class="detail-value">{{t('domestic')}}</span>
+                        <span class="detail-label">Connection Type:</span>
+                        <span class="detail-value">Domestic</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">{{t('contact')}}:</span>
+                        <span class="detail-label">Contact:</span>
                         <span class="detail-value">1800-XXX-XXXX</span>
                     </div>
                 </div>
                 <div class="vendor-actions">
                     <a href="#!/utilities" class="btn-outline-small">
                         <i data-lucide="external-link"></i>
-                        {{t('view_details')}}
+                        View Details
                     </a>
                 </div>
             </div>
@@ -213,32 +285,32 @@
                         <i data-lucide="droplet"></i>
                     </div>
                     <div class="vendor-title-group">
-                        <h3>{{t('water_board')}}</h3>
-                        <span class="vendor-badge">{{t('active')}}</span>
+                        <h3>Water Board</h3>
+                        <span class="vendor-badge">Active</span>
                     </div>
                 </div>
                 <div class="vendor-details">
                     <div class="detail-row">
-                        <span class="detail-label">{{t('service_provider')}}:</span>
+                        <span class="detail-label">Service Provider:</span>
                         <span class="detail-value">Municipal Water Works</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">{{t('customer_id')}}:</span>
+                        <span class="detail-label">Customer ID:</span>
                         <span class="detail-value">{{username || 'Not assigned'}}</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">{{t('connection_type')}}:</span>
-                        <span class="detail-value">{{t('metered')}}</span>
+                        <span class="detail-label">Connection Type:</span>
+                        <span class="detail-value">Metered</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">{{t('contact')}}:</span>
+                        <span class="detail-label">Contact:</span>
                         <span class="detail-value">1800-XXX-YYYY</span>
                     </div>
                 </div>
                 <div class="vendor-actions">
                     <a href="#!/utilities" class="btn-outline-small">
                         <i data-lucide="external-link"></i>
-                        {{t('view_details')}}
+                        View Details
                     </a>
                 </div>
             </div>
@@ -250,32 +322,32 @@
                         <i data-lucide="flame"></i>
                     </div>
                     <div class="vendor-title-group">
-                        <h3>{{t('gas_services')}}</h3>
-                        <span class="vendor-badge">{{t('active')}}</span>
+                        <h3>Gas Services</h3>
+                        <span class="vendor-badge">Active</span>
                     </div>
                 </div>
                 <div class="vendor-details">
                     <div class="detail-row">
-                        <span class="detail-label">{{t('service_provider')}}:</span>
+                        <span class="detail-label">Service Provider:</span>
                         <span class="detail-value">City Gas Distribution</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">{{t('customer_id')}}:</span>
+                        <span class="detail-label">Customer ID:</span>
                         <span class="detail-value">{{username || 'Not assigned'}}</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">{{t('connection_type')}}:</span>
-                        <span class="detail-value">{{t('png_domestic')}}</span>
+                        <span class="detail-label">Connection Type:</span>
+                        <span class="detail-value">PNG Domestic</span>
                     </div>
                     <div class="detail-row">
-                        <span class="detail-label">{{t('contact')}}:</span>
+                        <span class="detail-label">Contact:</span>
                         <span class="detail-value">1800-XXX-ZZZZ</span>
                     </div>
                 </div>
                 <div class="vendor-actions">
                     <a href="#!/utilities" class="btn-outline-small">
                         <i data-lucide="external-link"></i>
-                        {{t('view_details')}}
+                        View Details
                     </a>
                 </div>
             </div>
@@ -287,9 +359,9 @@
         <div class="section-header">
             <h2 class="section-title">
                 <i data-lucide="activity"></i>
-                {{t('quick_actions')}}
+                Quick Actions
             </h2>
-            <p class="section-subtitle">{{t('manage_utilities_efficiently')}}</p>
+            <p class="section-subtitle">Manage your utilities efficiently</p>
         </div>
 
         <div class="utility-cards-grid">
@@ -299,24 +371,24 @@
                     <div class="utility-icon">
                         <i data-lucide="file-text"></i>
                     </div>
-                    <h3>{{t('current_bill')}}</h3>
+                    <h3>Current Bill</h3>
                 </div>
                 <div class="utility-card-body">
                     <div class="bill-content-wrapper">
                         <div class="bill-main-info">
                             <div class="bill-amount">
                                 <span class="currency">₹</span>
-                                <span class="amount">2,450</span>
+                                <span class="amount">{{vm.userData.consumption.electricity.current_bill || 0}}</span>
                             </div>
-                            <p class="bill-period">{{t('billing_period')}}: Dec 2024</p>
+                            <p class="bill-period">Billing Period: {{vm.userData.consumption.electricity.billing_period || 'N/A'}}</p>
                             <div class="bill-details">
                                 <div class="detail-item">
-                                    <span class="label">{{t('due_date')}}:</span>
-                                    <span class="value text-warning">25 Jan 2025</span>
+                                    <span class="label">Due Date:</span>
+                                    <span class="value text-warning">{{vm.userData.consumption.electricity.due_date || 'N/A'}}</span>
                                 </div>
                                 <div class="detail-item">
-                                    <span class="label">{{t('status')}}:</span>
-                                    <span class="value badge-warning">{{t('pending')}}</span>
+                                    <span class="label">Status:</span>
+                                    <span class="value badge-warning">{{vm.userData.consumption.electricity.status || 'none'}}</span>
                                 </div>
                             </div>
                         </div>
@@ -332,7 +404,7 @@
                 <div class="utility-card-footer">
                     <a href="#!/utilities" class="btn-primary-small">
                         <i data-lucide="credit-card"></i>
-                        {{t('pay_bill')}}
+                        Pay Bill
                     </a>
                     <a href="#!/utilities" class="btn-outline-small">
                         <i data-lucide="download"></i>
@@ -347,7 +419,7 @@
                     <div class="utility-icon">
                         <i data-lucide="trending-up"></i>
                     </div>
-                    <h3>{{t('this_month')}}</h3>
+                    <h3>This Month</h3>
                 </div>
                 <div class="utility-card-body">
                     <div class="consumption-stat">
@@ -356,8 +428,8 @@
                                 <i data-lucide="zap"></i>
                             </div>
                             <div class="stat-content">
-                                <span class="stat-value">342</span>
-                                <span class="stat-label">{{t('kwh')}}</span>
+                                <span class="stat-value">{{vm.userData.consumption.electricity.current || 0}}</span>
+                                <span class="stat-label">{{vm.userData.consumption.electricity.unit || 'kWh'}}</span>
                             </div>
                         </div>
                         <div class="stat-item">
@@ -365,13 +437,13 @@
                                 <i data-lucide="droplet"></i>
                             </div>
                             <div class="stat-content">
-                                <span class="stat-value">15.2</span>
-                                <span class="stat-label">{{t('kl')}}</span>
+                                <span class="stat-value">{{vm.userData.consumption.water.current || 0}}</span>
+                                <span class="stat-label">{{vm.userData.consumption.water.unit || 'kL'}}</span>
                             </div>
                         </div>
                     </div>
                     <div class="comparison-bar">
-                        <div class="comparison-label">{{t('vs_last_month')}}</div>
+                        <div class="comparison-label">vs Last Month</div>
                         <div class="progress-bar">
                             <div class="progress-fill" style="width: 85%"></div>
                         </div>
@@ -395,26 +467,30 @@
                     <div class="utility-icon">
                         <i data-lucide="wrench"></i>
                     </div>
-                    <h3>{{t('service_requests')}}</h3>
+                    <h3>Service Requests</h3>
                 </div>
                 <div class="utility-card-body">
                     <div class="request-summary">
                         <div class="summary-item">
-                            <span class="summary-count">2</span>
-                            <span class="summary-label">{{t('active')}}</span>
+                            <span class="summary-count">{{(vm.userData.reports.open || 0) + (vm.userData.reports.in_progress || 0)}}</span>
+                            <span class="summary-label">Active</span>
                         </div>
                         <div class="summary-item">
-                            <span class="summary-count">5</span>
+                            <span class="summary-count">{{vm.userData.reports.resolved || 0}}</span>
                             <span class="summary-label">Completed</span>
                         </div>
                     </div>
-                    <div class="recent-request">
+                    <div class="recent-request" ng-if="vm.userData.reports.total > 0">
                         <div class="request-info">
-                            <span class="request-id">#SR-2024-145</span>
-                            <span class="request-status badge-warning">In Progress</span>
+                            <span class="request-id">#SR-Latest</span>
+                            <span class="request-status badge-warning">Check Services Page</span>
                         </div>
-                        <p class="request-title">Meter Reading Issue</p>
-                        <p class="request-date">Raised: 15 Jan 2025</p>
+                        <p class="request-title">View your service requests</p>
+                        <p class="request-date">Total: {{vm.userData.reports.total}}</p>
+                    </div>
+                    <div class="recent-request" ng-if="vm.userData.reports.total === 0">
+                        <p class="request-title">No service requests yet</p>
+                        <p class="request-date">Submit your first request</p>
                     </div>
                 </div>
                 <div class="utility-card-footer">
@@ -439,31 +515,40 @@
                 </div>
                 <div class="utility-card-body">
                     <div class="notification-list">
-                        <div class="notification-item notification-warning">
+                        <div class="notification-item notification-warning" ng-if="vm.userData.consumption.electricity.status === 'pending' || vm.userData.consumption.electricity.status === 'overdue'">
                             <div class="notification-icon">
                                 <i data-lucide="alert-triangle"></i>
                             </div>
                             <div class="notification-content">
-                                <p class="notification-text">Bill payment due in 5 days</p>
-                                <span class="notification-time">2 hours ago</span>
+                                <p class="notification-text">Electricity bill payment {{vm.userData.consumption.electricity.status === 'overdue' ? 'overdue' : 'due'}}: {{vm.userData.consumption.electricity.due_date}}</p>
+                                <span class="notification-time">Check now</span>
                             </div>
                         </div>
-                        <div class="notification-item notification-success">
+                        <div class="notification-item notification-success" ng-if="vm.userData.reports.resolved > 0">
                             <div class="notification-icon">
                                 <i data-lucide="check-circle"></i>
                             </div>
                             <div class="notification-content">
-                                <p class="notification-text">Service request resolved</p>
-                                <span class="notification-time">1 day ago</span>
+                                <p class="notification-text">{{vm.userData.reports.resolved}} service request(s) resolved</p>
+                                <span class="notification-time">Recent</span>
                             </div>
                         </div>
-                        <div class="notification-item notification-info">
+                        <div class="notification-item notification-info" ng-if="vm.userData.consumption.electricity.current > 0 || vm.userData.consumption.water.current > 0 || vm.userData.consumption.gas.current > 0">
                             <div class="notification-icon">
                                 <i data-lucide="info"></i>
                             </div>
                             <div class="notification-content">
-                                <p class="notification-text">Monthly usage report available</p>
-                                <span class="notification-time">2 days ago</span>
+                                <p class="notification-text">Usage data available</p>
+                                <span class="notification-time">Check insights</span>
+                            </div>
+                        </div>
+                        <div class="notification-item notification-info" ng-if="vm.userData.consumption.electricity.current === 0 && vm.userData.consumption.water.current === 0 && vm.userData.consumption.gas.current === 0">
+                            <div class="notification-icon">
+                                <i data-lucide="info"></i>
+                            </div>
+                            <div class="notification-content">
+                                <p class="notification-text">No consumption data yet</p>
+                                <span class="notification-time">Add your bills</span>
                             </div>
                         </div>
                     </div>
@@ -522,38 +607,38 @@
                                 <i data-lucide="zap" class="cost-icon cost-icon-electricity"></i>
                                 <div class="cost-details">
                                     <span class="cost-label">Electricity</span>
-                                    <span class="cost-amount">₹1,850</span>
-                                    <span class="cost-percentage">60%</span>
+                                    <span class="cost-amount">₹{{vm.userData.consumption.electricity.current_bill || 0}}</span>
+                                    <span class="cost-percentage" ng-if="vm.userData.consumption.electricity.current_bill > 0">{{vm.getPercentage('electricity')}}%</span>
                                 </div>
                             </div>
-                            <span class="cost-time">2h ago</span>
+                            <span class="cost-time">Current</span>
                         </div>
                         <div class="cost-item">
                             <div class="cost-item-left">
                                 <i data-lucide="droplet" class="cost-icon cost-icon-water"></i>
                                 <div class="cost-details">
                                     <span class="cost-label">Water</span>
-                                    <span class="cost-amount">₹420</span>
-                                    <span class="cost-percentage">14%</span>
+                                    <span class="cost-amount">₹{{vm.userData.consumption.water.current_bill || 0}}</span>
+                                    <span class="cost-percentage" ng-if="vm.userData.consumption.water.current_bill > 0">{{vm.getPercentage('water')}}%</span>
                                 </div>
                             </div>
-                            <span class="cost-time">1d ago</span>
+                            <span class="cost-time">Current</span>
                         </div>
                         <div class="cost-item">
                             <div class="cost-item-left">
                                 <i data-lucide="flame" class="cost-icon cost-icon-gas"></i>
                                 <div class="cost-details">
                                     <span class="cost-label">Gas</span>
-                                    <span class="cost-amount">₹800</span>
-                                    <span class="cost-percentage">26%</span>
+                                    <span class="cost-amount">₹{{vm.userData.consumption.gas.current_bill || 0}}</span>
+                                    <span class="cost-percentage" ng-if="vm.userData.consumption.gas.current_bill > 0">{{vm.getPercentage('gas')}}%</span>
                                 </div>
                             </div>
-                            <span class="cost-time">2d ago</span>
+                            <span class="cost-time">Current</span>
                         </div>
                     </div>
                     <div class="cost-total">
                         <span class="total-label">Total Monthly Cost</span>
-                        <span class="total-amount">₹3,070</span>
+                        <span class="total-amount">₹{{vm.getTotalCost()}}</span>
                     </div>
                     <div class="insight-footer">
                         <a href="#!/insights" class="insight-link">
