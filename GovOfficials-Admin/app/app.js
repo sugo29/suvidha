@@ -20,6 +20,10 @@ app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $lo
             templateUrl: './app/views/meter.html',
             controller: 'MeterController'
         })
+        .when('/field-operations', {
+            templateUrl: './app/views/field-operations.html',
+            controller: 'FieldOperationsController'
+        })
         .when('/rwa', {
             templateUrl: './app/views/rwa.html',
             controller: 'RWAController'
@@ -73,6 +77,7 @@ app.controller('MainController', ['$scope', '$location', function ($scope, $loca
             '/': 'Dashboard',
             '/grievance': 'Grievance Command',
             '/meter': 'Meter Integrity',
+            '/field-operations': 'Field Operations',
             '/rwa': 'RWA Oversight',
             '/participation': 'Participation & Incentives',
             '/policy': 'Policy Insights',
@@ -204,7 +209,7 @@ app.controller('RWAController', ['$scope', function ($scope) {
 // Participation Controller
 app.controller('ParticipationController', ['$scope', function ($scope) {
     // Engagement Health Score Calculation
-    var calculateEHS = function() {
+    var calculateEHS = function () {
         var participationRate = 78;
         var repeatParticipation = 65;
         var abuseFlags = 92;
@@ -352,23 +357,23 @@ app.controller('ParticipationController', ['$scope', function ($scope) {
     $scope.selectedWard = null;
     $scope.showWardDetails = false;
 
-    $scope.selectWard = function(ward) {
+    $scope.selectWard = function (ward) {
         $scope.selectedWard = ward;
         $scope.showWardDetails = true;
     };
 
-    $scope.closeWardDetails = function() {
+    $scope.closeWardDetails = function () {
         $scope.showWardDetails = false;
         $scope.selectedWard = null;
     };
 
     // Action handlers
-    $scope.handleAlertAction = function(alert, action) {
+    $scope.handleAlertAction = function (alert, action) {
         console.log('Action ' + action + ' on alert: ' + alert.type);
         // Will integrate with backend API
     };
 
-    $scope.handlePolicyAction = function(action) {
+    $scope.handlePolicyAction = function (action) {
         console.log('Executing policy action: ' + action.title);
         // Will integrate with backend API
     };
@@ -539,7 +544,7 @@ app.controller('PolicyController', ['$scope', '$timeout', function ($scope, $tim
 
     // Toggle explanation visibility
     $scope.selectedWardForExplanation = null;
-    $scope.toggleExplanation = function(wardIndex) {
+    $scope.toggleExplanation = function (wardIndex) {
         if ($scope.selectedWardForExplanation === wardIndex) {
             $scope.selectedWardForExplanation = null;
         } else {
@@ -548,12 +553,12 @@ app.controller('PolicyController', ['$scope', '$timeout', function ($scope, $tim
     };
 
     // Action handlers
-    $scope.approveAction = function(action) {
+    $scope.approveAction = function (action) {
         action.status = 'approved';
         console.log('Action approved: ' + action.title);
     };
 
-    $scope.exploreScenario = function(scenario) {
+    $scope.exploreScenario = function (scenario) {
         console.log('Exploring scenario: ' + scenario.title);
         // Would open detailed scenario analysis modal
     };
@@ -1268,3 +1273,39 @@ function initPolicyCharts() {
         });
     }
 }
+
+// Field Operations Controller
+app.controller('FieldOperationsController', ['$scope', function ($scope) {
+    // Worker monitoring data
+    $scope.workers = [
+        { id: 'FAG-2024-0891', name: 'Rajesh Kumar', initials: 'RK', area: 'Greenview Apartments, Ward 9', assigned: 35, covered: 28, lastActivity: '10 min ago', status: 'on-track' },
+        { id: 'FAG-2024-0892', name: 'Suresh Patel', initials: 'SP', area: 'Sector 15, Ward 15', assigned: 42, covered: 38, lastActivity: '5 min ago', status: 'on-track' },
+        { id: 'FAG-2024-0893', name: 'Amit Kumar', initials: 'AK', area: 'Block C, Ward 8', assigned: 38, covered: 15, lastActivity: '45 min ago', status: 'delayed' },
+        { id: 'FAG-2024-0894', name: 'Vikram Singh', initials: 'VS', area: 'Sector 22, Ward 22', assigned: 40, covered: 8, lastActivity: '4 hrs ago', status: 'inactive' },
+        { id: 'FAG-2024-0895', name: 'Priya Verma', initials: 'PV', area: 'DDA Flats, Ward 12', assigned: 30, covered: 27, lastActivity: '2 min ago', status: 'on-track' },
+        { id: 'FAG-2024-0896', name: 'Manoj Kumar', initials: 'MK', area: 'Nehru Nagar, Ward 5', assigned: 45, covered: 18, lastActivity: '1 hr ago', status: 'delayed' }
+    ];
+
+    // Stats
+    $scope.activeWorkers = 24;
+    $scope.totalHouses = 1250;
+    $scope.housesCovered = 876;
+    $scope.housesPending = 374;
+    $scope.workersBehind = 3;
+
+    // Filter
+    $scope.sortBy = 'all';
+
+    $scope.setSortBy = function (sort) {
+        $scope.sortBy = sort;
+    };
+
+    $scope.getProgress = function (worker) {
+        return Math.round((worker.covered / worker.assigned) * 100);
+    };
+
+    $scope.openWorkerDetails = function (worker) {
+        $scope.selectedWorker = worker;
+        // Drawer would open here
+    };
+}]);

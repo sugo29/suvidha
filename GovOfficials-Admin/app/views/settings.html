@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="adminApp">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings - Suvidha</title>
+    <title>Settings - Suvidha City Control Room</title>
     <link rel="stylesheet" href="../../css/gov-style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <style>
         .governance-banner {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -217,10 +218,30 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+
+        .toast-message {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--gov-success);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .toast-message.error {
+            background: var(--gov-danger);
+        }
     </style>
 </head>
 
-<body>
+<body ng-controller="SettingsController">
+    <!-- Sidebar -->
     <aside class="gov-sidebar">
         <div class="sidebar-header">
             <div class="sidebar-brand">
@@ -245,55 +266,53 @@
                     Insights</span></a>
             <a href="audit.html" class="nav-item"><span class="nav-icon">🔐</span><span class="nav-text">Audit
                     Vault</span></a>
-            <a href="settings.html" class="nav-item active"><span class="nav-icon">⚙️</span><span class="nav-text">Settings</span></a>
+            <a href="field-operations.html" class="nav-item"><span class="nav-icon">👷</span><span
+                    class="nav-text">Field Operations</span></a>
+            <a href="settings.html" class="nav-item active"><span class="nav-icon">⚙️</span><span
+                    class="nav-text">Settings</span></a>
         </nav>
         <div class="sidebar-footer">
             <div class="user-profile">
-                <div class="user-avatar">RK</div>
+                <div class="user-avatar">{{user.initials}}</div>
                 <div class="user-info">
-                    <h4>Rajesh Kumar</h4>
-                    <p>Government Official</p>
+                    <h4>{{user.name}}</h4>
+                    <p>{{user.role}}</p>
                 </div>
-            </div><button class="logout-btn">🚪 Logout</button>
+            </div>
+            <button class="logout-btn" ng-click="logout()"><span>🚪</span><span>Logout</span></button>
         </div>
     </aside>
+
+    <!-- Main Content -->
     <main class="gov-main">
         <header class="gov-topbar">
             <div class="topbar-left">
                 <h2>Settings & Configuration</h2>
-                <p id="currentDate"></p>
+                <p>{{currentDate}}</p>
             </div>
             <div class="topbar-right">
                 <button class="topbar-btn" title="Accessibility">♿</button>
                 <div class="lang-dropdown">
-                    <button class="lang-toggle-btn" id="langDropdownBtn">
-                        🌐 <span id="currentLangText">EN</span> ▼
-                    </button>
-                    <div class="lang-dropdown-menu" id="langDropdownMenu">
-                        <a href="#" class="lang-option active" data-lang="en">English</a>
-                        <a href="#" class="lang-option" data-lang="hi">हिन्दी (Hindi)</a>
-                        <a href="#" class="lang-option" data-lang="bn">বাংলা (Bengali)</a>
-                        <a href="#" class="lang-option" data-lang="ta">தமிழ் (Tamil)</a>
-                        <a href="#" class="lang-option" data-lang="te">తెలుగు (Telugu)</a>
-                        <a href="#" class="lang-option" data-lang="kn">ಕನ್ನಡ (Kannada)</a>
-                        <a href="#" class="lang-option" data-lang="pa">ਪੰਜਾਬੀ (Punjabi)</a>
-                        <a href="#" class="lang-option" data-lang="gu">ગુજરાતી (Gujarati)</a>
-                        <a href="#" class="lang-option" data-lang="ml">മലയാളം (Malayalam)</a>
-                        <a href="#" class="lang-option" data-lang="mr">मराठी (Marathi)</a>
-                        <a href="#" class="lang-option" data-lang="or">ଓଡ଼ିଆ (Odia)</a>
+                    <button class="lang-toggle-btn" ng-click="toggleLangMenu($event)">🌐 <span>{{selectedLang}}</span>
+                        ▼</button>
+                    <div class="lang-dropdown-menu" ng-show="showLangMenu">
+                        <a href="#" class="lang-option" ng-repeat="lang in languages"
+                            ng-class="{active: selectedLang === lang.code}"
+                            ng-click="selectLang(lang, $event)">{{lang.name}}</a>
                     </div>
                 </div>
-                <button class="topbar-btn notification-btn">
-                    🔔
-                    <span class="notification-badge">5</span>
-                </button>
+                <button class="topbar-btn notification-btn">🔔<span
+                        class="notification-badge">{{notifications}}</span></button>
             </div>
         </header>
+
         <div class="gov-content">
             <!-- Governance Banner -->
             <div class="governance-banner">
                 <div class="banner-title">🏛️ Government-Compliant Settings</div>
-                <p><strong>Official Policy:</strong> Government officials can manage their profile and alerts, but system security, data handling, and integrations are centrally governed to ensure compliance and accountability.</p>
+                <p><strong>Official Policy:</strong> Government officials can manage their profile and alerts, but
+                    system security, data handling, and integrations are centrally governed to ensure compliance and
+                    accountability.</p>
             </div>
 
             <!-- Settings Header -->
@@ -313,26 +332,30 @@
                     <div class="settings-content">
                         <div class="setting-group">
                             <label>Full Name</label>
-                            <input type="text" ng-model="settings.profile.fullName" class="setting-input" placeholder="Enter full name">
+                            <input type="text" ng-model="settings.profile.fullName" class="setting-input"
+                                placeholder="Enter full name">
                         </div>
                         <div class="setting-group">
                             <label>Email Address</label>
-                            <input type="email" ng-model="settings.profile.email" class="setting-input" placeholder="Enter email">
+                            <input type="email" ng-model="settings.profile.email" class="setting-input"
+                                placeholder="Enter email">
                         </div>
                         <div class="setting-group">
                             <label>Phone Number</label>
-                            <input type="tel" ng-model="settings.profile.phone" class="setting-input" placeholder="Enter phone number">
+                            <input type="tel" ng-model="settings.profile.phone" class="setting-input"
+                                placeholder="Enter phone number">
                         </div>
                         <div class="setting-group locked-field">
                             <label>Department · <span class="lock-indicator">🔒 Centrally Managed</span></label>
-                            <div class="locked-display">{{settings.profile.departmentName}}</div>
-                            <p class="locked-explanation">Department assignment is managed by the administrative system for compliance and oversight. To request a department change, contact your administrator with business justification.</p>
+                            <div class="locked-display">{{settings.profile.department}}</div>
+                            <p class="locked-explanation">Department assignment is managed by the administrative system
+                                for compliance and oversight.</p>
                         </div>
-                        <button class="gov-btn primary" ng-click="saveProfileSettings()">Save Profile</button>
+                        <button class="gov-btn primary" ng-click="saveProfile()">Save Profile</button>
                     </div>
                 </div>
 
-                <!-- Security Settings - MIXED (Password editable, 2FA locked) -->
+                <!-- Security Settings -->
                 <div class="gov-card settings-card">
                     <div class="card-header">
                         <h3><span class="icon">🔒</span> Security Settings</h3>
@@ -341,30 +364,32 @@
                     <div class="settings-content">
                         <div class="setting-group">
                             <label>Current Password</label>
-                            <input type="password" ng-model="settings.security.currentPassword" class="setting-input" placeholder="Enter current password">
+                            <input type="password" ng-model="security.currentPassword" class="setting-input"
+                                placeholder="Enter current password">
                         </div>
                         <div class="setting-group">
                             <label>New Password</label>
-                            <input type="password" ng-model="settings.security.newPassword" class="setting-input" placeholder="Enter new password">
+                            <input type="password" ng-model="security.newPassword" class="setting-input"
+                                placeholder="Enter new password">
                         </div>
                         <div class="setting-group">
                             <label>Confirm Password</label>
-                            <input type="password" ng-model="settings.security.confirmPassword" class="setting-input" placeholder="Confirm new password">
+                            <input type="password" ng-model="security.confirmPassword" class="setting-input"
+                                placeholder="Confirm new password">
                         </div>
                         <button class="gov-btn primary" ng-click="changePassword()">Change Password</button>
                         <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--gov-gray-200);">
                         <div class="setting-group locked-field">
                             <label>Two-Factor Authentication · <span class="lock-indicator">🔒 Mandatory</span></label>
-                            <div class="locked-checkbox">
-                                <input type="checkbox" disabled checked>
-                                <span>Enabled - <strong>Cannot be disabled</strong></span>
-                            </div>
-                            <p class="locked-explanation">Two-factor authentication is mandatory for all government officials to ensure account security and compliance with security protocols.</p>
+                            <div class="locked-checkbox"><input type="checkbox" disabled checked><span>Enabled -
+                                    <strong>Cannot be disabled</strong></span></div>
+                            <p class="locked-explanation">Two-factor authentication is mandatory for all government
+                                officials.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Notification Settings - MIXED (Critical mandatory, optional alerts) -->
+                <!-- Notification Settings -->
                 <div class="gov-card settings-card">
                     <div class="card-header">
                         <h3><span class="icon">🔔</span> Alert & Notification Settings</h3>
@@ -372,52 +397,24 @@
                     </div>
                     <div class="settings-content">
                         <div class="alert-section mandatory-alerts">
-                            <h4 style="color: var(--gov-danger); margin-bottom: 0.75rem;">🚨 Mandatory Critical Alerts (Cannot Disable)</h4>
-                            <div class="setting-group">
-                                <label>
-                                    <input type="checkbox" disabled checked>
-                                    SLA Breach Alerts
-                                </label>
-                                <p class="locked-explanation">Required for operational excellence monitoring</p>
-                            </div>
-                            <div class="setting-group">
-                                <label>
-                                    <input type="checkbox" disabled checked>
-                                    Integrity Violation Alerts
-                                </label>
-                                <p class="locked-explanation">Required for audit and compliance accountability</p>
-                            </div>
-                            <div class="setting-group">
-                                <label>
-                                    <input type="checkbox" disabled checked>
-                                    Security & Access Alerts
-                                </label>
-                                <p class="locked-explanation">Required for system security and governance</p>
-                            </div>
+                            <h4 style="color: var(--gov-danger); margin-bottom: 0.75rem;">🚨 Mandatory Critical Alerts
+                                (Cannot Disable)</h4>
+                            <div class="setting-group"><label><input type="checkbox" disabled checked> SLA Breach
+                                    Alerts</label></div>
+                            <div class="setting-group"><label><input type="checkbox" disabled checked> Integrity
+                                    Violation Alerts</label></div>
+                            <div class="setting-group"><label><input type="checkbox" disabled checked> Security & Access
+                                    Alerts</label></div>
                         </div>
                         <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--gov-gray-200);">
                         <div class="alert-section optional-alerts">
                             <h4 style="margin-bottom: 0.75rem;">✓ Optional Notifications (Configurable)</h4>
-                            <div class="setting-group">
-                                <label>
-                                    <input type="checkbox" ng-model="settings.notifications.emailAlerts">
-                                    Email Notifications
-                                </label>
-                                <p class="setting-desc">Receive email for all alerts</p>
-                            </div>
-                            <div class="setting-group">
-                                <label>
-                                    <input type="checkbox" ng-model="settings.notifications.smsAlerts">
-                                    SMS Notifications
-                                </label>
-                                <p class="setting-desc">Receive SMS for critical alerts only</p>
-                            </div>
-                            <div class="setting-group">
-                                <label>
-                                    <input type="checkbox" ng-model="settings.notifications.dailyReport">
-                                    Daily Summary Report
-                                </label>
-                                <p class="setting-desc">Receive daily digest of activities</p>
+                            <div class="setting-group"><label><input type="checkbox"
+                                        ng-model="settings.notifications.emailAlerts"> Email Notifications</label></div>
+                            <div class="setting-group"><label><input type="checkbox"
+                                        ng-model="settings.notifications.smsAlerts"> SMS Notifications</label></div>
+                            <div class="setting-group"><label><input type="checkbox"
+                                        ng-model="settings.notifications.dailyReport"> Daily Summary Report</label>
                             </div>
                             <div class="setting-group">
                                 <label>Notification Frequency</label>
@@ -425,15 +422,14 @@
                                     <option value="immediate">Immediate</option>
                                     <option value="hourly">Hourly</option>
                                     <option value="daily">Daily</option>
-                                    <option value="weekly">Weekly</option>
                                 </select>
                             </div>
                         </div>
-                        <button class="gov-btn primary" ng-click="saveNotificationSettings()">Save Preferences</button>
+                        <button class="gov-btn primary" ng-click="saveNotifications()">Save Preferences</button>
                     </div>
                 </div>
 
-                <!-- Display Settings - MIXED (Theme locked, language/format editable) -->
+                <!-- Display Settings -->
                 <div class="gov-card settings-card">
                     <div class="card-header">
                         <h3><span class="icon">🎨</span> Display Settings</h3>
@@ -443,7 +439,6 @@
                         <div class="setting-group locked-field">
                             <label>Theme · <span class="lock-indicator">🔒 Government Standard</span></label>
                             <div class="locked-display">Light (Government Unified Theme)</div>
-                            <p class="locked-explanation">All government officials use the unified government theme for consistency and accessibility compliance.</p>
                         </div>
                         <div class="setting-group">
                             <label>Language</label>
@@ -451,7 +446,6 @@
                                 <option value="en">English</option>
                                 <option value="hi">हिंदी (Hindi)</option>
                                 <option value="bn">বাংলা (Bengali)</option>
-                                <option value="ta">தமிழ் (Tamil)</option>
                             </select>
                         </div>
                         <div class="setting-group">
@@ -462,208 +456,171 @@
                                 <option value="yyyy-mm-dd">YYYY-MM-DD</option>
                             </select>
                         </div>
-                        <div class="setting-group">
-                            <label>
-                                <input type="checkbox" ng-model="settings.display.compactView">
-                                Compact View
-                            </label>
-                            <p class="setting-desc">Show more data in compact format</p>
-                        </div>
-                        <button class="gov-btn primary" ng-click="saveDisplaySettings()">Save Display Settings</button>
+                        <div class="setting-group"><label><input type="checkbox"
+                                    ng-model="settings.display.compactView"> Compact View</label></div>
+                        <button class="gov-btn primary" ng-click="saveDisplay()">Save Display Settings</button>
                     </div>
                 </div>
 
-                <!-- Data Transparency & Governance - LOCKED -->
-                <div class="gov-card settings-card">
-                    <div class="card-header">
-                        <h3><span class="icon">📊</span> Data Transparency & Governance</h3>
-                        <span class="section-badge locked">🔒 Read-Only</span>
-                    </div>
-                    <div class="settings-content">
-                        <div class="governance-statement">
-                            <h4>Data Retention Policy</h4>
-                            <p>All audit records, transaction logs, and operational data are retained for <strong>7 years</strong> in compliance with government archival standards. No official can delete or modify historical records.</p>
-                        </div>
-                        <div class="setting-group locked-field">
-                            <label>Data Retention Status</label>
-                            <div class="locked-display">Active - 7-Year Retention Policy</div>
-                        </div>
-                        <div class="setting-group locked-field">
-                            <label>Audit Consent</label>
-                            <div>
-                                <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
-                                    <input type="checkbox" disabled checked>
-                                    <span><strong>I consent to audit of my actions and data</strong></span>
-                                </div>
-                                <p class="locked-explanation">As a government official, you acknowledge that all your actions in this system are subject to audit and compliance review. This consent cannot be withdrawn.</p>
-                            </div>
-                        </div>
-                        <div class="setting-group locked-field">
-                            <label>Data Download Availability</label>
-                            <button class="gov-btn outline" ng-click="downloadData()" style="cursor: pointer;">📥 Download Governance Report (Read-Only)</button>
-                            <p class="locked-explanation">Download your personal governance report including audit history, access logs, and compliance status for your records.</p>
-                        </div>
-                        <div class="compliance-notice" style="margin-top: 2rem; padding: 1rem; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 6px;">
-                            <strong>⚠️ Important Notice:</strong> Deletion of any government records is strictly prohibited. The "Delete Data" function has been removed to protect data governance. If you need to request data removal for special circumstances, contact the Audit & Compliance department with documented justification.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- API & Integrations - LOCKED -->
-                <div class="gov-card settings-card">
-                    <div class="card-header">
-                        <h3><span class="icon">🔗</span> API & Integrations</h3>
-                        <span class="section-badge locked">🔒 Centrally Managed</span>
-                    </div>
-                    <div class="settings-content">
-                        <div class="settings-alert security-alert">
-                            <strong>🔐 Security Note:</strong> API keys and integrations are sensitive security credentials. These cannot be managed by individual officials and are provisioned/managed by the Security & System Administration team only.
-                        </div>
-                        <div class="setting-group locked-field">
-                            <label>API Key Status · <span class="lock-indicator">🔒 Provisioned</span></label>
-                            <div class="locked-display">
-                                <div style="font-family: monospace; color: var(--gov-gray-500);">sk_live_••••••••••••••••••••••••••</div>
-                            </div>
-                            <p class="locked-explanation">API key is provisioned for your role and cannot be regenerated by individual officials. For key rotation or regeneration, submit a request to Security & System Administration.</p>
-                        </div>
-                        <div class="setting-group locked-field">
-                            <label>Webhooks Integration · <span class="lock-indicator">🔒 Centrally Managed</span></label>
-                            <div class="locked-display">
-                                <div style="margin-bottom: 0.5rem;">
-                                    <strong>Status:</strong> {{settings.api.webhooksStatus}}
-                                </div>
-                                <div>
-                                    <strong>Webhook URL:</strong> (Managed by system administrators only)
-                                </div>
-                            </div>
-                            <p class="locked-explanation">Webhook configuration is managed centrally to ensure system security and data integrity. Contact System Administration to modify webhook settings.</p>
-                        </div>
-                        <div class="setting-group locked-field">
-                            <label>Integration Management</label>
-                            <button class="gov-btn disabled" disabled style="opacity: 0.6; cursor: not-allowed;">Request Integration Change (Submit via Admin Portal)</button>
-                            <p class="locked-explanation">To request new integrations or modifications, submit a formal change request through the System Administration portal. All requests require security review and manager approval.</p>
-                        </div>
-                        <div class="compliance-notice" style="margin-top: 1.5rem; padding: 1rem; background: #ede9fe; border-left: 4px solid #7c3aed; border-radius: 6px;">
-                            <strong>📋 Governance Point:</strong> API and integration controls are locked to prevent unauthorized system access. This protects the integrity of all government systems and citizen data.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Login History & Access - LOCKED -->
-                <div class="gov-card settings-card">
-                    <div class="card-header">
-                        <h3><span class="icon">🔑</span> Login History & Access Control</h3>
-                        <span class="section-badge locked">🔒 Read-Only Audit</span>
-                    </div>
-                    <div class="settings-content">
-                        <div style="overflow-x: auto;">
-                            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
-                                <thead>
-                                    <tr style="background: var(--gov-gray-50); border-bottom: 1px solid var(--gov-gray-200);">
-                                        <th style="padding: 0.75rem; text-align: left; color: var(--gov-gray-700); font-weight: 600;">Date & Time</th>
-                                        <th style="padding: 0.75rem; text-align: left; color: var(--gov-gray-700); font-weight: 600;">Device/IP</th>
-                                        <th style="padding: 0.75rem; text-align: left; color: var(--gov-gray-700); font-weight: 600;">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr style="border-bottom: 1px solid var(--gov-gray-200);">
-                                        <td style="padding: 0.75rem;">Feb 8, 2026 - 02:30 PM</td>
-                                        <td style="padding: 0.75rem;">192.168.1.105 (Chrome, Windows)</td>
-                                        <td style="padding: 0.75rem;"><span style="background: var(--gov-success-light); color: var(--gov-success); padding: 0.25rem 0.75rem; border-radius: 12px; font-weight: 600;">✓ Success</span></td>
-                                    </tr>
-                                    <tr style="border-bottom: 1px solid var(--gov-gray-200);">
-                                        <td style="padding: 0.75rem;">Feb 8, 2026 - 09:15 AM</td>
-                                        <td style="padding: 0.75rem;">192.168.1.105 (Safari, iPhone)</td>
-                                        <td style="padding: 0.75rem;"><span style="background: var(--gov-success-light); color: var(--gov-success); padding: 0.25rem 0.75rem; border-radius: 12px; font-weight: 600;">✓ Success</span></td>
-                                    </tr>
-                                    <tr style="border-bottom: 1px solid var(--gov-gray-200);">
-                                        <td style="padding: 0.75rem;">Feb 7, 2026 - 04:45 PM</td>
-                                        <td style="padding: 0.75rem;">192.168.1.112 (Chrome, Windows)</td>
-                                        <td style="padding: 0.75rem;"><span style="background: var(--gov-danger-light); color: var(--gov-danger); padding: 0.25rem 0.75rem; border-radius: 12px; font-weight: 600;">✗ Failed</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <p class="locked-explanation" style="margin-top: 1rem;">All login attempts are logged for security audit purposes. Verify that all listed sessions are recognized as yours. Report any unrecognized access to the Security team immediately.</p>
-                    </div>
-                </div>
-
-                <!-- System Information - LOCKED -->
+                <!-- System Information -->
                 <div class="gov-card settings-card">
                     <div class="card-header">
                         <h3><span class="icon">ℹ️</span> System Information</h3>
                         <span class="section-badge locked">🔒 Read-Only</span>
                     </div>
                     <div class="settings-content">
-                        <div class="info-row">
-                            <span class="info-label">Application Version:</span>
-                            <span class="info-value">{{systemInfo.version}}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Last Updated:</span>
-                            <span class="info-value">{{systemInfo.lastUpdated}}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Database Status:</span>
-                            <span class="info-value" ng-class="systemInfo.dbStatus">{{systemInfo.dbStatus}}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Server Status:</span>
-                            <span class="info-value" ng-class="systemInfo.serverStatus">{{systemInfo.serverStatus}}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Last Backup:</span>
-                            <span class="info-value">{{systemInfo.lastBackup}}</span>
-                        </div>
-                        <button class="gov-btn outline" ng-click="checkUpdates()">Check for Updates</button>
+                        <div class="info-row"><span class="info-label">Application Version:</span><span
+                                class="info-value">{{systemInfo.version}}</span></div>
+                        <div class="info-row"><span class="info-label">Last Updated:</span><span
+                                class="info-value">{{systemInfo.lastUpdated}}</span></div>
+                        <div class="info-row"><span class="info-label">Database Status:</span><span class="info-value"
+                                style="color: var(--gov-success);">{{systemInfo.dbStatus}}</span></div>
+                        <div class="info-row"><span class="info-label">Server Status:</span><span class="info-value"
+                                style="color: var(--gov-success);">{{systemInfo.serverStatus}}</span></div>
+                        <div class="info-row"><span class="info-label">Last Backup:</span><span
+                                class="info-value">{{systemInfo.lastBackup}}</span></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Settings Actions - GOVERNANCE FOOTER -->
+            <!-- Governance Footer -->
             <div class="settings-actions governance-footer">
                 <div class="governance-footer-info">
                     <h4>📋 Settings Changes & Compliance</h4>
-                    <p>All changes to profile, password, notifications, and display settings are automatically saved when you click the respective "Save" buttons. <strong>Locked settings cannot be modified</strong> and are managed centrally to ensure compliance.</p>
-                    <p style="margin-top: 0.5rem;"><strong>Compliance Note:</strong> All settings changes are logged in the Audit Vault for accountability and governance verification.</p>
+                    <p>All changes to profile, password, notifications, and display settings are automatically saved.
+                        <strong>Locked settings cannot be modified</strong> and are managed centrally.</p>
                 </div>
                 <div class="governance-footer-actions">
-                    <button class="gov-btn outline" ng-click="generateComplianceReport()">📄 Generate Compliance Report</button>
-                    <button class="gov-btn outline" ng-click="downloadAuditTrail()">📥 Download Audit Trail</button>
+                    <button class="gov-btn outline" ng-click="generateReport()">📄 Generate Compliance Report</button>
+                    <button class="gov-btn outline" ng-click="downloadAudit()">📥 Download Audit Trail</button>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Success Message -->
-    <div class="alert-message" ng-if="successMessage" ng-class="successMessage.type">
-        <span>{{successMessage.text}}</span>
-        <button ng-click="successMessage = null">×</button>
+    <!-- Toast Message -->
+    <div class="toast-message" ng-show="toastMessage" ng-class="{error: toastType === 'error'}">
+        <span>{{toastMessage}}</span>
     </div>
 
     <script>
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        var app = angular.module('adminApp', []);
 
-        // Language Dropdown
-        const langBtn = document.getElementById('langDropdownBtn');
-        const langMenu = document.getElementById('langDropdownMenu');
-        const langText = document.getElementById('currentLangText');
-        if (langBtn && langMenu) {
-            langBtn.addEventListener('click', (e) => { e.stopPropagation(); langMenu.classList.toggle('show'); });
-            document.addEventListener('click', () => langMenu.classList.remove('show'));
-            langMenu.querySelectorAll('.lang-option').forEach(option => {
-                option.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    langMenu.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
-                    option.classList.add('active');
-                    langText.textContent = option.dataset.lang.toUpperCase();
-                    langMenu.classList.remove('show');
-                    localStorage.setItem('selectedLang', option.dataset.lang);
-                });
+        app.controller('SettingsController', ['$scope', '$timeout', function ($scope, $timeout) {
+            // User
+            $scope.user = { name: 'Rajesh Kumar', initials: 'RK', role: 'Government Official' };
+
+            // Date
+            $scope.currentDate = new Date().toLocaleDateString('en-IN', {
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
             });
-            const saved = localStorage.getItem('selectedLang');
-            if (saved) { langText.textContent = saved.toUpperCase(); langMenu.querySelectorAll('.lang-option').forEach(o => o.classList.toggle('active', o.dataset.lang === saved)); }
-        }
+
+            // Language
+            $scope.selectedLang = 'EN';
+            $scope.showLangMenu = false;
+            $scope.languages = [
+                { code: 'EN', name: 'English' },
+                { code: 'HI', name: 'हिन्दी (Hindi)' },
+                { code: 'BN', name: 'বাংলা (Bengali)' }
+            ];
+            $scope.notifications = 5;
+
+            // Settings
+            $scope.settings = {
+                profile: {
+                    fullName: 'Rajesh Kumar',
+                    email: 'rajesh.kumar@gov.in',
+                    phone: '+91 98765 43210',
+                    department: 'Municipal Corporation - South Delhi'
+                },
+                notifications: {
+                    emailAlerts: true,
+                    smsAlerts: true,
+                    dailyReport: true,
+                    frequency: 'immediate'
+                },
+                display: {
+                    language: 'en',
+                    dateFormat: 'dd/mm/yyyy',
+                    compactView: false
+                }
+            };
+
+            $scope.security = {
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: ''
+            };
+
+            $scope.systemInfo = {
+                version: 'v2.4.1',
+                lastUpdated: 'February 5, 2026',
+                dbStatus: 'Connected',
+                serverStatus: 'Active',
+                lastBackup: 'Feb 8, 2026 - 03:00 AM'
+            };
+
+            // Toast
+            $scope.toastMessage = '';
+            $scope.toastType = '';
+
+            $scope.showToast = function (message, type) {
+                $scope.toastMessage = message;
+                $scope.toastType = type || 'success';
+                $timeout(function () { $scope.toastMessage = ''; }, 3000);
+            };
+
+            // Functions
+            $scope.toggleLangMenu = function ($event) {
+                $event.stopPropagation();
+                $scope.showLangMenu = !$scope.showLangMenu;
+            };
+
+            $scope.selectLang = function (lang, $event) {
+                $event.preventDefault();
+                $scope.selectedLang = lang.code;
+                $scope.showLangMenu = false;
+            };
+
+            $scope.saveProfile = function () {
+                $scope.showToast('Profile saved successfully!');
+            };
+
+            $scope.changePassword = function () {
+                if (!$scope.security.currentPassword || !$scope.security.newPassword) {
+                    $scope.showToast('Please fill in all password fields', 'error');
+                    return;
+                }
+                if ($scope.security.newPassword !== $scope.security.confirmPassword) {
+                    $scope.showToast('Passwords do not match', 'error');
+                    return;
+                }
+                $scope.showToast('Password changed successfully!');
+                $scope.security = { currentPassword: '', newPassword: '', confirmPassword: '' };
+            };
+
+            $scope.saveNotifications = function () {
+                $scope.showToast('Notification preferences saved!');
+            };
+
+            $scope.saveDisplay = function () {
+                $scope.showToast('Display settings saved!');
+            };
+
+            $scope.generateReport = function () {
+                $scope.showToast('Generating compliance report...');
+            };
+
+            $scope.downloadAudit = function () {
+                $scope.showToast('Downloading audit trail...');
+            };
+
+            $scope.logout = function () {
+                if (confirm('Are you sure you want to logout?')) {
+                    alert('Logged out successfully');
+                }
+            };
+        }]);
     </script>
 </body>
 

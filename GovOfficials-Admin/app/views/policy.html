@@ -1,338 +1,154 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="adminApp">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Policy Insights - Suvidha</title>
+    <title>Policy Insights - Suvidha City Control Room</title>
     <link rel="stylesheet" href="../../css/gov-style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .ranking-table {
-            width: 100%;
-            border-collapse: collapse;
+        .policy-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
         }
 
-        .ranking-table th,
-        .ranking-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--gov-gray-200);
-        }
-
-        .ranking-table th {
-            background: var(--gov-gray-50);
-            font-weight: 600;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            color: var(--gov-gray-600);
-        }
-
-        .score-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-
-        .score-badge.success {
-            background: var(--gov-success-light);
-            color: var(--gov-success);
-        }
-
-        .score-badge.info {
-            background: var(--gov-info-light);
-            color: var(--gov-info);
-        }
-
-        .score-badge.warning {
-            background: var(--gov-warning-light);
-            color: var(--gov-warning);
-        }
-
-        .policy-summary-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        .chart-card {
+            background: white;
+            border-radius: var(--radius-lg);
             padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
+            border: 1px solid var(--gov-gray-200);
         }
 
-        .summary-section {
-            margin-bottom: 1rem;
-        }
-
-        .summary-label {
-            font-size: 0.8rem;
-            opacity: 0.9;
-            text-transform: uppercase;
-            margin-bottom: 0.3rem;
-        }
-
-        .summary-text {
-            font-size: 0.95rem;
-            line-height: 1.4;
-        }
-
-        .rank-row {
-            border-bottom: 1px solid var(--gov-gray-200);
-        }
-
-        .rank-row.expanded {
-            background: var(--gov-gray-50);
-        }
-
-        .explanation-row {
-            padding: 1rem;
-            background: var(--gov-gray-50);
-            font-size: 0.85rem;
-            color: var(--gov-gray-700);
-            cursor: default;
-            display: none;
-        }
-
-        .explanation-row.show {
-            display: table-row;
-        }
-
-        .explain-btn {
-            background: none;
-            border: none;
-            color: var(--gov-primary);
-            cursor: pointer;
-            font-size: 0.8rem;
-            text-decoration: underline;
-            padding: 0;
-        }
-
-        .explain-btn:hover {
-            color: var(--gov-primary-dark);
-        }
-
-        .explanation-content {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .explanation-item {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-
-        .explanation-item strong {
-            color: var(--gov-primary);
-        }
-
-        .policy-impact-card {
-            padding: 1rem;
-            background: var(--gov-gray-50);
-            border-left: 4px solid var(--gov-primary);
-            border-radius: 6px;
-            margin-bottom: 0.75rem;
-        }
-
-        .impact-title {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .impact-link {
-            font-size: 0.9rem;
-            color: var(--gov-gray-700);
-            margin-bottom: 0.5rem;
-        }
-
-        .impact-metric {
+        .chart-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.85rem;
+            margin-bottom: 1rem;
         }
 
-        .metric-value {
+        .chart-title {
             font-weight: 600;
-            color: var(--gov-success);
+            font-size: 1rem;
         }
 
-        .effectiveness-badge {
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            background: var(--gov-success-light);
-            color: var(--gov-success);
+        .chart-container {
+            position: relative;
+            height: 280px;
         }
 
-        .scenarios-grid {
+        .policy-recommendations {
+            grid-column: span 2;
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            border: 1px solid var(--gov-gray-200);
+        }
+
+        .recommendation-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 1rem;
             margin-top: 1rem;
         }
 
-        .scenario-card {
+        .recommendation-card {
             padding: 1rem;
-            border: 1px solid var(--gov-gray-200);
-            border-radius: 8px;
-            background: white;
-        }
-
-        .scenario-title {
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .scenario-detail {
-            font-size: 0.8rem;
-            color: var(--gov-gray-700);
-            margin-bottom: 0.5rem;
-        }
-
-        .scenario-detail-label {
-            font-weight: 600;
-            color: var(--gov-gray-600);
-        }
-
-        .scenario-impact {
-            padding: 0.75rem;
-            background: var(--gov-success-light);
-            border-radius: 4px;
-            font-size: 0.85rem;
-            color: var(--gov-success);
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-        }
-
-        .scenario-confidence {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .confidence-badge {
-            background: var(--gov-info-light);
-            color: var(--gov-info);
-            padding: 0.2rem 0.5rem;
-            border-radius: 3px;
-            font-weight: 600;
-        }
-
-        .risk-badge {
-            background: var(--gov-warning-light);
-            color: var(--gov-warning);
-            padding: 0.2rem 0.5rem;
-            border-radius: 3px;
-            font-weight: 600;
-        }
-
-        .explore-btn {
-            width: 100%;
-            padding: 0.5rem;
-            background: var(--gov-primary);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .explore-btn:hover {
-            background: var(--gov-primary-dark);
-        }
-
-        .actions-grid {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .action-card {
-            padding: 1.25rem;
-            border-left: 4px solid;
             background: var(--gov-gray-50);
-            border-radius: 6px;
+            border-radius: var(--radius-md);
+            border-left: 4px solid transparent;
         }
 
-        .action-card.high {
+        .recommendation-card.high {
             border-left-color: var(--gov-danger);
         }
 
-        .action-card.medium {
+        .recommendation-card.medium {
             border-left-color: var(--gov-warning);
         }
 
-        .action-title {
+        .recommendation-card.low {
+            border-left-color: var(--gov-info);
+        }
+
+        .rec-priority {
+            font-size: 0.7rem;
+            text-transform: uppercase;
             font-weight: 600;
-            font-size: 0.95rem;
             margin-bottom: 0.5rem;
         }
 
-        .action-desc {
-            font-size: 0.85rem;
-            color: var(--gov-gray-700);
-            margin-bottom: 0.75rem;
+        .rec-priority.high {
+            color: var(--gov-danger);
         }
 
-        .action-outcome {
-            font-size: 0.85rem;
-            color: var(--gov-primary);
-            font-weight: 500;
-            margin-bottom: 0.75rem;
-            padding: 0.5rem;
-            background: white;
-            border-radius: 4px;
-        }
-
-        .action-status {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .status-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            background: var(--gov-warning-light);
+        .rec-priority.medium {
             color: var(--gov-warning);
         }
 
-        .status-badge.approved {
-            background: var(--gov-success-light);
+        .rec-priority.low {
+            color: var(--gov-info);
+        }
+
+        .rec-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .rec-description {
+            font-size: 0.8rem;
+            color: var(--gov-gray-600);
+            line-height: 1.5;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            border: 1px solid var(--gov-gray-200);
+            text-align: center;
+        }
+
+        .kpi-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--gov-primary);
+        }
+
+        .kpi-label {
+            font-size: 0.8rem;
+            color: var(--gov-gray-500);
+            margin-top: 0.25rem;
+        }
+
+        .kpi-trend {
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .kpi-trend.up {
             color: var(--gov-success);
         }
 
-        .approve-btn {
-            padding: 0.4rem 0.75rem;
-            background: var(--gov-primary);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .approve-btn:hover {
-            background: var(--gov-primary-dark);
-        }
-
-        .chart-section-title {
-            font-size: 0.9rem;
-            color: var(--gov-gray-700);
-            margin-bottom: 0.5rem;
+        .kpi-trend.down {
+            color: var(--gov-danger);
         }
     </style>
 </head>
 
-<body>
+<body ng-controller="PolicyController">
+    <!-- Sidebar -->
     <aside class="gov-sidebar">
         <div class="sidebar-header">
             <div class="sidebar-brand">
@@ -352,216 +168,158 @@
             <a href="rwa.html" class="nav-item"><span class="nav-icon">🏗️</span><span class="nav-text">RWA
                     Oversight</span></a>
             <a href="participation.html" class="nav-item"><span class="nav-icon">⭐</span><span
-                    class="nav-text">Participation</span></a>
+                    class="nav-text">Participation & Incentives</span></a>
             <a href="policy.html" class="nav-item active"><span class="nav-icon">📊</span><span class="nav-text">Policy
                     Insights</span></a>
             <a href="audit.html" class="nav-item"><span class="nav-icon">🔐</span><span class="nav-text">Audit
                     Vault</span></a>
-            <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span><span class="nav-text">Settings</span></a>
+            <a href="field-operations.html" class="nav-item"><span class="nav-icon">👷</span><span
+                    class="nav-text">Field Operations</span></a>
+            <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span><span
+                    class="nav-text">Settings</span></a>
         </nav>
         <div class="sidebar-footer">
             <div class="user-profile">
-                <div class="user-avatar">RK</div>
+                <div class="user-avatar">{{user.initials}}</div>
                 <div class="user-info">
-                    <h4>Rajesh Kumar</h4>
-                    <p>Government Official</p>
+                    <h4>{{user.name}}</h4>
+                    <p>{{user.role}}</p>
                 </div>
-            </div><button class="logout-btn">🚪 Logout</button>
+            </div>
+            <button class="logout-btn" ng-click="logout()"><span>🚪</span><span>Logout</span></button>
         </div>
     </aside>
+
+    <!-- Main Content -->
     <main class="gov-main">
         <header class="gov-topbar">
             <div class="topbar-left">
                 <h2>Policy Insights</h2>
-                <p id="currentDate"></p>
+                <p>{{currentDate}}</p>
             </div>
             <div class="topbar-right">
                 <button class="topbar-btn" title="Accessibility">♿</button>
-                <div class="lang-dropdown">
-                    <button class="lang-toggle-btn" id="langDropdownBtn">
-                        🌐 <span id="currentLangText">EN</span> ▼
-                    </button>
-                    <div class="lang-dropdown-menu" id="langDropdownMenu">
-                        <a href="#" class="lang-option active" data-lang="en">English</a>
-                        <a href="#" class="lang-option" data-lang="hi">हिन्दी (Hindi)</a>
-                        <a href="#" class="lang-option" data-lang="bn">বাংলা (Bengali)</a>
-                        <a href="#" class="lang-option" data-lang="ta">தமிழ் (Tamil)</a>
-                        <a href="#" class="lang-option" data-lang="te">తెలుగు (Telugu)</a>
-                        <a href="#" class="lang-option" data-lang="kn">ಕನ್ನಡ (Kannada)</a>
-                        <a href="#" class="lang-option" data-lang="pa">ਪੰਜਾਬੀ (Punjabi)</a>
-                        <a href="#" class="lang-option" data-lang="gu">ગુજરાતી (Gujarati)</a>
-                        <a href="#" class="lang-option" data-lang="ml">മലയാളം (Malayalam)</a>
-                        <a href="#" class="lang-option" data-lang="mr">मराठी (Marathi)</a>
-                        <a href="#" class="lang-option" data-lang="or">ଓଡ଼ିଆ (Odia)</a>
-                    </div>
-                </div>
-                <button class="topbar-btn notification-btn">
-                    🔔
-                    <span class="notification-badge">5</span>
-                </button>
+                <button class="topbar-btn notification-btn">🔔<span
+                        class="notification-badge">{{notifications}}</span></button>
             </div>
         </header>
+
         <div class="gov-content">
-            <!-- Policy Summary Card -->
-            <div class="gov-card policy-summary-card">
-                <div class="summary-section">
-                    <div class="summary-label">🧠 Key Insight</div>
-                    <div class="summary-text">Complaint volume reduced by 28% over 6 months, driven primarily by faster electricity issue resolution in high-performing wards.</div>
-                </div>
-                <div class="summary-section">
-                    <div class="summary-label">⚠️ Risk Alert</div>
-                    <div class="summary-text">Water-related complaints show slower improvement in low-performing wards (Wards 3, 11).</div>
-                </div>
-                <div class="summary-section">
-                    <div class="summary-label">💡 Opportunity</div>
-                    <div class="summary-text">Implementing best practices from Ward 15 (Rohini) could improve average satisfaction by 8-12%.</div>
+            <!-- KPI Grid -->
+            <div class="section-header">
+                <h3><span class="icon">📊</span> Key Performance Indicators</h3>
+            </div>
+            <div class="kpi-grid">
+                <div class="kpi-card" ng-repeat="kpi in kpis">
+                    <div class="kpi-value">{{kpi.value}}</div>
+                    <div class="kpi-label">{{kpi.label}}</div>
+                    <div class="kpi-trend" ng-class="kpi.trendClass">{{kpi.trend}}</div>
                 </div>
             </div>
 
-            <!-- Ward Performance Rankings with Explanations -->
-            <div class="gov-card" style="margin-bottom:1.5rem">
-                <div class="card-header">
-                    <h3>🏆 Ward Performance Grade Analysis</h3>
-                    <p style="font-size: 0.8rem; color: var(--gov-gray-600); margin-top: 0.25rem;">Click "Why this score?" to see detailed performance factors</p>
+            <!-- Charts Grid -->
+            <div class="policy-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">📈 Grievance Trends</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="grievanceChart"></canvas>
+                    </div>
                 </div>
-                <table class="ranking-table">
-                    <thead>
-                        <tr>
-                            <th>Ward</th>
-                            <th>Resolved</th>
-                            <th>Avg Time</th>
-                            <th>Satisfaction</th>
-                            <th>Score</th>
-                            <th>Trend</th>
-                            <th>Details</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="ward in wardRankings track by $index" class="rank-row">
-                            <td><strong>{{ward.name}}</strong></td>
-                            <td>{{ward.resolved}}</td>
-                            <td>{{ward.avgTime}}</td>
-                            <td>{{ward.satisfaction}}%</td>
-                            <td><span class="score-badge" ng-class="ward.scoreClass">{{ward.score}}</span></td>
-                            <td><strong ng-style="{color: ward.trend.includes('-') ? '#dd6b20' : '#38a169'}">{{ward.trend}}</strong></td>
-                            <td><button class="explain-btn" ng-click="toggleExplanation($index)">Why this score?</button></td>
-                        </tr>
-                        <tr ng-repeat="ward in wardRankings track by $index" class="explanation-row" ng-class="{show: selectedWardForExplanation === $index}">
-                            <td colspan="7">
-                                <div class="explanation-content">
-                                    <div><strong>Performance Factors:</strong> {{ward.explanation}}</div>
-                                    <div><strong>Community Participation Score:</strong> {{ward.participationScore}}/100</div>
-                                    <div><strong>Complaint Breakdown:</strong> Water: {{ward.waterComplaints}} | Electricity: {{ward.electricityComplaints}} | Gas: {{ward.gasComplaints}}</div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Policy Impact Correlation -->
-            <div class="gov-card" style="margin-bottom:1.5rem">
-                <div class="card-header">
-                    <h3>📊 Policy Impact Correlation Analysis</h3>
-                    <p style="font-size: 0.8rem; color: var(--gov-gray-600); margin-top: 0.25rem;">How incentive programs are linked to operational outcomes</p>
-                </div>
-                <div ng-repeat="impact in policyImpacts" class="policy-impact-card">
-                    <div class="impact-title">{{impact.policy}}</div>
-                    <div class="impact-link">→ {{impact.participationLink}}</div>
-                    <div class="impact-metric">
-                        <span class="metric-value">{{impact.impactMetric}}</span>
-                        <span class="effectiveness-badge">{{impact.effectiveness}}</span>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <span class="chart-title">🎯 Service Distribution</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="serviceChart"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- What-If Policy Scenarios -->
-            <div class="gov-card" style="margin-bottom:1.5rem">
-                <div class="card-header">
-                    <h3>🔮 Policy Scenario Analysis (Indicative)</h3>
-                    <p style="font-size: 0.8rem; color: var(--gov-gray-600); margin-top: 0.25rem;">⚠️ Based on historical patterns. Actual results may vary. Human review required.</p>
-                </div>
-                <div class="scenarios-grid">
-                    <div class="scenario-card" ng-repeat="scenario in scenarios">
-                        <div class="scenario-title">{{scenario.title}}</div>
-                        <div class="scenario-detail">
-                            <div class="scenario-detail-label">Assumption</div>
-                            {{scenario.assumption}}
-                        </div>
-                        <div class="scenario-impact">{{scenario.expectedImpact}}</div>
-                        <div class="scenario-confidence">
-                            <span class="confidence-badge">Confidence: {{scenario.confidence}}</span>
-                            <span class="risk-badge">Risk: {{scenario.riskLevel}}</span>
-                        </div>
-                        <button class="explore-btn" ng-click="exploreScenario(scenario)">Explore Scenario</button>
+            <!-- AI Recommendations -->
+            <div class="policy-recommendations">
+                <h3><span class="icon">🤖</span> AI Policy Recommendations</h3>
+                <div class="recommendation-list">
+                    <div class="recommendation-card" ng-repeat="rec in recommendations" ng-class="rec.priority">
+                        <div class="rec-priority" ng-class="rec.priority">{{rec.priority}} Priority</div>
+                        <div class="rec-title">{{rec.title}}</div>
+                        <div class="rec-description">{{rec.description}}</div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Recommended Policy Actions -->
-            <div class="gov-card" style="margin-bottom:1.5rem">
-                <div class="card-header">
-                    <h3>🧭 Recommended Policy Actions</h3>
-                    <p style="font-size: 0.8rem; color: var(--gov-gray-600); margin-top: 0.25rem;">Evidence-based recommendations (requires administrator approval)</p>
-                </div>
-                <div class="actions-grid">
-                    <div class="action-card" ng-repeat="action in recommendedActions" ng-class="action.priority">
-                        <div class="action-title">{{action.title}}</div>
-                        <div class="action-desc">{{action.description}}</div>
-                        <div class="action-outcome">💡 {{action.expectedOutcome}}</div>
-                        <div class="action-status">
-                            <span class="status-badge" ng-class="{approved: action.status === 'approved'}">{{action.status | uppercase}}</span>
-                            <button class="approve-btn" ng-if="action.status === 'pending'" ng-click="approveAction(action)">Approve</button>
-                            <span style="color: var(--gov-success); font-weight: 600;" ng-if="action.status === 'approved'">✓ Approved</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Charts Section -->
-            <div class="revenue-grid">
-                <div class="gov-card chart-card">
-                    <div class="card-header">
-                        <h3>📉 Complaint Trend Analysis</h3>
-                        <p class="chart-section-title">6-month trend showing overall improvements</p>
-                    </div>
-                    <div class="chart-container"><canvas id="trendChart"></canvas></div>
-                </div>
-                <div class="gov-card chart-card">
-                    <div class="card-header">
-                        <h3>📊 Utility Performance Comparison</h3>
-                        <p class="chart-section-title">Monthly comparison across service categories</p>
-                    </div>
-                    <div class="chart-container"><canvas id="comparisonChart"></canvas></div>
                 </div>
             </div>
         </div>
     </main>
-    <script>
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-        new Chart(document.getElementById('trendChart'), { type: 'line', data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], datasets: [{ label: 'Complaints', data: [1200, 1150, 1080, 950, 890, 820], borderColor: '#38a169', backgroundColor: 'rgba(56,161,105,0.1)', tension: 0.4, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-        new Chart(document.getElementById('comparisonChart'), { type: 'bar', data: { labels: ['Electricity', 'Water', 'Gas'], datasets: [{ label: 'This Month', data: [450, 320, 180], backgroundColor: '#3182ce' }, { label: 'Last Month', data: [520, 380, 210], backgroundColor: '#a0aec0' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
 
-        // Language Dropdown
-        const langBtn = document.getElementById('langDropdownBtn');
-        const langMenu = document.getElementById('langDropdownMenu');
-        const langText = document.getElementById('currentLangText');
-        if (langBtn && langMenu) {
-            langBtn.addEventListener('click', (e) => { e.stopPropagation(); langMenu.classList.toggle('show'); });
-            document.addEventListener('click', () => langMenu.classList.remove('show'));
-            langMenu.querySelectorAll('.lang-option').forEach(option => {
-                option.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    langMenu.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
-                    option.classList.add('active');
-                    langText.textContent = option.dataset.lang.toUpperCase();
-                    langMenu.classList.remove('show');
-                    localStorage.setItem('selectedLang', option.dataset.lang);
-                });
-            });
-            const saved = localStorage.getItem('selectedLang');
-            if (saved) { langText.textContent = saved.toUpperCase(); langMenu.querySelectorAll('.lang-option').forEach(o => o.classList.toggle('active', o.dataset.lang === saved)); }
-        }
+    <script>
+        var app = angular.module('adminApp', []);
+
+        app.controller('PolicyController', ['$scope', '$timeout', function ($scope, $timeout) {
+            $scope.user = { name: 'Rajesh Kumar', initials: 'RK', role: 'Government Official' };
+            $scope.currentDate = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            $scope.notifications = 5;
+
+            $scope.kpis = [
+                { value: '94%', label: 'SLA Compliance', trend: '↑ 3% from last month', trendClass: 'up' },
+                { value: '2.4h', label: 'Avg Resolution Time', trend: '↓ 0.5h improvement', trendClass: 'up' },
+                { value: '87%', label: 'Citizen Satisfaction', trend: '↑ 5% increase', trendClass: 'up' },
+                { value: '₹12.4L', label: 'Collection Efficiency', trend: '↑ 8% growth', trendClass: 'up' }
+            ];
+
+            $scope.recommendations = [
+                { priority: 'high', title: 'Increase Staff in Ward 22', description: 'Gas complaints have increased 40% in the last week. Consider deploying additional field agents.' },
+                { priority: 'medium', title: 'Optimize Water Distribution', description: 'Pattern analysis suggests peak demand hours. Consider adjusting supply schedules.' },
+                { priority: 'low', title: 'Preventive Maintenance', description: 'Schedule preventive maintenance for electricity infrastructure in Ward 15 next month.' }
+            ];
+
+            // Initialize charts after DOM load
+            $timeout(function () {
+                // Grievance Trends Chart
+                var ctx1 = document.getElementById('grievanceChart');
+                if (ctx1) {
+                    new Chart(ctx1, {
+                        type: 'line',
+                        data: {
+                            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                            datasets: [{
+                                label: 'Complaints',
+                                data: [450, 520, 380, 410, 390, 340],
+                                borderColor: '#667eea',
+                                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                                fill: true,
+                                tension: 0.4
+                            }, {
+                                label: 'Resolved',
+                                data: [420, 490, 360, 400, 380, 330],
+                                borderColor: '#38a169',
+                                backgroundColor: 'rgba(56, 161, 105, 0.1)',
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+
+                // Service Distribution Chart
+                var ctx2 = document.getElementById('serviceChart');
+                if (ctx2) {
+                    new Chart(ctx2, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Electricity', 'Water', 'Gas', 'Sanitation', 'Others'],
+                            datasets: [{
+                                data: [35, 28, 18, 12, 7],
+                                backgroundColor: ['#667eea', '#38a169', '#dd6b20', '#3182ce', '#718096']
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+            }, 100);
+
+            $scope.logout = function () { if (confirm('Are you sure you want to logout?')) alert('Logged out successfully'); };
+        }]);
     </script>
 </body>
 

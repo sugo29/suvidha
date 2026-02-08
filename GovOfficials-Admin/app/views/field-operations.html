@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="adminApp">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Field Operations - Suvidha City Control Room</title>
+    <link rel="stylesheet" href="../../css/gov-style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <style>
+        .operations-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .agent-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .agent-table th,
+        .agent-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gov-gray-200);
+        }
+
+        .agent-table th {
+            background: var(--gov-gray-50);
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--gov-gray-600);
+            text-transform: uppercase;
+        }
+
+        .agent-table tr:hover {
+            background: var(--gov-gray-50);
+        }
+
+        .agent-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .agent-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gov-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .agent-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .agent-id {
+            font-size: 0.75rem;
+            color: var(--gov-gray-500);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.online {
+            background: var(--gov-success);
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.busy {
+            background: var(--gov-warning);
+        }
+
+        .status-dot.offline {
+            background: var(--gov-gray-400);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge.success {
+            background: var(--gov-success-light);
+            color: var(--gov-success);
+        }
+
+        .badge.warning {
+            background: var(--gov-warning-light);
+            color: var(--gov-warning);
+        }
+
+        .badge.info {
+            background: var(--gov-info-light);
+            color: var(--gov-info);
+        }
+
+        .badge.danger {
+            background: var(--gov-danger-light);
+            color: var(--gov-danger);
+        }
+
+        .action-btn {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .action-btn.primary {
+            background: var(--gov-primary);
+            color: white;
+        }
+
+        .action-btn.outline {
+            background: white;
+            border: 1px solid var(--gov-gray-300);
+            color: var(--gov-gray-700);
+            margin-left: 0.5rem;
+        }
+
+        .table-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-top: 1px solid var(--gov-gray-200);
+        }
+
+        .table-info {
+            font-size: 0.8rem;
+            color: var(--gov-gray-500);
+        }
+
+        .live-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .live-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            border: 1px solid var(--gov-gray-200);
+        }
+
+        .live-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .live-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .live-indicator {
+            width: 8px;
+            height: 8px;
+            background: var(--gov-danger);
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: var(--gov-gray-50);
+            border-radius: var(--radius-md);
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .activity-icon.success {
+            background: var(--gov-success-light);
+        }
+
+        .activity-icon.warning {
+            background: var(--gov-warning-light);
+        }
+
+        .activity-icon.info {
+            background: var(--gov-info-light);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-text {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .activity-meta {
+            font-size: 0.75rem;
+            color: var(--gov-gray-500);
+        }
+
+        .map-placeholder {
+            height: 200px;
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gov-gray-500);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body ng-controller="FieldOperationsController">
+    <!-- Sidebar -->
+    <aside class="gov-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <div class="brand-icon">🏛️</div>
+                <div class="brand-text">
+                    <h1>Suvidha</h1><span>CITY CONTROL ROOM</span>
+                </div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item"><span class="nav-icon">🏠</span><span
+                    class="nav-text">Dashboard</span></a>
+            <a href="grievance.html" class="nav-item"><span class="nav-icon">📢</span><span class="nav-text">Grievance
+                    Command</span></a>
+            <a href="meter.html" class="nav-item"><span class="nav-icon">⚡</span><span class="nav-text">Meter
+                    Integrity</span></a>
+            <a href="rwa.html" class="nav-item"><span class="nav-icon">🏗️</span><span class="nav-text">RWA
+                    Oversight</span></a>
+            <a href="participation.html" class="nav-item"><span class="nav-icon">⭐</span><span
+                    class="nav-text">Participation & Incentives</span></a>
+            <a href="policy.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-text">Policy
+                    Insights</span></a>
+            <a href="audit.html" class="nav-item"><span class="nav-icon">🔐</span><span class="nav-text">Audit
+                    Vault</span></a>
+            <a href="field-operations.html" class="nav-item active"><span class="nav-icon">👷</span><span
+                    class="nav-text">Field Operations</span></a>
+            <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span><span
+                    class="nav-text">Settings</span></a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">{{user.initials}}</div>
+                <div class="user-info">
+                    <h4>{{user.name}}</h4>
+                    <p>{{user.role}}</p>
+                </div>
+            </div>
+            <button class="logout-btn" ng-click="logout()"><span>🚪</span><span>Logout</span></button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="gov-main">
+        <header class="gov-topbar">
+            <div class="topbar-left">
+                <h2>Field Operations</h2>
+                <p>{{currentDate}}</p>
+            </div>
+            <div class="topbar-right">
+                <button class="topbar-btn" title="Accessibility">♿</button>
+                <button class="topbar-btn notification-btn">🔔<span
+                        class="notification-badge">{{notifications}}</span></button>
+            </div>
+        </header>
+
+        <div class="gov-content">
+            <!-- Stats Row -->
+            <div class="section-header">
+                <h3><span class="icon">👷</span> Field Agent Overview</h3>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card success">
+                    <div class="stat-icon-box green"><span>🟢</span></div>
+                    <div class="stat-content">
+                        <div class="stat-value">{{stats.online}}</div>
+                        <div class="stat-label">Agents Online</div>
+                        <small class="stat-context">Active in field</small>
+                    </div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-icon-box orange"><span>🔄</span></div>
+                    <div class="stat-content">
+                        <div class="stat-value">{{stats.onTask}}</div>
+                        <div class="stat-label">On Active Task</div>
+                        <small class="stat-context">Currently working</small>
+                    </div>
+                </div>
+                <div class="stat-card primary">
+                    <div class="stat-icon-box blue"><span>✅</span></div>
+                    <div class="stat-content">
+                        <div class="stat-value">{{stats.completedToday}}</div>
+                        <div class="stat-label">Tasks Completed</div>
+                        <small class="stat-context">Today</small>
+                    </div>
+                </div>
+                <div class="stat-card info">
+                    <div class="stat-icon-box blue"><span>📊</span></div>
+                    <div class="stat-content">
+                        <div class="stat-value">{{stats.avgTime}}</div>
+                        <div class="stat-label">Avg Response Time</div>
+                        <small class="stat-context">This week</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operations Grid -->
+            <div class="operations-grid">
+                <!-- Agent Table -->
+                <div class="gov-card">
+                    <div class="card-header">
+                        <h3><span class="icon">👥</span> Field Agents</h3>
+                    </div>
+                    <div class="table-container">
+                        <table class="agent-table">
+                            <thead>
+                                <tr>
+                                    <th>Agent</th>
+                                    <th>Status</th>
+                                    <th>Current Task</th>
+                                    <th>Location</th>
+                                    <th>Tasks Today</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="agent in agents">
+                                    <td>
+                                        <div class="agent-info">
+                                            <div class="agent-avatar">{{agent.initials}}</div>
+                                            <div>
+                                                <div class="agent-name">{{agent.name}}</div>
+                                                <div class="agent-id">{{agent.id}}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="status-indicator">
+                                            <span class="status-dot" ng-class="agent.statusClass"></span>
+                                            <span>{{agent.status}}</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge" ng-class="agent.taskClass">{{agent.currentTask}}</span></td>
+                                    <td>{{agent.location}}</td>
+                                    <td><strong>{{agent.tasksCompleted}}</strong>/{{agent.tasksAssigned}}</td>
+                                    <td>
+                                        <button class="action-btn primary" ng-click="trackAgent(agent)">Track</button>
+                                        <button class="action-btn outline" ng-click="assignTask(agent)">Assign</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-footer">
+                        <span class="table-info">Showing {{agents.length}} agents</span>
+                    </div>
+                </div>
+
+                <!-- Live Panel -->
+                <div class="live-panel">
+                    <div class="live-card">
+                        <div class="live-header">
+                            <span class="live-title"><span class="live-indicator"></span> Live Activity</span>
+                        </div>
+                        <div class="activity-list">
+                            <div class="activity-item" ng-repeat="activity in liveActivities">
+                                <div class="activity-icon" ng-class="activity.iconClass">{{activity.icon}}</div>
+                                <div class="activity-content">
+                                    <div class="activity-text">{{activity.text}}</div>
+                                    <div class="activity-meta">{{activity.time}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="live-card">
+                        <div class="live-header">
+                            <span class="live-title">📍 Field Map</span>
+                        </div>
+                        <div class="map-placeholder">
+                            🗺️ Interactive Map - Coming Soon
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        var app = angular.module('adminApp', []);
+
+        app.controller('FieldOperationsController', ['$scope', function ($scope) {
+            $scope.user = { name: 'Rajesh Kumar', initials: 'RK', role: 'Government Official' };
+            $scope.currentDate = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            $scope.notifications = 5;
+
+            $scope.stats = { online: 45, onTask: 32, completedToday: 156, avgTime: '28 min' };
+
+            $scope.agents = [
+                { name: 'Vikram Singh', initials: 'VS', id: 'FA-001', status: 'Online', statusClass: 'online', currentTask: 'Meter Reading', taskClass: 'info', location: 'Ward 15, Saket', tasksCompleted: 8, tasksAssigned: 10 },
+                { name: 'Anita Rao', initials: 'AR', id: 'FA-002', status: 'On Task', statusClass: 'busy', currentTask: 'Grievance Visit', taskClass: 'warning', location: 'Ward 22, Rohini', tasksCompleted: 5, tasksAssigned: 8 },
+                { name: 'Mohan Das', initials: 'MD', id: 'FA-003', status: 'Online', statusClass: 'online', currentTask: 'Available', taskClass: 'success', location: 'Ward 8, Lajpat Nagar', tasksCompleted: 12, tasksAssigned: 12 },
+                { name: 'Priya Gupta', initials: 'PG', id: 'FA-004', status: 'On Task', statusClass: 'busy', currentTask: 'RWA Inspection', taskClass: 'info', location: 'Ward 11, Dwarka', tasksCompleted: 6, tasksAssigned: 9 },
+                { name: 'Ravi Kumar', initials: 'RK', id: 'FA-005', status: 'Offline', statusClass: 'offline', currentTask: 'Break', taskClass: 'danger', location: 'N/A', tasksCompleted: 4, tasksAssigned: 7 }
+            ];
+
+            $scope.liveActivities = [
+                { icon: '✅', iconClass: 'success', text: 'Vikram completed meter reading at Ward 15', time: '2 min ago' },
+                { icon: '📍', iconClass: 'info', text: 'Anita arrived at grievance location', time: '5 min ago' },
+                { icon: '⚠️', iconClass: 'warning', text: 'Mohan flagged potential tampering', time: '12 min ago' },
+                { icon: '✅', iconClass: 'success', text: 'Priya completed RWA verification', time: '18 min ago' }
+            ];
+
+            $scope.trackAgent = function (agent) { alert('Tracking agent: ' + agent.name); };
+            $scope.assignTask = function (agent) { alert('Assigning task to: ' + agent.name); };
+            $scope.logout = function () { if (confirm('Are you sure you want to logout?')) alert('Logged out successfully'); };
+        }]);
+    </script>
+</body>
+
+</html>

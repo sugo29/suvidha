@@ -1,301 +1,228 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="adminApp">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Participation & Incentives - Suvidha</title>
+    <title>Participation & Incentives - Suvidha City Control Room</title>
     <link rel="stylesheet" href="../../css/gov-style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <style>
-        .heatmap-grid {
+        .participation-grid {
             display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 0.5rem;
-            margin: 1rem 0;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
         }
 
-        .ward-cell {
-            aspect-ratio: 1;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.8rem;
-            color: white;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .ward-cell:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .ward-cell.low {
-            background: #c6f6d5;
-            color: #22543d;
-        }
-
-        .ward-cell.medium {
-            background: #9ae6b4;
-            color: #22543d;
-        }
-
-        .ward-cell.high {
-            background: #48bb78;
-        }
-
-        .ward-cell.very-high {
-            background: #25855a;
-        }
-
-        .ward-details-drawer {
-            position: fixed;
-            right: 0;
-            top: 0;
-            width: 420px;
-            height: 100%;
+        .leaderboard {
             background: white;
-            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-        }
-
-        .ward-details-drawer.show {
-            transform: translateX(0);
-        }
-
-        .drawer-header {
+            border-radius: var(--radius-lg);
             padding: 1.5rem;
-            border-bottom: 1px solid var(--gov-gray-200);
+            border: 1px solid var(--gov-gray-200);
+        }
+
+        .leaderboard-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .drawer-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1.5rem;
-        }
-
-        .drawer-section {
             margin-bottom: 1.5rem;
         }
 
-        .drawer-section-title {
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--gov-gray-700);
-            margin-bottom: 0.75rem;
-            text-transform: uppercase;
-        }
-
-        .drawer-stat {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--gov-gray-100);
-        }
-
-        .drawer-stat-value {
-            font-weight: 600;
-            font-size: 1rem;
-            color: var(--gov-primary);
-        }
-
-        .redemption-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .redemption-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem;
-            background: var(--gov-gray-50);
-            border-radius: 8px;
-        }
-
-        .badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .badge.danger {
-            background: var(--gov-danger-light);
-            color: var(--gov-danger);
-        }
-
-        .badge.warning {
-            background: var(--gov-warning-light);
-            color: var(--gov-warning);
-        }
-
-        .badge.success {
-            background: var(--gov-success-light);
-            color: var(--gov-success);
-        }
-
-        .badge.verify {
-            background: #e0f7fa;
-            color: #0097a7;
-        }
-
-        .alert-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            padding: 0.75rem;
-            background: var(--gov-gray-50);
-            border-radius: 8px;
-            margin-bottom: 0.75rem;
-        }
-
-        .alert-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .alert-actions {
+        .leaderboard-tabs {
             display: flex;
             gap: 0.5rem;
-            margin-top: 0.5rem;
-            flex-wrap: wrap;
         }
 
-        .action-btn {
-            padding: 0.4rem 0.75rem;
-            font-size: 0.7rem;
-            border: 1px solid var(--gov-gray-300);
+        .tab-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--gov-gray-200);
             background: white;
-            border-radius: 4px;
+            border-radius: 20px;
+            font-size: 0.8rem;
             cursor: pointer;
-            transition: all 0.2s;
         }
 
-        .action-btn:hover {
+        .tab-btn.active {
             background: var(--gov-primary);
             color: white;
             border-color: var(--gov-primary);
         }
 
-        .scheme-performance-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
         }
 
-        .scheme-performance-table th,
-        .scheme-performance-table td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid var(--gov-gray-200);
-            font-size: 0.85rem;
-        }
-
-        .scheme-performance-table th {
-            background: var(--gov-gray-50);
-            font-weight: 600;
-            color: var(--gov-gray-700);
-        }
-
-        .scheme-performance-table tr:hover {
-            background: var(--gov-gray-50);
-        }
-
-        .policy-actions-strip {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
             gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .policy-action-card {
             padding: 1rem;
-            border-left: 4px solid;
             background: var(--gov-gray-50);
-            border-radius: 6px;
+            border-radius: var(--radius-md);
+            transition: all 0.2s;
         }
 
-        .policy-action-card.high {
-            border-left-color: var(--gov-danger);
+        .leaderboard-item:hover {
+            background: var(--gov-gray-100);
         }
 
-        .policy-action-card.medium {
-            border-left-color: var(--gov-warning);
+        .leaderboard-item.gold {
+            background: linear-gradient(135deg, #fff7e6 0%, #fffbe6 100%);
+            border: 1px solid #ffc107;
         }
 
-        .policy-action-card.low {
-            border-left-color: var(--gov-info);
+        .leaderboard-item.silver {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            border: 1px solid #c0c0c0;
         }
 
-        .policy-action-title {
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-bottom: 0.5rem;
+        .leaderboard-item.bronze {
+            background: linear-gradient(135deg, #fff4e6 0%, #ffe4d6 100%);
+            border: 1px solid #cd7f32;
         }
 
-        .policy-action-desc {
-            font-size: 0.8rem;
-            color: var(--gov-gray-700);
-            margin-bottom: 0.5rem;
+        .rank {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
         }
 
-        .policy-action-rec {
-            font-size: 0.8rem;
-            color: var(--gov-primary);
-            font-weight: 500;
-        }
-
-        .drawer-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 999;
-            display: none;
-        }
-
-        .drawer-overlay.show {
-            display: block;
-        }
-
-        .ehs-card {
-            position: relative;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .rank.gold {
+            background: #ffc107;
             color: white;
         }
 
-        .ehs-tooltip {
-            font-size: 0.7rem;
-            margin-top: 0.5rem;
-            opacity: 0.9;
-            line-height: 1.3;
+        .rank.silver {
+            background: #c0c0c0;
+            color: white;
         }
 
-        .close-btn {
-            background: none;
-            border: none;
+        .rank.bronze {
+            background: #cd7f32;
+            color: white;
+        }
+
+        .rank.default {
+            background: var(--gov-gray-300);
+            color: white;
+        }
+
+        .participant-info {
+            flex: 1;
+        }
+
+        .participant-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .participant-ward {
+            font-size: 0.8rem;
+            color: var(--gov-gray-500);
+        }
+
+        .participant-score {
+            text-align: right;
+        }
+
+        .score-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gov-primary);
+        }
+
+        .score-label {
+            font-size: 0.7rem;
+            color: var(--gov-gray-500);
+            text-transform: uppercase;
+        }
+
+        .incentives-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .incentive-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            border: 1px solid var(--gov-gray-200);
+        }
+
+        .incentive-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .incentive-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--gov-gray-700);
+        }
+
+        .incentive-icon.green {
+            background: var(--gov-success-light);
+        }
+
+        .incentive-icon.blue {
+            background: var(--gov-info-light);
+        }
+
+        .incentive-icon.orange {
+            background: var(--gov-warning-light);
+        }
+
+        .incentive-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .incentive-subtitle {
+            font-size: 0.8rem;
+            color: var(--gov-gray-500);
+        }
+
+        .incentive-stat {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--gov-gray-800);
+            margin: 0.5rem 0;
+        }
+
+        .incentive-change {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .incentive-change.up {
+            color: var(--gov-success);
+        }
+
+        .incentive-change.down {
+            color: var(--gov-danger);
         }
     </style>
 </head>
 
-<body>
+<body ng-controller="ParticipationController">
+    <!-- Sidebar -->
     <aside class="gov-sidebar">
         <div class="sidebar-header">
             <div class="sidebar-brand">
@@ -315,271 +242,175 @@
             <a href="rwa.html" class="nav-item"><span class="nav-icon">🏗️</span><span class="nav-text">RWA
                     Oversight</span></a>
             <a href="participation.html" class="nav-item active"><span class="nav-icon">⭐</span><span
-                    class="nav-text">Participation</span></a>
+                    class="nav-text">Participation & Incentives</span></a>
             <a href="policy.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-text">Policy
                     Insights</span></a>
             <a href="audit.html" class="nav-item"><span class="nav-icon">🔐</span><span class="nav-text">Audit
                     Vault</span></a>
-            <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span><span class="nav-text">Settings</span></a>
+            <a href="field-operations.html" class="nav-item"><span class="nav-icon">👷</span><span
+                    class="nav-text">Field Operations</span></a>
+            <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span><span
+                    class="nav-text">Settings</span></a>
         </nav>
         <div class="sidebar-footer">
             <div class="user-profile">
-                <div class="user-avatar">RK</div>
+                <div class="user-avatar">{{user.initials}}</div>
                 <div class="user-info">
-                    <h4>Rajesh Kumar</h4>
-                    <p>Government Official</p>
+                    <h4>{{user.name}}</h4>
+                    <p>{{user.role}}</p>
                 </div>
-            </div><button class="logout-btn">🚪 Logout</button>
+            </div>
+            <button class="logout-btn" ng-click="logout()"><span>🚪</span><span>Logout</span></button>
         </div>
     </aside>
+
+    <!-- Main Content -->
     <main class="gov-main">
         <header class="gov-topbar">
             <div class="topbar-left">
                 <h2>Participation & Incentives</h2>
-                <p id="currentDate"></p>
+                <p>{{currentDate}}</p>
             </div>
             <div class="topbar-right">
                 <button class="topbar-btn" title="Accessibility">♿</button>
-                <div class="lang-dropdown">
-                    <button class="lang-toggle-btn" id="langDropdownBtn">
-                        🌐 <span id="currentLangText">EN</span> ▼
-                    </button>
-                    <div class="lang-dropdown-menu" id="langDropdownMenu">
-                        <a href="#" class="lang-option active" data-lang="en">English</a>
-                        <a href="#" class="lang-option" data-lang="hi">हिन्दी (Hindi)</a>
-                        <a href="#" class="lang-option" data-lang="bn">বাংলা (Bengali)</a>
-                        <a href="#" class="lang-option" data-lang="ta">தமிழ் (Tamil)</a>
-                        <a href="#" class="lang-option" data-lang="te">తెలుగు (Telugu)</a>
-                        <a href="#" class="lang-option" data-lang="kn">ಕನ್ನಡ (Kannada)</a>
-                        <a href="#" class="lang-option" data-lang="pa">ਪੰਜਾਬੀ (Punjabi)</a>
-                        <a href="#" class="lang-option" data-lang="gu">ગુજરાતી (Gujarati)</a>
-                        <a href="#" class="lang-option" data-lang="ml">മലയാളം (Malayalam)</a>
-                        <a href="#" class="lang-option" data-lang="mr">मराठी (Marathi)</a>
-                        <a href="#" class="lang-option" data-lang="or">ଓଡ଼ିଆ (Odia)</a>
-                    </div>
-                </div>
-                <button class="topbar-btn notification-btn">
-                    🔔
-                    <span class="notification-badge">5</span>
-                </button>
+                <button class="topbar-btn notification-btn">🔔<span
+                        class="notification-badge">{{notifications}}</span></button>
             </div>
         </header>
+
         <div class="gov-content">
+            <!-- Stats Row -->
+            <div class="section-header">
+                <h3><span class="icon">⭐</span> Participation Overview</h3>
+            </div>
             <div class="stats-grid">
-                <div class="stat-card ehs-card">
-                    <div class="stat-icon-box" style="background: rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center;"><span style="font-size: 2rem;">🧠</span></div>
+                <div class="stat-card success">
+                    <div class="stat-icon-box green"><span>👥</span></div>
                     <div class="stat-content">
-                        <div class="stat-value">{{stats.engagementHealthScore}}/100</div>
-                        <div class="stat-label">Engagement Health Score</div>
-                        <div class="ehs-tooltip">Healthy participation rate • Fair repeat engagement • Low abuse flags</div>
+                        <div class="stat-value">{{stats.activeUsers | number}}</div>
+                        <div class="stat-label">Active Participants</div>
+                        <small class="stat-context">This month</small>
                     </div>
                 </div>
                 <div class="stat-card primary">
-                    <div class="stat-icon-box blue"><span>👥</span></div>
+                    <div class="stat-icon-box blue"><span>🏆</span></div>
                     <div class="stat-content">
-                        <div class="stat-value">45,678</div>
-                        <div class="stat-label">Total Participants</div>
-                    </div>
-                </div>
-                <div class="stat-card success">
-                    <div class="stat-icon-box green"><span>🎯</span></div>
-                    <div class="stat-content">
-                        <div class="stat-value">12</div>
-                        <div class="stat-label">Ongoing Incentive Programs</div>
+                        <div class="stat-value">{{stats.rewardsDistributed | number}}</div>
+                        <div class="stat-label">Rewards Distributed</div>
+                        <small class="stat-context">Total this month</small>
                     </div>
                 </div>
                 <div class="stat-card warning">
-                    <div class="stat-icon-box orange"><span>🎁</span></div>
+                    <div class="stat-icon-box orange"><span>📈</span></div>
                     <div class="stat-content">
-                        <div class="stat-value">47</div>
-                        <div class="stat-label">Pending Redemptions</div>
+                        <div class="stat-value">{{stats.engagementRate}}%</div>
+                        <div class="stat-label">Engagement Rate</div>
+                        <small class="stat-context">+5% from last month</small>
                     </div>
                 </div>
-                <div class="stat-card danger">
-                    <div class="stat-icon-box red"><span>⚠️</span></div>
+                <div class="stat-card info">
+                    <div class="stat-icon-box blue"><span>💰</span></div>
                     <div class="stat-content">
-                        <div class="stat-value">3</div>
-                        <div class="stat-label">Integrity Alerts</div>
-                    </div>
-                </div>
-            </div>
-            <div class="dashboard-grid">
-                <div class="gov-card">
-                    <div class="card-header">
-                        <h3>🗺️ Ward Participation Heatmap</h3>
-                        <p style="font-size: 0.8rem; color: var(--gov-gray-600); margin-top: 0.25rem;">Click on any ward to view details</p>
-                    </div>
-                    <div class="heatmap-grid">
-                        <div class="ward-cell" ng-repeat="ward in wards" ng-class="ward.level" ng-click="selectWard(ward)" title="Ward {{ward.id}} - {{ward.participation}}%">
-                            {{ward.id}}
-                        </div>
-                    </div>
-                    <div style="display:flex;gap:1rem;justify-content:center;margin-top:1rem;font-size:0.75rem">
-                        <span><span
-                                style="display:inline-block;width:12px;height:12px;background:#c6f6d5;border-radius:2px"></span>
-                            Low</span>
-                        <span><span
-                                style="display:inline-block;width:12px;height:12px;background:#9ae6b4;border-radius:2px"></span>
-                            Medium</span>
-                        <span><span
-                                style="display:inline-block;width:12px;height:12px;background:#48bb78;border-radius:2px"></span>
-                            High</span>
-                        <span><span
-                                style="display:inline-block;width:12px;height:12px;background:#25855a;border-radius:2px"></span>
-                            Very High</span>
-                    </div>
-                </div>
-                <div class="right-column">
-                    <div class="gov-card">
-                        <div class="card-header">
-                            <h3>✔️ Verified Redemptions</h3>
-                        </div>
-                        <div class="redemption-list">
-                            <div class="redemption-item" ng-repeat="item in redemptions">
-                                <div>
-                                    <strong>{{item.user}}</strong><br>
-                                    <small>{{item.reward}} • {{item.points}} pts • {{item.ward}}</small>
-                                </div>
-                                <div style="display: flex; gap: 0.5rem; align-items: center;">
-                                    <span class="badge verify">✔ Verified</span>
-                                    <span class="badge success">{{item.date}}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="gov-card">
-                        <div class="card-header">
-                            <h3>⚠️ Integrity Alerts</h3>
-                        </div>
-                        <div ng-repeat="alert in abuseAlerts" class="alert-item">
-                            <div class="alert-header">
-                                <span class="badge" ng-class="alert.severity">{{alert.severity | uppercase}}</span>
-                                <div>
-                                    <strong>{{alert.type}}</strong><br>
-                                    <small>{{alert.description}} • {{alert.ward}}</small>
-                                </div>
-                            </div>
-                            <div class="alert-actions">
-                                <button class="action-btn" ng-repeat="action in alert.actions" ng-click="handleAlertAction(alert, action.action)">
-                                    {{action.label}}
-                                </button>
-                        </div>
+                        <div class="stat-value">₹{{stats.incentivesPaid | number}}</div>
+                        <div class="stat-label">Incentives Paid</div>
+                        <small class="stat-context">This month</small>
                     </div>
                 </div>
             </div>
 
-            <!-- Scheme Performance Comparison -->
-            <div class="gov-card" style="margin-top: 1.5rem;">
-                <div class="card-header">
-                    <h3>🎯 Incentive Programs Performance Matrix</h3>
-                    <p style="font-size: 0.8rem; color: var(--gov-gray-600); margin-top: 0.25rem;">Comparative effectiveness analysis across all active schemes</p>
+            <!-- Participation Grid -->
+            <div class="participation-grid">
+                <!-- Leaderboard -->
+                <div class="leaderboard">
+                    <div class="leaderboard-header">
+                        <h3><span class="icon">🏆</span> Top Performers</h3>
+                        <div class="leaderboard-tabs">
+                            <button class="tab-btn" ng-class="{active: leaderboardTab === 'weekly'}"
+                                ng-click="leaderboardTab = 'weekly'">Weekly</button>
+                            <button class="tab-btn" ng-class="{active: leaderboardTab === 'monthly'}"
+                                ng-click="leaderboardTab = 'monthly'">Monthly</button>
+                            <button class="tab-btn" ng-class="{active: leaderboardTab === 'all'}"
+                                ng-click="leaderboardTab = 'all'">All Time</button>
+                        </div>
+                    </div>
+                    <div class="leaderboard-list">
+                        <div class="leaderboard-item" ng-repeat="participant in leaderboard"
+                            ng-class="participant.rankClass">
+                            <div class="rank" ng-class="participant.rankStyle">{{$index + 1}}</div>
+                            <div class="participant-info">
+                                <div class="participant-name">{{participant.name}}</div>
+                                <div class="participant-ward">{{participant.ward}}</div>
+                            </div>
+                            <div class="participant-score">
+                                <div class="score-value">{{participant.points | number}}</div>
+                                <div class="score-label">Points</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <table class="scheme-performance-table">
-                    <thead>
-                        <tr>
-                            <th>Program Name</th>
-                            <th>Active Wards</th>
-                            <th>Participation</th>
-                            <th>Cost/Engagement</th>
-                            <th>Impact Status</th>
-                            <th>Abuse Rate</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="scheme in schemePerformance">
-                            <td><strong>{{scheme.name}}</strong></td>
-                            <td>{{scheme.activeWards}}</td>
-                            <td><strong>{{scheme.participation}}</strong></td>
-                            <td>{{scheme.costPerEngagement}}</td>
-                            <td><span class="badge" ng-class="scheme.statusClass">{{scheme.status}}</span></td>
-                            <td><span class="badge" ng-class="scheme.abuseRate === 'High' ? 'danger' : (scheme.abuseRate === 'Medium' ? 'warning' : 'success')">{{scheme.abuseRate}}</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
 
-            <!-- Policy Actions Recommendations -->
-            <div class="gov-card" style="margin-top: 1.5rem;">
-                <div class="card-header">
-                    <h3>🧠 Suggested Policy Actions</h3>
-                    <p style="font-size: 0.8rem; color: var(--gov-gray-600); margin-top: 0.25rem;">AI-recommended interventions (⚠️ Requires human approval)</p>
-                </div>
-                <div class="policy-actions-strip">
-                    <div class="policy-action-card" ng-repeat="action in policyActions" ng-class="action.priority">
-                        <div class="policy-action-title">{{action.title}}</div>
-                        <div class="policy-action-desc">{{action.description}}</div>
-                        <div class="policy-action-rec">💡 {{action.recommendation}}</div>
-                        <button style="margin-top: 0.75rem; padding: 0.4rem 0.75rem; background: var(--gov-primary); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" ng-click="handlePolicyAction(action)">
-                            Approve & Execute
-                        </button>
+                <!-- Incentives Panel -->
+                <div class="incentives-panel">
+                    <div class="incentive-card">
+                        <div class="incentive-header">
+                            <div class="incentive-icon green">🎁</div>
+                            <div>
+                                <div class="incentive-title">Rewards Claimed</div>
+                                <div class="incentive-subtitle">This week</div>
+                            </div>
+                        </div>
+                        <div class="incentive-stat">{{incentives.rewardsClaimed}}</div>
+                        <div class="incentive-change up">↑ 12% from last week</div>
+                    </div>
+                    <div class="incentive-card">
+                        <div class="incentive-header">
+                            <div class="incentive-icon blue">📊</div>
+                            <div>
+                                <div class="incentive-title">Avg Points/User</div>
+                                <div class="incentive-subtitle">Active users</div>
+                            </div>
+                        </div>
+                        <div class="incentive-stat">{{incentives.avgPoints}}</div>
+                        <div class="incentive-change up">↑ 8% improvement</div>
+                    </div>
+                    <div class="incentive-card">
+                        <div class="incentive-header">
+                            <div class="incentive-icon orange">🎯</div>
+                            <div>
+                                <div class="incentive-title">Target Achievement</div>
+                                <div class="incentive-subtitle">Monthly goal</div>
+                            </div>
+                        </div>
+                        <div class="incentive-stat">{{incentives.targetAchievement}}%</div>
+                        <div class="incentive-change up">On track</div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Ward Details Drawer -->
-    <div class="drawer-overlay" ng-class="{show: showWardDetails}" ng-click="closeWardDetails()"></div>
-    <div class="ward-details-drawer" ng-class="{show: showWardDetails}">
-        <div class="drawer-header" ng-if="selectedWard">
-            <h3 style="margin: 0;">Ward {{selectedWard.id}} Details</h3>
-            <button class="close-btn" ng-click="closeWardDetails()">✕</button>
-        </div>
-        <div class="drawer-content" ng-if="selectedWard">
-            <div class="drawer-section">
-                <div class="drawer-section-title">Engagement Metrics</div>
-                <div class="drawer-stat">
-                    <span>Participation Rate</span>
-                    <span class="drawer-stat-value">{{selectedWard.participation}}%</span>
-                </div>
-                <div class="drawer-stat">
-                    <span>Trend (30 days)</span>
-                    <span class="drawer-stat-value">{{selectedWard.trend}}</span>
-                </div>
-                <div class="drawer-stat">
-                    <span>Avg Points/Citizen</span>
-                    <span class="drawer-stat-value">{{selectedWard.avgPointsPerCitizen}}</span>
-                </div>
-            </div>
-            <div class="drawer-section">
-                <div class="drawer-section-title">Program Performance</div>
-                <div class="drawer-stat">
-                    <span>Top Active Program</span>
-                    <span class="drawer-stat-value" style="font-size: 0.9rem;">{{selectedWard.topScheme}}</span>
-                </div>
-            </div>
-            <div class="drawer-section">
-                <div class="drawer-section-title">Integrity Status</div>
-                <div class="drawer-stat">
-                    <span>Abuse Risk Level</span>
-                    <span class="badge" ng-class="selectedWard.abuseRiskLevel === 'High' ? 'danger' : (selectedWard.abuseRiskLevel === 'Medium' ? 'warning' : 'success')" style="width: auto;">{{selectedWard.abuseRiskLevel}}</span>
-                </div>
-            </div>
-        </div>
-    </div>
     <script>
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        var app = angular.module('adminApp', []);
 
-        // Language Dropdown
-        const langBtn = document.getElementById('langDropdownBtn');
-        const langMenu = document.getElementById('langDropdownMenu');
-        const langText = document.getElementById('currentLangText');
-        if (langBtn && langMenu) {
-            langBtn.addEventListener('click', (e) => { e.stopPropagation(); langMenu.classList.toggle('show'); });
-            document.addEventListener('click', () => langMenu.classList.remove('show'));
-            langMenu.querySelectorAll('.lang-option').forEach(option => {
-                option.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    langMenu.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
-                    option.classList.add('active');
-                    langText.textContent = option.dataset.lang.toUpperCase();
-                    langMenu.classList.remove('show');
-                    localStorage.setItem('selectedLang', option.dataset.lang);
-                });
-            });
-            const saved = localStorage.getItem('selectedLang');
-            if (saved) { langText.textContent = saved.toUpperCase(); langMenu.querySelectorAll('.lang-option').forEach(o => o.classList.toggle('active', o.dataset.lang === saved)); }
-        }
+        app.controller('ParticipationController', ['$scope', function ($scope) {
+            $scope.user = { name: 'Rajesh Kumar', initials: 'RK', role: 'Government Official' };
+            $scope.currentDate = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            $scope.notifications = 5;
+            $scope.leaderboardTab = 'weekly';
+
+            $scope.stats = { activeUsers: 8520, rewardsDistributed: 1234, engagementRate: 78, incentivesPaid: 245000 };
+            $scope.incentives = { rewardsClaimed: 456, avgPoints: 1250, targetAchievement: 85 };
+
+            $scope.leaderboard = [
+                { name: 'Priya Sharma', ward: 'Ward 15, Saket', points: 12500, rankClass: 'gold', rankStyle: 'gold' },
+                { name: 'Amit Patel', ward: 'Ward 22, Rohini', points: 11200, rankClass: 'silver', rankStyle: 'silver' },
+                { name: 'Sunita Devi', ward: 'Ward 8, Lajpat Nagar', points: 10800, rankClass: 'bronze', rankStyle: 'bronze' },
+                { name: 'Rajesh Kumar', ward: 'Ward 11, Dwarka', points: 9500, rankClass: '', rankStyle: 'default' },
+                { name: 'Meena Gupta', ward: 'Ward 3, Central Delhi', points: 8900, rankClass: '', rankStyle: 'default' }
+            ];
+
+            $scope.logout = function () { if (confirm('Are you sure you want to logout?')) alert('Logged out successfully'); };
+        }]);
     </script>
 </body>
 

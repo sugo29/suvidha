@@ -1,0 +1,41 @@
+<!-- Sidebar Component -->
+<aside class="worker-sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-brand">
+            <h1>Suvidha</h1>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a href="#!/dashboard" class="nav-item" ng-class="{active: isActive('/dashboard') || isActive('/')}">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">Dashboard</span>
+        </a>
+        <a href="#!/search" class="nav-item" ng-class="{active: isActive('/search')}">
+            <span class="nav-icon">🔍</span>
+            <span class="nav-text">Search Households</span>
+        </a>
+        <a href="#!/report" class="nav-item" ng-class="{active: isActive('/report')}">
+            <span class="nav-icon">📝</span>
+            <span class="nav-text">Report Issue</span>
+        </a>
+        <a href="#!/settings" class="nav-item" ng-class="{active: isActive('/settings')}">
+            <span class="nav-icon">⚙️</span>
+            <span class="nav-text">Settings</span>
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="user-profile">
+            <div class="user-avatar">{{user.initials}}</div>
+            <div class="user-info">
+                <h4>{{user.name}}</h4>
+                <p>{{user.role}}</p>
+            </div>
+        </div>
+        <button class="logout-btn" ng-click="logout()">
+            <span>🚪</span>
+            <span>Logout</span>
+        </button>
+    </div>
+</aside>

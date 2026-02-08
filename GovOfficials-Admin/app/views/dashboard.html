@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="adminApp">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Suvidha City Control Room</title>
     <link rel="stylesheet" href="../../css/gov-style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 
-<body>
+<body ng-controller="DashboardController">
     <!-- Sidebar -->
     <aside class="gov-sidebar">
         <div class="sidebar-header">
@@ -50,6 +51,10 @@
                 <span class="nav-icon">🔐</span>
                 <span class="nav-text">Audit Vault</span>
             </a>
+            <a href="field-operations.html" class="nav-item">
+                <span class="nav-icon">👷</span>
+                <span class="nav-text">Field Operations</span>
+            </a>
             <a href="settings.html" class="nav-item">
                 <span class="nav-icon">⚙️</span>
                 <span class="nav-text">Settings</span>
@@ -57,14 +62,14 @@
         </nav>
         <div class="sidebar-footer">
             <div class="user-profile">
-                <div class="user-avatar">RK</div>
+                <div class="user-avatar">{{user.initials}}</div>
                 <div class="user-info">
-                    <h4>Rajesh Kumar</h4>
-                    <p>Government Official</p>
-                    <small>Last Login: Today, 09:30 AM</small>
+                    <h4>{{user.name}}</h4>
+                    <p>{{user.role}}</p>
+                    <small>Last Login: {{user.lastLogin}}</small>
                 </div>
             </div>
-            <button class="logout-btn">
+            <button class="logout-btn" ng-click="logout()">
                 <span>🚪</span>
                 <span>Logout</span>
             </button>
@@ -76,35 +81,24 @@
         <header class="gov-topbar">
             <div class="topbar-left">
                 <h2>Dashboard</h2>
-                <p id="currentDate"></p>
+                <p>{{currentDate}}</p>
                 <span class="role-badge">🔒 Role: Government Official (Read-only Oversight)</span>
             </div>
             <div class="topbar-right">
-                <!-- Accessibility Button -->
                 <button class="topbar-btn" title="Accessibility">♿</button>
-                <!-- Language Dropdown -->
                 <div class="lang-dropdown">
-                    <button class="lang-toggle-btn" id="langDropdownBtn">
-                        🌐 <span id="currentLangText">EN</span> ▼
+                    <button class="lang-toggle-btn" ng-click="toggleLangMenu($event)">
+                        🌐 <span>{{selectedLang}}</span> ▼
                     </button>
-                    <div class="lang-dropdown-menu" id="langDropdownMenu">
-                        <a href="#" class="lang-option active" data-lang="en">English</a>
-                        <a href="#" class="lang-option" data-lang="hi">हिन्दी (Hindi)</a>
-                        <a href="#" class="lang-option" data-lang="bn">বাংলা (Bengali)</a>
-                        <a href="#" class="lang-option" data-lang="ta">தமிழ் (Tamil)</a>
-                        <a href="#" class="lang-option" data-lang="te">తెలుగు (Telugu)</a>
-                        <a href="#" class="lang-option" data-lang="kn">ಕನ್ನಡ (Kannada)</a>
-                        <a href="#" class="lang-option" data-lang="pa">ਪੰਜਾਬੀ (Punjabi)</a>
-                        <a href="#" class="lang-option" data-lang="gu">ગુજરાતી (Gujarati)</a>
-                        <a href="#" class="lang-option" data-lang="ml">മലയാളം (Malayalam)</a>
-                        <a href="#" class="lang-option" data-lang="mr">मराठी (Marathi)</a>
-                        <a href="#" class="lang-option" data-lang="or">ଓଡ଼ିଆ (Odia)</a>
+                    <div class="lang-dropdown-menu" ng-show="showLangMenu">
+                        <a href="#" class="lang-option" ng-repeat="lang in languages"
+                            ng-class="{active: selectedLang === lang.code}"
+                            ng-click="selectLang(lang, $event)">{{lang.name}}</a>
                     </div>
                 </div>
-                <!-- Notifications -->
                 <button class="topbar-btn notification-btn">
                     🔔
-                    <span class="notification-badge">5</span>
+                    <span class="notification-badge">{{notifications}}</span>
                 </button>
             </div>
         </header>
@@ -119,9 +113,9 @@
                 <div class="filter-controls">
                     <div class="filter-select">
                         <label>State</label>
-                        <select id="stateFilter">
+                        <select ng-model="filters.state" ng-change="onFilterChange()">
                             <option value="all">All States</option>
-                            <option value="delhi" selected>Delhi NCT</option>
+                            <option value="delhi">Delhi NCT</option>
                             <option value="up">Uttar Pradesh</option>
                             <option value="haryana">Haryana</option>
                             <option value="rajasthan">Rajasthan</option>
@@ -130,7 +124,7 @@
                     <span class="filter-arrow">→</span>
                     <div class="filter-select">
                         <label>District</label>
-                        <select id="districtFilter">
+                        <select ng-model="filters.district" ng-change="onFilterChange()">
                             <option value="all">All Districts</option>
                             <option value="south">South Delhi</option>
                             <option value="north">North Delhi</option>
@@ -142,7 +136,7 @@
                     <span class="filter-arrow">→</span>
                     <div class="filter-select">
                         <label>Ward</label>
-                        <select id="wardFilter">
+                        <select ng-model="filters.ward" ng-change="onFilterChange()">
                             <option value="all">All Wards</option>
                             <option value="ward-12">Ward 12</option>
                             <option value="ward-15">Ward 15</option>
@@ -153,7 +147,7 @@
                     <span class="filter-arrow">→</span>
                     <div class="filter-select">
                         <label>Locality</label>
-                        <select id="localityFilter">
+                        <select ng-model="filters.locality" ng-change="onFilterChange()">
                             <option value="all">All Localities</option>
                             <option value="rohini">Rohini</option>
                             <option value="dwarka">Dwarka</option>
@@ -161,70 +155,59 @@
                             <option value="lajpat">Lajpat Nagar</option>
                         </select>
                     </div>
-                    <button class="filter-apply-btn" id="applyFilterBtn">
+                    <button class="filter-apply-btn" ng-click="applyFilters()">
                         <span>🔄</span> Apply Filters
                     </button>
                 </div>
             </div>
 
             <!-- Active Filter Badge -->
-            <div class="active-filter-badge" id="activeFilterBadge">
+            <div class="active-filter-badge">
                 <span class="badge-icon">📌</span>
-                <span class="badge-text" id="filterBadgeText">Showing: Delhi NCT (All Districts)</span>
-                <button class="badge-clear" id="clearFilters">✕ Clear</button>
+                <span class="badge-text">{{filterBadgeText}}</span>
+                <button class="badge-clear" ng-click="clearFilters()">✕ Clear</button>
             </div>
 
             <!-- Operational Snapshot Section -->
             <div class="section-header">
                 <h3><span class="icon">📊</span> Operational Snapshot <span class="geography-tag">(Selected
                         Geography)</span></h3>
-                <span class="section-context" id="snapshotContext">Based on selected geography</span>
+                <span class="section-context">Based on selected geography</span>
             </div>
 
             <!-- Stats Cards Row -->
             <div class="stats-grid">
                 <div class="stat-card primary">
-                    <div class="stat-icon-box blue">
-                        <span>📋</span>
-                    </div>
+                    <div class="stat-icon-box blue"><span>📋</span></div>
                     <div class="stat-content">
-                        <div class="stat-value" id="activeComplaints">1,247</div>
+                        <div class="stat-value">{{stats.activeComplaints | number}}</div>
                         <div class="stat-label">Active Complaints</div>
                         <span class="stat-trend up">↑ 12% from yesterday</span>
                         <small class="stat-context">For selected region</small>
                     </div>
                 </div>
-
                 <div class="stat-card danger">
-                    <div class="stat-icon-box red">
-                        <span>⚠️</span>
-                    </div>
+                    <div class="stat-icon-box red"><span>⚠️</span></div>
                     <div class="stat-content">
-                        <div class="stat-value" id="slaBreaches">23</div>
+                        <div class="stat-value">{{stats.slaBreaches}}</div>
                         <div class="stat-label">SLA Breaches</div>
                         <span class="stat-trend up">+ 3 new today</span>
                         <small class="stat-context">Requires immediate attention</small>
                     </div>
                 </div>
-
                 <div class="stat-card warning">
-                    <div class="stat-icon-box orange">
-                        <span>📍</span>
-                    </div>
+                    <div class="stat-icon-box orange"><span>📍</span></div>
                     <div class="stat-content">
-                        <div class="stat-value" id="areasStress">8</div>
+                        <div class="stat-value">{{stats.areasStress}}</div>
                         <div class="stat-label">Areas Under Stress</div>
                         <span class="stat-trend down">↓ 2 resolved</span>
                         <small class="stat-context">Infrastructure hotspots</small>
                     </div>
                 </div>
-
                 <div class="stat-card success">
-                    <div class="stat-icon-box green">
-                        <span>🔧</span>
-                    </div>
+                    <div class="stat-icon-box green"><span>🔧</span></div>
                     <div class="stat-content">
-                        <div class="stat-value" id="activeOutages">3</div>
+                        <div class="stat-value">{{stats.activeOutages}}</div>
                         <div class="stat-label">Active Outages</div>
                         <span class="stat-trend down">↓ 5 fixed today</span>
                         <small class="stat-context">Utility disruptions</small>
@@ -239,13 +222,15 @@
                     <div class="card-header">
                         <h3><span class="icon">📈</span> Utility Consumption Trends</h3>
                         <div class="period-toggle">
-                            <button class="toggle-btn">Today</button>
-                            <button class="toggle-btn active">7 Days</button>
-                            <button class="toggle-btn">30 Days</button>
+                            <button class="toggle-btn" ng-class="{active: chartPeriod === 'today'}"
+                                ng-click="setChartPeriod('today')">Today</button>
+                            <button class="toggle-btn" ng-class="{active: chartPeriod === '7days'}"
+                                ng-click="setChartPeriod('7days')">7 Days</button>
+                            <button class="toggle-btn" ng-class="{active: chartPeriod === '30days'}"
+                                ng-click="setChartPeriod('30days')">30 Days</button>
                         </div>
                     </div>
-                    <p class="chart-subtitle" id="chartSubtitle">Delhi NCT – Last 7 Days | Forecasting & Stress
-                        Detection</p>
+                    <p class="chart-subtitle">{{chartSubtitle}}</p>
                     <div class="chart-container">
                         <canvas id="utilityChart"></canvas>
                     </div>
@@ -260,14 +245,14 @@
                     <div class="gov-card map-card">
                         <div class="card-header">
                             <h3><span class="icon">🗺️</span> Infrastructure Snapshot</h3>
-                            <span class="zoom-indicator" id="zoomIndicator">City View</span>
+                            <span class="zoom-indicator">{{zoomLevel}}</span>
                         </div>
-                        <div class="mini-map" id="miniMap">
+                        <div class="mini-map">
                             <div class="map-placeholder">
                                 <div class="map-overlay">
-                                    <span class="map-region-label" id="mapRegionLabel">Delhi NCT</span>
+                                    <span class="map-region-label">{{mapRegion}}</span>
                                 </div>
-                                <div class="map-markers" id="mapMarkers">
+                                <div class="map-markers">
                                     <span class="marker blue pulse" style="top: 30%; left: 40%;"
                                         title="Water Issue">●</span>
                                     <span class="marker orange pulse" style="top: 50%; left: 60%;"
@@ -291,28 +276,14 @@
                     <div class="gov-card alerts-card">
                         <div class="card-header">
                             <h3><span class="icon">🚨</span> Priority Alerts</h3>
-                            <span class="alert-count" id="alertCount">3 Active</span>
+                            <span class="alert-count">{{alerts.length}} Active</span>
                         </div>
-                        <div class="alerts-list" id="alertsList">
-                            <div class="alert-item critical">
-                                <span class="alert-dot danger"></span>
+                        <div class="alerts-list">
+                            <div class="alert-item" ng-repeat="alert in alerts" ng-class="alert.type">
+                                <span class="alert-dot" ng-class="alert.type"></span>
                                 <div class="alert-content">
-                                    <span class="alert-text">Complaint #8762 breached SLA > 24 hrs</span>
-                                    <small class="alert-location">📍 Ward 12, South Delhi</small>
-                                </div>
-                            </div>
-                            <div class="alert-item warning">
-                                <span class="alert-dot warning"></span>
-                                <div class="alert-content">
-                                    <span class="alert-text">Electricity load exceeding 80% capacity</span>
-                                    <small class="alert-location">📍 Ward 5, Rohini</small>
-                                </div>
-                            </div>
-                            <div class="alert-item info">
-                                <span class="alert-dot info"></span>
-                                <div class="alert-content">
-                                    <span class="alert-text">Billing sync delayed > 1 hour</span>
-                                    <small class="alert-location">📍 District-level sync</small>
+                                    <span class="alert-text">{{alert.text}}</span>
+                                    <small class="alert-location">📍 {{alert.location}}</small>
                                 </div>
                             </div>
                         </div>
@@ -324,26 +295,26 @@
             <!-- Revenue Overview Section -->
             <div class="section-header">
                 <h3><span class="icon">💰</span> Revenue Overview</h3>
-                <span class="section-badge" id="revenueBadge">📍 Filtered by Region</span>
+                <span class="section-badge">📍 Filtered by Region</span>
             </div>
             <div class="revenue-grid">
                 <div class="gov-card revenue-card">
                     <div class="card-header">
-                        <h3><span class="icon">�</span> Collections Summary</h3>
+                        <h3><span class="icon">💵</span> Collections Summary</h3>
                         <span class="live-badge">🟢 Live</span>
                     </div>
                     <div class="revenue-stats">
                         <div class="revenue-item">
                             <span class="revenue-label">Today's Collections</span>
-                            <span class="revenue-value" id="todayCollections">₹12.5L</span>
+                            <span class="revenue-value">{{revenue.todayCollections}}</span>
                         </div>
                         <div class="revenue-item">
                             <span class="revenue-label">Month-to-Date</span>
-                            <span class="revenue-value highlight" id="mtdCollections">₹2.18Cr</span>
+                            <span class="revenue-value highlight">{{revenue.mtdCollections}}</span>
                         </div>
                         <div class="revenue-item">
                             <span class="revenue-label">Fiscal Year Progress</span>
-                            <span class="revenue-value" id="fyProgress">₹54.6L</span>
+                            <span class="revenue-value">{{revenue.fyProgress}}</span>
                         </div>
                     </div>
                     <div class="revenue-footer">
@@ -359,15 +330,15 @@
                     <div class="revenue-stats">
                         <div class="revenue-item">
                             <span class="revenue-label">Pending Bills</span>
-                            <span class="revenue-value warning" id="pendingBills">₹4.60L</span>
+                            <span class="revenue-value warning">{{revenue.pendingBills}}</span>
                         </div>
                         <div class="revenue-item">
                             <span class="revenue-label">Overdue Amount</span>
-                            <span class="revenue-value danger" id="overdueAmount">₹1.23L</span>
+                            <span class="revenue-value danger">{{revenue.overdueAmount}}</span>
                         </div>
                         <div class="revenue-item">
                             <span class="revenue-label">Billing Sync Alerts</span>
-                            <span class="revenue-value alert" id="syncAlerts">⚠️ 2 alerts</span>
+                            <span class="revenue-value alert">⚠️ {{revenue.syncAlerts}} alerts</span>
                         </div>
                     </div>
                     <button class="gov-btn primary">Open Revenue Monitor</button>
@@ -377,191 +348,205 @@
     </main>
 
     <script>
-        // Set current date
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', {
-            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-        });
+        var app = angular.module('adminApp', []);
 
-        // Initialize Chart
-        const ctx = document.getElementById('utilityChart');
-        if (ctx) {
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    datasets: [
-                        {
-                            label: 'Electricity',
-                            data: [65, 72, 68, 80, 75, 70, 78],
-                            borderColor: '#f6ad55',
-                            backgroundColor: 'rgba(246, 173, 85, 0.1)',
-                            tension: 0.4,
-                            fill: true,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Water',
-                            data: [45, 48, 52, 49, 53, 47, 50],
-                            borderColor: '#63b3ed',
-                            backgroundColor: 'rgba(99, 179, 237, 0.1)',
-                            tension: 0.4,
-                            fill: true,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Gas',
-                            data: [30, 32, 28, 35, 33, 31, 34],
-                            borderColor: '#fc8181',
-                            backgroundColor: 'rgba(252, 129, 129, 0.1)',
-                            tension: 0.4,
-                            fill: true,
-                            borderWidth: 2
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-                        x: { grid: { display: false } }
-                    }
+        app.controller('DashboardController', ['$scope', '$timeout', function ($scope, $timeout) {
+            // User
+            $scope.user = {
+                name: 'Rajesh Kumar',
+                initials: 'RK',
+                role: 'Government Official',
+                lastLogin: 'Today, 09:30 AM'
+            };
+
+            // Date
+            $scope.currentDate = new Date().toLocaleDateString('en-IN', {
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+            });
+
+            // Language
+            $scope.selectedLang = 'EN';
+            $scope.showLangMenu = false;
+            $scope.languages = [
+                { code: 'EN', name: 'English' },
+                { code: 'HI', name: 'हिन्दी (Hindi)' },
+                { code: 'BN', name: 'বাংলা (Bengali)' },
+                { code: 'TA', name: 'தமிழ் (Tamil)' },
+                { code: 'TE', name: 'తెలుగు (Telugu)' }
+            ];
+            $scope.notifications = 5;
+
+            // Filters
+            $scope.filters = {
+                state: 'delhi',
+                district: 'all',
+                ward: 'all',
+                locality: 'all'
+            };
+            $scope.filterBadgeText = 'Showing: Delhi NCT (All Districts)';
+
+            // Stats
+            $scope.stats = {
+                activeComplaints: 1247,
+                slaBreaches: 23,
+                areasStress: 8,
+                activeOutages: 3
+            };
+
+            // Chart
+            $scope.chartPeriod = '7days';
+            $scope.chartSubtitle = 'Delhi NCT – Last 7 Days | Forecasting & Stress Detection';
+            $scope.zoomLevel = 'City View';
+            $scope.mapRegion = 'Delhi NCT';
+
+            // Alerts
+            $scope.alerts = [
+                { type: 'critical', text: 'Complaint #8762 breached SLA > 24 hrs', location: 'Ward 12, South Delhi' },
+                { type: 'warning', text: 'Electricity load exceeding 80% capacity', location: 'Ward 5, Rohini' },
+                { type: 'info', text: 'Billing sync delayed > 1 hour', location: 'District-level sync' }
+            ];
+
+            // Revenue
+            $scope.revenue = {
+                todayCollections: '₹12.5L',
+                mtdCollections: '₹2.18Cr',
+                fyProgress: '₹54.6L',
+                pendingBills: '₹4.60L',
+                overdueAmount: '₹1.23L',
+                syncAlerts: 2
+            };
+
+            // Functions
+            $scope.toggleLangMenu = function ($event) {
+                $event.stopPropagation();
+                $scope.showLangMenu = !$scope.showLangMenu;
+            };
+
+            $scope.selectLang = function (lang, $event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                $scope.selectedLang = lang.code;
+                $scope.showLangMenu = false;
+            };
+
+            $scope.onFilterChange = function () {
+                var region = $scope.getSelectedRegionName();
+                $scope.filterBadgeText = 'Preview: ' + region + ' (Click Apply)';
+            };
+
+            $scope.getSelectedRegionName = function () {
+                var parts = [];
+                if ($scope.filters.locality !== 'all') {
+                    parts.push($scope.filters.locality.charAt(0).toUpperCase() + $scope.filters.locality.slice(1));
                 }
-            });
-        }
+                if ($scope.filters.ward !== 'all') {
+                    parts.push($scope.filters.ward.replace('-', ' ').replace(/\b\w/g, function (l) { return l.toUpperCase(); }));
+                }
+                if ($scope.filters.district !== 'all') {
+                    parts.push($scope.filters.district.charAt(0).toUpperCase() + $scope.filters.district.slice(1) + ' Delhi');
+                }
+                if ($scope.filters.state !== 'all') {
+                    parts.push($scope.filters.state === 'delhi' ? 'Delhi NCT' : $scope.filters.state.toUpperCase());
+                }
+                return parts.length > 0 ? parts.join(', ') : 'All Regions';
+            };
 
-        // Language Dropdown Toggle
-        const langBtn = document.getElementById('langDropdownBtn');
-        const langMenu = document.getElementById('langDropdownMenu');
-        const langText = document.getElementById('currentLangText');
+            $scope.applyFilters = function () {
+                var region = $scope.getSelectedRegionName();
+                $scope.filterBadgeText = 'Showing: ' + region;
+                $scope.chartSubtitle = region + ' – Last 7 Days | Forecasting & Stress Detection';
+                $scope.mapRegion = region.split(',')[0];
 
-        if (langBtn && langMenu) {
-            langBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                langMenu.classList.toggle('show');
-            });
+                // Update zoom level
+                if ($scope.filters.locality !== 'all') {
+                    $scope.zoomLevel = 'Locality View';
+                } else if ($scope.filters.ward !== 'all') {
+                    $scope.zoomLevel = 'Ward View';
+                } else if ($scope.filters.district !== 'all') {
+                    $scope.zoomLevel = 'District View';
+                } else {
+                    $scope.zoomLevel = 'City View';
+                }
 
-            document.addEventListener('click', () => {
-                langMenu.classList.remove('show');
-            });
+                // Simulate data update
+                $scope.stats = {
+                    activeComplaints: Math.floor(Math.random() * 2000) + 500,
+                    slaBreaches: Math.floor(Math.random() * 30) + 5,
+                    areasStress: Math.floor(Math.random() * 15) + 3,
+                    activeOutages: Math.floor(Math.random() * 10) + 1
+                };
+            };
 
-            langMenu.querySelectorAll('.lang-option').forEach(option => {
-                option.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const lang = option.dataset.lang;
-                    langMenu.querySelectorAll('.lang-option').forEach(opt => opt.classList.remove('active'));
-                    option.classList.add('active');
-                    langText.textContent = lang.toUpperCase();
-                    langMenu.classList.remove('show');
-                    localStorage.setItem('selectedLang', lang);
-                });
-            });
+            $scope.clearFilters = function () {
+                $scope.filters = { state: 'delhi', district: 'all', ward: 'all', locality: 'all' };
+                $scope.applyFilters();
+            };
 
-            const savedLang = localStorage.getItem('selectedLang');
-            if (savedLang) {
-                langText.textContent = savedLang.toUpperCase();
-                langMenu.querySelectorAll('.lang-option').forEach(opt => {
-                    opt.classList.toggle('active', opt.dataset.lang === savedLang);
-                });
-            }
-        }
+            $scope.setChartPeriod = function (period) {
+                $scope.chartPeriod = period;
+                var periodText = period === 'today' ? 'Today' : period === '7days' ? 'Last 7 Days' : 'Last 30 Days';
+                $scope.chartSubtitle = $scope.mapRegion + ' – ' + periodText + ' | Forecasting & Stress Detection';
+            };
 
-        // Geographic Filter Functionality
-        const stateFilter = document.getElementById('stateFilter');
-        const districtFilter = document.getElementById('districtFilter');
-        const wardFilter = document.getElementById('wardFilter');
-        const localityFilter = document.getElementById('localityFilter');
-        const applyFilterBtn = document.getElementById('applyFilterBtn');
-        const clearFilters = document.getElementById('clearFilters');
-        const filterBadgeText = document.getElementById('filterBadgeText');
+            $scope.logout = function () {
+                if (confirm('Are you sure you want to logout?')) {
+                    alert('Logged out successfully');
+                }
+            };
 
-        // Mock data for different regions
-        const regionData = {
-            'delhi': { complaints: 1247, sla: 23, stress: 8, outages: 3, collections: '₹12.5L', mtd: '₹2.18Cr' },
-            'south': { complaints: 342, sla: 8, stress: 2, outages: 1, collections: '₹3.2L', mtd: '₹58.4L' },
-            'north': { complaints: 289, sla: 5, stress: 2, outages: 0, collections: '₹2.8L', mtd: '₹51.2L' },
-            'ward-12': { complaints: 87, sla: 3, stress: 1, outages: 0, collections: '₹95K', mtd: '₹18.2L' },
-            'ward-15': { complaints: 112, sla: 4, stress: 1, outages: 1, collections: '₹1.1L', mtd: '₹21.5L' },
-            'rohini': { complaints: 45, sla: 2, stress: 0, outages: 0, collections: '₹48K', mtd: '₹9.2L' },
-            'dwarka': { complaints: 52, sla: 1, stress: 1, outages: 0, collections: '₹55K', mtd: '₹10.8L' }
-        };
-
-        function getSelectedRegionName() {
-            const state = stateFilter.options[stateFilter.selectedIndex].text;
-            const district = districtFilter.value !== 'all' ? districtFilter.options[districtFilter.selectedIndex].text : '';
-            const ward = wardFilter.value !== 'all' ? wardFilter.options[wardFilter.selectedIndex].text : '';
-            const locality = localityFilter.value !== 'all' ? localityFilter.options[localityFilter.selectedIndex].text : '';
-
-            let region = state;
-            if (district) region = district;
-            if (ward) region = ward + ', ' + (district || state);
-            if (locality) region = locality + ', ' + (ward || district || state);
-
-            return region;
-        }
-
-        function updateDashboardData() {
-            const region = getSelectedRegionName();
-            const dataKey = localityFilter.value !== 'all' ? localityFilter.value :
-                wardFilter.value !== 'all' ? wardFilter.value :
-                    districtFilter.value !== 'all' ? districtFilter.value : 'delhi';
-
-            const data = regionData[dataKey] || regionData['delhi'];
-
-            // Update filter badge
-            filterBadgeText.textContent = `Showing: ${region}`;
-
-            // Update stats
-            document.getElementById('activeComplaints').textContent = data.complaints.toLocaleString();
-            document.getElementById('slaBreaches').textContent = data.sla;
-            document.getElementById('areasStress').textContent = data.stress;
-            document.getElementById('activeOutages').textContent = data.outages;
-
-            // Update chart subtitle
-            document.getElementById('chartSubtitle').textContent = `${region} – Last 7 Days | Forecasting & Stress Detection`;
-
-            // Update map region label
-            document.getElementById('mapRegionLabel').textContent = region;
-
-            // Update zoom indicator
-            const zoomLevel = localityFilter.value !== 'all' ? 'Locality View' :
-                wardFilter.value !== 'all' ? 'Ward View' :
-                    districtFilter.value !== 'all' ? 'District View' : 'City View';
-            document.getElementById('zoomIndicator').textContent = zoomLevel;
-
-            // Update revenue
-            document.getElementById('todayCollections').textContent = data.collections;
-            document.getElementById('mtdCollections').textContent = data.mtd;
-
-            // Visual feedback
-            document.querySelectorAll('.stat-card, .gov-card').forEach(card => {
-                card.style.transition = 'transform 0.3s, box-shadow 0.3s';
-                card.style.transform = 'scale(1.02)';
-                setTimeout(() => card.style.transform = 'scale(1)', 300);
-            });
-        }
-
-        applyFilterBtn.addEventListener('click', updateDashboardData);
-
-        clearFilters.addEventListener('click', () => {
-            stateFilter.value = 'delhi';
-            districtFilter.value = 'all';
-            wardFilter.value = 'all';
-            localityFilter.value = 'all';
-            updateDashboardData();
-        });
-
-        // Auto-update on filter change (optional immediate feedback)
-        [stateFilter, districtFilter, wardFilter, localityFilter].forEach(select => {
-            select.addEventListener('change', () => {
-                // Update badge preview
-                const region = getSelectedRegionName();
-                filterBadgeText.textContent = `Preview: ${region} (Click Apply)`;
-            });
-        });
+            // Initialize chart after DOM is ready
+            $timeout(function () {
+                var ctx = document.getElementById('utilityChart');
+                if (ctx) {
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                            datasets: [
+                                {
+                                    label: 'Electricity',
+                                    data: [65, 72, 68, 80, 75, 70, 78],
+                                    borderColor: '#f6ad55',
+                                    backgroundColor: 'rgba(246, 173, 85, 0.1)',
+                                    tension: 0.4,
+                                    fill: true,
+                                    borderWidth: 2
+                                },
+                                {
+                                    label: 'Water',
+                                    data: [45, 50, 48, 55, 52, 58, 54],
+                                    borderColor: '#63b3ed',
+                                    backgroundColor: 'rgba(99, 179, 237, 0.1)',
+                                    tension: 0.4,
+                                    fill: true,
+                                    borderWidth: 2
+                                },
+                                {
+                                    label: 'Gas',
+                                    data: [30, 32, 28, 35, 33, 30, 32],
+                                    borderColor: '#68d391',
+                                    backgroundColor: 'rgba(104, 211, 145, 0.1)',
+                                    tension: 0.4,
+                                    fill: true,
+                                    borderWidth: 2
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { position: 'bottom' }
+                            },
+                            scales: {
+                                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                                x: { grid: { display: false } }
+                            }
+                        }
+                    });
+                }
+            }, 100);
+        }]);
     </script>
 </body>
 

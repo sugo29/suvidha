@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html ng-app="workerApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suvidha - Field Agent Dashboard</title>
+
+    <!-- AngularJS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+
+    <!-- App CSS -->
+    <link rel="stylesheet" href="css/worker-style.css">
+</head>
+<body ng-controller="MainController">
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <ng-include src="'app/components/sidebar.html'"></ng-include>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <h1>{{ currentPage }}</h1>
+                    <p class="date">{{ currentDate }}</p>
+                </div>
+                <div class="header-right">
+                    <div class="notifications">
+                        <span class="bell-icon">🔔</span>
+                        <span class="badge">{{ notifications }}</span>
+                    </div>
+                    <div class="language-menu">
+                        <button class="lang-toggle" ng-click="toggleLangMenu($event)">
+                            {{ selectedLang }}
+                        </button>
+                        <div class="lang-dropdown" ng-show="showLangMenu">
+                            <button ng-repeat="lang in languages"
+                                    ng-click="selectLang(lang.code, $event)"
+                                    ng-class="{ active: selectedLang === lang.code }">
+                                {{ lang.name }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page Content -->
+            <div class="content-area">
+                <ng-view></ng-view>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script src="app/app.js"></script>
+</body>
+</html>

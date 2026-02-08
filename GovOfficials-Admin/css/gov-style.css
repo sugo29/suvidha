@@ -873,6 +873,95 @@ body {
     margin-top: 0.25rem;
 }
 
+/* Geographic Filter Bar - Compact Single Line */
+.geo-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--glass-bg);
+    border: 1px solid var(--gov-gray-200);
+    border-radius: var(--radius-lg);
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.geo-filter-bar .filter-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--gov-gray-600);
+    white-space: nowrap;
+}
+
+.geo-filter-bar .filter-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    flex-wrap: wrap;
+}
+
+.geo-filter-bar .filter-select select {
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--gov-gray-300);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    background: white;
+    cursor: pointer;
+    min-width: 120px;
+}
+
+.geo-filter-bar .filter-select select:hover {
+    border-color: var(--gov-primary);
+}
+
+.geo-filter-bar .filter-arrow {
+    color: var(--gov-gray-400);
+    font-size: 0.75rem;
+}
+
+.geo-filter-bar .gov-btn.primary {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+    background: var(--gov-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* Active Filter Badge */
+.active-filter-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.4rem 0.75rem;
+    background: var(--gov-primary-light);
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    color: var(--gov-primary);
+    margin-bottom: 1rem;
+}
+
+.active-filter-badge .clear-filter {
+    background: none;
+    border: none;
+    color: var(--gov-gray-500);
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+}
+
+.active-filter-badge .clear-filter:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: var(--gov-gray-700);
+}
+
 /* Content Area */
 .gov-content {
     padding: 2rem;

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="adminApp">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grievance Command - Suvidha City Control Room</title>
     <link rel="stylesheet" href="../../css/gov-style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <style>
-        /* Command Grid Layout */
         .command-grid {
             display: grid;
             grid-template-columns: 1fr 320px;
@@ -15,7 +15,6 @@
             margin-top: 1.5rem;
         }
 
-        /* Table Section */
         .table-section {
             overflow: hidden;
         }
@@ -24,7 +23,6 @@
             overflow-x: auto;
         }
 
-        /* Quick Filters */
         .quick-filters {
             display: flex;
             align-items: center;
@@ -56,7 +54,7 @@
             border-radius: 20px;
             font-size: 0.8rem;
             cursor: pointer;
-            transition: all var(--transition-fast);
+            transition: all 0.2s;
         }
 
         .quick-filter-btn:hover {
@@ -75,7 +73,6 @@
             color: var(--gov-danger);
         }
 
-        .quick-filter-btn.urgent:hover,
         .quick-filter-btn.urgent.active {
             background: var(--gov-danger);
             color: white;
@@ -87,7 +84,6 @@
             background: var(--gov-gray-300);
         }
 
-        /* Grievance Table */
         .grievance-table {
             width: 100%;
             border-collapse: collapse;
@@ -103,17 +99,15 @@
         .grievance-table th {
             background: var(--gov-gray-50);
             font-weight: 600;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 0.8rem;
             color: var(--gov-gray-600);
+            text-transform: uppercase;
         }
 
         .grievance-table tr:hover {
             background: var(--gov-gray-50);
         }
 
-        /* SLA Row with left border indicator */
         .sla-row {
             border-left: 4px solid transparent;
         }
@@ -131,7 +125,6 @@
             border-left-color: var(--gov-success);
         }
 
-        /* SLA Display with dot */
         .sla-display {
             display: flex;
             align-items: center;
@@ -139,28 +132,23 @@
         }
 
         .sla-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            animation: pulse-dot 1.5s infinite;
         }
 
         .sla-display.critical .sla-dot {
             background: var(--gov-danger);
-        }
-
-        .sla-display.warning .sla-dot {
-            background: var(--gov-warning);
-        }
-
-        .sla-display.safe .sla-dot {
-            background: var(--gov-success);
-            animation: none;
+            animation: pulse 1.5s infinite;
         }
 
         .sla-display.critical .sla-time {
             color: var(--gov-danger);
-            font-weight: 700;
+            font-weight: 600;
+        }
+
+        .sla-display.warning .sla-dot {
+            background: var(--gov-warning);
         }
 
         .sla-display.warning .sla-time {
@@ -168,52 +156,26 @@
             font-weight: 600;
         }
 
+        .sla-display.safe .sla-dot {
+            background: var(--gov-success);
+        }
+
         .sla-display.safe .sla-time {
             color: var(--gov-success);
         }
 
-        /* Critical Urgent - SLA < 1 hour - Extra emphasis */
-        .sla-display.critical-urgent .sla-dot {
-            background: var(--gov-danger);
-            animation: pulse-urgent 0.8s infinite;
-        }
-
-        .sla-display.critical-urgent .sla-time {
-            color: var(--gov-danger);
-            font-weight: 800;
-            font-size: 1rem;
-            text-shadow: 0 0 8px rgba(229, 62, 62, 0.3);
-        }
-
-        @keyframes pulse-urgent {
+        @keyframes pulse {
 
             0%,
             100% {
                 opacity: 1;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.4;
-                transform: scale(1.4);
-            }
-        }
-
-        @keyframes pulse-dot {
-
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
             }
 
             50% {
                 opacity: 0.5;
-                transform: scale(1.2);
             }
         }
 
-        /* Badges */
         .badge {
             display: inline-block;
             padding: 0.25rem 0.75rem;
@@ -242,7 +204,6 @@
             color: var(--gov-info);
         }
 
-        /* Action Button */
         .action-btn {
             padding: 0.4rem 0.8rem;
             border: none;
@@ -250,7 +211,6 @@
             cursor: pointer;
             font-size: 0.75rem;
             font-weight: 500;
-            transition: all var(--transition-fast);
         }
 
         .action-btn.primary {
@@ -260,17 +220,14 @@
 
         .action-btn.primary:hover {
             background: var(--gov-primary-dark);
-            transform: translateY(-1px);
         }
 
-        /* Table Footer */
         .table-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 1rem;
             border-top: 1px solid var(--gov-gray-200);
-            margin-top: 0.5rem;
         }
 
         .table-info {
@@ -291,7 +248,6 @@
             border-radius: var(--radius-sm);
             font-size: 0.75rem;
             cursor: pointer;
-            transition: all var(--transition-fast);
         }
 
         .page-btn:hover {
@@ -305,7 +261,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: var(--radius-sm);
+            border-radius: 50%;
             font-size: 0.8rem;
             cursor: pointer;
         }
@@ -315,7 +271,6 @@
             color: white;
         }
 
-        /* Insights Panel */
         .insights-panel {
             height: fit-content;
         }
@@ -324,16 +279,15 @@
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
-            padding: 0.5rem 0;
         }
 
         .insight-item {
             display: flex;
-            align-items: flex-start;
             gap: 0.75rem;
             padding: 0.75rem;
             border-radius: var(--radius-md);
             border-left: 3px solid transparent;
+            font-size: 0.85rem;
         }
 
         .insight-item.critical {
@@ -356,36 +310,21 @@
             border-left-color: var(--gov-success);
         }
 
-        .insight-icon {
-            font-size: 1rem;
-        }
-
         .insight-content {
             flex: 1;
-            font-size: 0.85rem;
-            line-height: 1.4;
         }
 
         .insight-content small {
             display: block;
             color: var(--gov-gray-500);
+            font-size: 0.75rem;
             margin-top: 0.25rem;
         }
 
         .insights-footer {
+            margin-top: 1rem;
             padding-top: 1rem;
             border-top: 1px solid var(--gov-gray-200);
-            margin-top: 0.5rem;
-        }
-
-        .gov-btn.secondary {
-            background: var(--gov-gray-100);
-            color: var(--gov-gray-700);
-            border: 1px solid var(--gov-gray-200);
-        }
-
-        .gov-btn.secondary:hover {
-            background: var(--gov-gray-200);
         }
 
         .export-hint {
@@ -396,7 +335,6 @@
             margin-top: 0.5rem;
         }
 
-        /* Case Review Drawer */
         .case-drawer {
             position: fixed;
             top: 0;
@@ -429,20 +367,9 @@
             max-width: 100%;
             height: 100%;
             background: white;
-            box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
+            box-shadow: -8px 0 24px rgba(0; 0, 0, 0.15);
             display: flex;
             flex-direction: column;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-            }
-
-            to {
-                transform: translateX(0);
-            }
         }
 
         .drawer-header {
@@ -467,7 +394,6 @@
             border-radius: 50%;
             cursor: pointer;
             font-size: 1rem;
-            transition: all var(--transition-fast);
         }
 
         .drawer-close:hover {
@@ -482,8 +408,6 @@
         }
 
         .case-id-display {
-            display: flex;
-            flex-direction: column;
             margin-bottom: 1.5rem;
         }
 
@@ -491,21 +415,20 @@
             font-size: 0.7rem;
             text-transform: uppercase;
             color: var(--gov-gray-500);
-            margin-bottom: 0.25rem;
         }
 
         .case-value {
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--gov-gray-800);
+            color: var(--gov-primary);
         }
 
         .sla-clock {
+            text-align: center;
+            padding: 1.5rem;
             background: var(--gov-gray-50);
-            padding: 1.25rem;
             border-radius: var(--radius-md);
             margin-bottom: 1.5rem;
-            text-align: center;
         }
 
         .clock-label {
@@ -525,14 +448,6 @@
             color: var(--gov-danger);
         }
 
-        .clock-value.warning {
-            color: var(--gov-warning);
-        }
-
-        .clock-value.safe {
-            color: var(--gov-success);
-        }
-
         .clock-bar {
             height: 6px;
             background: var(--gov-gray-200);
@@ -543,17 +458,16 @@
         .clock-progress {
             height: 100%;
             background: var(--gov-danger);
-            border-radius: 3px;
         }
 
-        .case-details {
+        .case-details,
+        .case-timeline {
             margin-bottom: 1.5rem;
         }
 
         .detail-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             padding: 0.75rem 0;
             border-bottom: 1px solid var(--gov-gray-100);
         }
@@ -598,11 +512,10 @@
         .timeline-dot {
             position: absolute;
             left: -1.5rem;
-            top: 4px;
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background: var(--gov-gray-300);
+            background: var(--gov-primary);
             border: 2px solid white;
         }
 
@@ -616,23 +529,19 @@
         }
 
         .timeline-content small {
-            font-size: 0.75rem;
             color: var(--gov-gray-500);
-        }
-
-        .case-notes {
-            margin-top: 1.5rem;
+            font-size: 0.75rem;
         }
 
         .case-notes textarea {
             width: 100%;
-            height: 100px;
             padding: 0.75rem;
             border: 1px solid var(--gov-gray-200);
             border-radius: var(--radius-md);
             font-family: inherit;
             font-size: 0.85rem;
             resize: vertical;
+            min-height: 80px;
         }
 
         .drawer-footer {
@@ -646,112 +555,49 @@
         .drawer-footer .gov-btn {
             flex: 1;
         }
-
-        .gov-btn.danger {
-            background: var(--gov-danger);
-            color: white;
-        }
-
-        .gov-btn.danger:hover {
-            background: #c53030;
-        }
-
-        /* Responsive */
-        @media (max-width: 1200px) {
-            .command-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .insights-panel {
-                order: -1;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .quick-filters {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .filter-group {
-                flex-wrap: wrap;
-            }
-
-            .filter-divider {
-                display: none;
-            }
-
-            .drawer-content {
-                width: 100%;
-            }
-
-            .table-footer {
-                flex-direction: column;
-                gap: 1rem;
-            }
-        }
     </style>
 </head>
 
-<body>
+<body ng-controller="GrievanceController">
     <!-- Sidebar -->
     <aside class="gov-sidebar">
         <div class="sidebar-header">
             <div class="sidebar-brand">
                 <div class="brand-icon">🏛️</div>
                 <div class="brand-text">
-                    <h1>Suvidha</h1>
-                    <span>CITY CONTROL ROOM</span>
+                    <h1>Suvidha</h1><span>CITY CONTROL ROOM</span>
                 </div>
             </div>
         </div>
         <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-item">
-                <span class="nav-icon">🏠</span>
-                <span class="nav-text">Dashboard</span>
-            </a>
-            <a href="grievance.html" class="nav-item active">
-                <span class="nav-icon">📢</span>
-                <span class="nav-text">Grievance Command</span>
-            </a>
-            <a href="meter.html" class="nav-item">
-                <span class="nav-icon">⚡</span>
-                <span class="nav-text">Meter Integrity</span>
-            </a>
-            <a href="rwa.html" class="nav-item">
-                <span class="nav-icon">🏗️</span>
-                <span class="nav-text">RWA Oversight</span>
-            </a>
-            <a href="participation.html" class="nav-item">
-                <span class="nav-icon">⭐</span>
-                <span class="nav-text">Participation & Incentives</span>
-            </a>
-            <a href="policy.html" class="nav-item">
-                <span class="nav-icon">📊</span>
-                <span class="nav-text">Policy Insights</span>
-            </a>
-            <a href="audit.html" class="nav-item">
-                <span class="nav-icon">🔐</span>
-                <span class="nav-text">Audit Vault</span>
-            </a>
-            <a href="settings.html" class="nav-item">
-                <span class="nav-icon">⚙️</span>
-                <span class="nav-text">Settings</span>
-            </a>
+            <a href="dashboard.html" class="nav-item"><span class="nav-icon">🏠</span><span
+                    class="nav-text">Dashboard</span></a>
+            <a href="grievance.html" class="nav-item active"><span class="nav-icon">📢</span><span
+                    class="nav-text">Grievance Command</span></a>
+            <a href="meter.html" class="nav-item"><span class="nav-icon">⚡</span><span class="nav-text">Meter
+                    Integrity</span></a>
+            <a href="rwa.html" class="nav-item"><span class="nav-icon">🏗️</span><span class="nav-text">RWA
+                    Oversight</span></a>
+            <a href="participation.html" class="nav-item"><span class="nav-icon">⭐</span><span
+                    class="nav-text">Participation & Incentives</span></a>
+            <a href="policy.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-text">Policy
+                    Insights</span></a>
+            <a href="audit.html" class="nav-item"><span class="nav-icon">🔐</span><span class="nav-text">Audit
+                    Vault</span></a>
+            <a href="field-operations.html" class="nav-item"><span class="nav-icon">👷</span><span
+                    class="nav-text">Field Operations</span></a>
+            <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span><span
+                    class="nav-text">Settings</span></a>
         </nav>
         <div class="sidebar-footer">
             <div class="user-profile">
-                <div class="user-avatar">RK</div>
+                <div class="user-avatar">{{user.initials}}</div>
                 <div class="user-info">
-                    <h4>Rajesh Kumar</h4>
-                    <p>Government Official</p>
-                    <small>Last Login: Today, 09:30 AM</small>
+                    <h4>{{user.name}}</h4>
+                    <p>{{user.role}}</p>
                 </div>
             </div>
-            <button class="logout-btn">
-                <span>🚪</span>
-                <span>Logout</span>
-            </button>
+            <button class="logout-btn" ng-click="logout()"><span>🚪</span><span>Logout</span></button>
         </div>
     </aside>
 
@@ -760,92 +606,63 @@
         <header class="gov-topbar">
             <div class="topbar-left">
                 <h2>Grievance Command</h2>
-                <p id="currentDate"></p>
+                <p>{{currentDate}}</p>
             </div>
             <div class="topbar-right">
                 <button class="topbar-btn" title="Accessibility">♿</button>
                 <div class="lang-dropdown">
-                    <button class="lang-toggle-btn" id="langDropdownBtn">
-                        🌐 <span id="currentLangText">EN</span> ▼
-                    </button>
-                    <div class="lang-dropdown-menu" id="langDropdownMenu">
-                        <a href="#" class="lang-option active" data-lang="en">English</a>
-                        <a href="#" class="lang-option" data-lang="hi">हिन्दी (Hindi)</a>
-                        <a href="#" class="lang-option" data-lang="bn">বাংলা (Bengali)</a>
-                        <a href="#" class="lang-option" data-lang="ta">தமிழ் (Tamil)</a>
-                        <a href="#" class="lang-option" data-lang="te">తెలుగు (Telugu)</a>
-                        <a href="#" class="lang-option" data-lang="kn">ಕನ್ನಡ (Kannada)</a>
-                        <a href="#" class="lang-option" data-lang="pa">ਪੰਜਾਬੀ (Punjabi)</a>
-                        <a href="#" class="lang-option" data-lang="gu">ગુજરાતી (Gujarati)</a>
-                        <a href="#" class="lang-option" data-lang="ml">മലയാളം (Malayalam)</a>
-                        <a href="#" class="lang-option" data-lang="mr">मराठी (Marathi)</a>
-                        <a href="#" class="lang-option" data-lang="or">ଓଡ଼ିଆ (Odia)</a>
+                    <button class="lang-toggle-btn" ng-click="toggleLangMenu($event)">🌐 <span>{{selectedLang}}</span>
+                        ▼</button>
+                    <div class="lang-dropdown-menu" ng-show="showLangMenu">
+                        <a href="#" class="lang-option" ng-repeat="lang in languages"
+                            ng-class="{active: selectedLang === lang.code}"
+                            ng-click="selectLang(lang, $event)">{{lang.name}}</a>
                     </div>
                 </div>
-                <button class="topbar-btn notification-btn">
-                    🔔
-                    <span class="notification-badge">5</span>
-                </button>
+                <button class="topbar-btn notification-btn">🔔<span
+                        class="notification-badge">{{notifications}}</span></button>
             </div>
         </header>
 
         <div class="gov-content">
             <!-- Geographic Filter Bar -->
             <div class="geo-filter-bar">
-                <div class="filter-label">
-                    <span class="filter-icon">📍</span>
-                    <span>Filter by Geography</span>
-                </div>
+                <div class="filter-label"><span class="filter-icon">📍</span><span>Filter by Geography</span></div>
                 <div class="filter-controls">
                     <div class="filter-select">
                         <label>State</label>
-                        <select id="stateFilter">
-                            <option value="all">All States</option>
-                            <option value="delhi" selected>Delhi NCT</option>
+                        <select ng-model="filters.state">
+                            <option value="delhi">Delhi NCT</option>
                             <option value="up">Uttar Pradesh</option>
-                            <option value="haryana">Haryana</option>
                         </select>
                     </div>
                     <span class="filter-arrow">→</span>
                     <div class="filter-select">
                         <label>District</label>
-                        <select id="districtFilter">
+                        <select ng-model="filters.district">
                             <option value="all">All Districts</option>
                             <option value="south">South Delhi</option>
                             <option value="north">North Delhi</option>
-                            <option value="central">Central Delhi</option>
                         </select>
                     </div>
                     <span class="filter-arrow">→</span>
                     <div class="filter-select">
                         <label>Ward</label>
-                        <select id="wardFilter">
+                        <select ng-model="filters.ward">
                             <option value="all">All Wards</option>
                             <option value="ward-15">Ward 15</option>
                             <option value="ward-22">Ward 22</option>
-                            <option value="ward-8">Ward 8</option>
                         </select>
                     </div>
-                    <span class="filter-arrow">→</span>
-                    <div class="filter-select">
-                        <label>Locality</label>
-                        <select id="localityFilter">
-                            <option value="all">All Localities</option>
-                            <option value="rohini">Rohini</option>
-                            <option value="dwarka">Dwarka</option>
-                        </select>
-                    </div>
-                    <button class="filter-apply-btn" id="applyFilterBtn">
-                        <span>🔄</span> Apply Filters
-                    </button>
+                    <button class="filter-apply-btn" ng-click="applyFilters()"><span>🔄</span> Apply Filters</button>
                 </div>
             </div>
 
             <!-- Active Filter Badge -->
-            <div class="active-filter-badge" id="activeFilterBadge">
+            <div class="active-filter-badge">
                 <span class="badge-icon">📌</span>
-                <span class="badge-text" id="filterBadgeText">Showing: Delhi NCT (All Districts)</span>
-                <button class="badge-clear" id="clearFilters">✕ Clear</button>
+                <span class="badge-text">{{filterBadgeText}}</span>
+                <button class="badge-clear" ng-click="clearFilters()">✕ Clear</button>
             </div>
 
             <!-- Stats Row -->
@@ -855,42 +672,34 @@
             </div>
             <div class="stats-grid">
                 <div class="stat-card warning">
-                    <div class="stat-icon-box orange">
-                        <span>⏳</span>
-                    </div>
+                    <div class="stat-icon-box orange"><span>⏳</span></div>
                     <div class="stat-content">
-                        <div class="stat-value" id="pendingCount">89</div>
+                        <div class="stat-value">{{stats.pending}}</div>
                         <div class="stat-label">Pending Cases</div>
                         <small class="stat-context">Awaiting action</small>
                     </div>
                 </div>
                 <div class="stat-card danger">
-                    <div class="stat-icon-box red">
-                        <span>⚠️</span>
-                    </div>
+                    <div class="stat-icon-box red"><span>⚠️</span></div>
                     <div class="stat-content">
-                        <div class="stat-value" id="slaRiskCount">34</div>
+                        <div class="stat-value">{{stats.slaRisk}}</div>
                         <div class="stat-label">SLA At Risk</div>
                         <small class="stat-context">
                             < 2 hrs remaining</small>
                     </div>
                 </div>
                 <div class="stat-card primary">
-                    <div class="stat-icon-box blue">
-                        <span>⬆️</span>
-                    </div>
+                    <div class="stat-icon-box blue"><span>⬆️</span></div>
                     <div class="stat-content">
-                        <div class="stat-value" id="escalatedCount">12</div>
+                        <div class="stat-value">{{stats.escalated}}</div>
                         <div class="stat-label">Escalated</div>
                         <small class="stat-context">Requires senior action</small>
                     </div>
                 </div>
                 <div class="stat-card success">
-                    <div class="stat-icon-box green">
-                        <span>✅</span>
-                    </div>
+                    <div class="stat-icon-box green"><span>✅</span></div>
                     <div class="stat-content">
-                        <div class="stat-value" id="resolvedCount">156</div>
+                        <div class="stat-value">{{stats.resolved}}</div>
                         <div class="stat-label">Resolved Today</div>
                         <small class="stat-context">Closed successfully</small>
                     </div>
@@ -904,10 +713,12 @@
                     <div class="card-header">
                         <h3><span class="icon">📋</span> Cases Requiring Action</h3>
                         <div class="period-toggle">
-                            <button class="toggle-btn active">All</button>
-                            <button class="toggle-btn">Critical</button>
-                            <button class="toggle-btn">High</button>
-                            <button class="toggle-btn">Medium</button>
+                            <button class="toggle-btn" ng-class="{active: priorityFilter === 'all'}"
+                                ng-click="setPriorityFilter('all')">All</button>
+                            <button class="toggle-btn" ng-class="{active: priorityFilter === 'critical'}"
+                                ng-click="setPriorityFilter('critical')">Critical</button>
+                            <button class="toggle-btn" ng-class="{active: priorityFilter === 'high'}"
+                                ng-click="setPriorityFilter('high')">High</button>
                         </div>
                     </div>
 
@@ -915,15 +726,20 @@
                     <div class="quick-filters">
                         <div class="filter-group">
                             <span class="filter-group-label">Service:</span>
-                            <button class="quick-filter-btn active" data-filter="all">All</button>
-                            <button class="quick-filter-btn" data-filter="electricity">⚡ Electricity</button>
-                            <button class="quick-filter-btn" data-filter="water">💧 Water</button>
-                            <button class="quick-filter-btn" data-filter="gas">🔥 Gas</button>
+                            <button class="quick-filter-btn" ng-class="{active: serviceFilter === 'all'}"
+                                ng-click="setServiceFilter('all')">All</button>
+                            <button class="quick-filter-btn" ng-class="{active: serviceFilter === 'electricity'}"
+                                ng-click="setServiceFilter('electricity')">⚡ Electricity</button>
+                            <button class="quick-filter-btn" ng-class="{active: serviceFilter === 'water'}"
+                                ng-click="setServiceFilter('water')">💧 Water</button>
+                            <button class="quick-filter-btn" ng-class="{active: serviceFilter === 'gas'}"
+                                ng-click="setServiceFilter('gas')">🔥 Gas</button>
                         </div>
                         <div class="filter-divider"></div>
                         <div class="filter-group">
                             <span class="filter-group-label">Urgency:</span>
-                            <button class="quick-filter-btn urgent" data-filter="sla-urgent">🔴 SLA < 2 hrs</button>
+                            <button class="quick-filter-btn urgent" ng-class="{active: urgentFilter}"
+                                ng-click="urgentFilter = !urgentFilter">🔴 SLA < 2 hrs</button>
                         </div>
                     </div>
 
@@ -941,87 +757,27 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="sla-row critical">
-                                    <td><strong>GRV-2024-003</strong></td>
-                                    <td>🔥 Gas</td>
-                                    <td>Ward 22, Rohini</td>
-                                    <td><span class="badge danger">Critical</span></td>
+                                <tr class="sla-row" ng-repeat="case in filteredCases()" ng-class="case.slaClass">
+                                    <td><strong>{{case.id}}</strong></td>
+                                    <td>{{case.serviceIcon}} {{case.service}}</td>
+                                    <td>{{case.location}}</td>
+                                    <td><span class="badge" ng-class="case.severityClass">{{case.severity}}</span></td>
                                     <td>
-                                        <div class="sla-display critical-urgent">
+                                        <div class="sla-display" ng-class="case.slaClass">
                                             <span class="sla-dot"></span>
-                                            <span class="sla-time">0h 45m</span>
+                                            <span class="sla-time">{{case.slaTime}}</span>
                                         </div>
                                     </td>
-                                    <td><span class="badge danger">Escalated</span></td>
+                                    <td><span class="badge" ng-class="case.statusClass">{{case.status}}</span></td>
                                     <td><button class="action-btn primary"
-                                            onclick="openCaseDrawer('GRV-2024-003')">Review</button></td>
-                                </tr>
-                                <tr class="sla-row critical">
-                                    <td><strong>GRV-2024-005</strong></td>
-                                    <td>💧 Water</td>
-                                    <td>Ward 11, Dwarka</td>
-                                    <td><span class="badge danger">High</span></td>
-                                    <td>
-                                        <div class="sla-display critical">
-                                            <span class="sla-dot"></span>
-                                            <span class="sla-time">1h 20m</span>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge warning">In Progress</span></td>
-                                    <td><button class="action-btn primary"
-                                            onclick="openCaseDrawer('GRV-2024-005')">Review</button></td>
-                                </tr>
-                                <tr class="sla-row warning">
-                                    <td><strong>GRV-2024-001</strong></td>
-                                    <td>⚡ Electricity</td>
-                                    <td>Ward 15, Saket</td>
-                                    <td><span class="badge danger">High</span></td>
-                                    <td>
-                                        <div class="sla-display warning">
-                                            <span class="sla-dot"></span>
-                                            <span class="sla-time">2h 15m</span>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge warning">In Progress</span></td>
-                                    <td><button class="action-btn primary"
-                                            onclick="openCaseDrawer('GRV-2024-001')">Review</button></td>
-                                </tr>
-                                <tr class="sla-row warning">
-                                    <td><strong>GRV-2024-002</strong></td>
-                                    <td>💧 Water</td>
-                                    <td>Ward 8, Lajpat Nagar</td>
-                                    <td><span class="badge warning">Medium</span></td>
-                                    <td>
-                                        <div class="sla-display warning">
-                                            <span class="sla-dot"></span>
-                                            <span class="sla-time">5h 30m</span>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge info">Assigned</span></td>
-                                    <td><button class="action-btn primary"
-                                            onclick="openCaseDrawer('GRV-2024-002')">Review</button></td>
-                                </tr>
-                                <tr class="sla-row safe">
-                                    <td><strong>GRV-2024-004</strong></td>
-                                    <td>⚡ Electricity</td>
-                                    <td>Ward 3, Central Delhi</td>
-                                    <td><span class="badge success">Low</span></td>
-                                    <td>
-                                        <div class="sla-display safe">
-                                            <span class="sla-dot"></span>
-                                            <span class="sla-time">18h 00m</span>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge info">Pending</span></td>
-                                    <td><button class="action-btn primary"
-                                            onclick="openCaseDrawer('GRV-2024-004')">Review</button></td>
+                                            ng-click="openCaseDrawer(case)">Review</button></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
                     <div class="table-footer">
-                        <span class="table-info">Showing 5 of 89 cases</span>
+                        <span class="table-info">Showing {{filteredCases().length}} of {{cases.length}} cases</span>
                         <div class="table-pagination">
                             <button class="page-btn">← Previous</button>
                             <span class="page-num active">1</span>
@@ -1038,44 +794,17 @@
                         <h3><span class="icon">🧠</span> Command Insights</h3>
                     </div>
                     <div class="insights-list">
-                        <div class="insight-item critical">
-                            <div class="insight-icon">🔴</div>
+                        <div class="insight-item" ng-repeat="insight in insights" ng-class="insight.type">
+                            <div class="insight-icon">{{insight.icon}}</div>
                             <div class="insight-content">
-                                <strong>3 cases</strong> likely to breach SLA in next 1 hour
-                                <small>Immediate escalation recommended</small>
-                            </div>
-                        </div>
-                        <div class="insight-item warning">
-                            <div class="insight-icon">🟠</div>
-                            <div class="insight-content">
-                                <strong>Ward 22</strong> has repeated gas complaints
-                                <small>Pattern detected - 5 in last 24 hrs</small>
-                            </div>
-                        </div>
-                        <div class="insight-item warning">
-                            <div class="insight-icon">🟠</div>
-                            <div class="insight-content">
-                                <strong>Electricity</strong> complaints rising since morning
-                                <small>+23% compared to yesterday</small>
-                            </div>
-                        </div>
-                        <div class="insight-item info">
-                            <div class="insight-icon">🔵</div>
-                            <div class="insight-content">
-                                <strong>Water dept</strong> response time improved
-                                <small>Avg 2.4 hrs vs 3.1 hrs last week</small>
-                            </div>
-                        </div>
-                        <div class="insight-item success">
-                            <div class="insight-icon">🟢</div>
-                            <div class="insight-content">
-                                <strong>156 resolved</strong> today - best in 7 days
-                                <small>Team performance: Excellent</small>
+                                <strong>{{insight.title}}</strong>
+                                <small>{{insight.description}}</small>
                             </div>
                         </div>
                     </div>
                     <div class="insights-footer">
-                        <button class="gov-btn secondary full-width">Generate Report</button>
+                        <button class="gov-btn secondary full-width" ng-click="generateReport()">Generate
+                            Report</button>
                         <small class="export-hint">Exports data for selected geography</small>
                     </div>
                 </div>
@@ -1083,236 +812,149 @@
         </div>
 
         <!-- Case Review Drawer -->
-        <div class="case-drawer" id="caseDrawer">
-            <div class="drawer-overlay" onclick="closeCaseDrawer()"></div>
+        <div class="case-drawer" ng-class="{open: showDrawer}">
+            <div class="drawer-overlay" ng-click="closeDrawer()"></div>
             <div class="drawer-content">
                 <div class="drawer-header">
                     <h3>📋 Case Review</h3>
-                    <button class="drawer-close" onclick="closeCaseDrawer()">✕</button>
+                    <button class="drawer-close" ng-click="closeDrawer()">✕</button>
                 </div>
                 <div class="drawer-body">
                     <div class="case-id-display">
                         <span class="case-label">Case ID</span>
-                        <span class="case-value" id="drawerCaseId">GRV-2024-003</span>
+                        <span class="case-value">{{selectedCase.id}}</span>
                     </div>
-
                     <div class="sla-clock">
                         <div class="clock-label">SLA Countdown</div>
-                        <div class="clock-value critical" id="drawerSlaTime">0h 45m</div>
+                        <div class="clock-value critical">{{selectedCase.slaTime}}</div>
                         <div class="clock-bar">
-                            <div class="clock-progress" style="width: 15%;"></div>
+                            <div class="clock-progress" ng-style="{width: selectedCase.slaProgress + '%'}"></div>
                         </div>
                     </div>
-
                     <div class="case-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Service</span>
-                            <span class="detail-value">🔥 Gas Supply</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Location</span>
-                            <span class="detail-value">Ward 22, Rohini, North Delhi</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Severity</span>
-                            <span class="badge danger">Critical</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Assigned To</span>
-                            <span class="detail-value">Gas Dept - North Zone</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Filed On</span>
-                            <span class="detail-value">08 Feb 2026, 11:45 AM</span>
-                        </div>
+                        <div class="detail-row"><span class="detail-label">Service</span><span
+                                class="detail-value">{{selectedCase.serviceIcon}} {{selectedCase.service}}</span></div>
+                        <div class="detail-row"><span class="detail-label">Location</span><span
+                                class="detail-value">{{selectedCase.location}}</span></div>
+                        <div class="detail-row"><span class="detail-label">Severity</span><span class="badge"
+                                ng-class="selectedCase.severityClass">{{selectedCase.severity}}</span></div>
+                        <div class="detail-row"><span class="detail-label">Status</span><span class="badge"
+                                ng-class="selectedCase.statusClass">{{selectedCase.status}}</span></div>
                     </div>
-
                     <div class="case-timeline">
                         <h4>Case Timeline</h4>
                         <div class="timeline">
                             <div class="timeline-item">
                                 <div class="timeline-dot"></div>
-                                <div class="timeline-content">
-                                    <strong>Complaint Filed</strong>
-                                    <small>08 Feb, 11:45 AM</small>
-                                </div>
+                                <div class="timeline-content"><strong>Complaint Filed</strong><small>08 Feb, 11:45
+                                        AM</small></div>
                             </div>
                             <div class="timeline-item">
                                 <div class="timeline-dot"></div>
-                                <div class="timeline-content">
-                                    <strong>Auto-assigned to Gas Dept</strong>
-                                    <small>08 Feb, 11:47 AM</small>
-                                </div>
+                                <div class="timeline-content"><strong>Auto-assigned</strong><small>08 Feb, 11:47
+                                        AM</small></div>
                             </div>
                             <div class="timeline-item">
                                 <div class="timeline-dot warning"></div>
-                                <div class="timeline-content">
-                                    <strong>Escalated - No Response</strong>
-                                    <small>08 Feb, 02:30 PM</small>
+                                <div class="timeline-content"><strong>Escalated</strong><small>08 Feb, 02:30 PM</small>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                     <div class="case-notes">
                         <h4>Officer Notes</h4>
-                        <textarea placeholder="Add notes for this case..."></textarea>
+                        <textarea ng-model="selectedCase.notes" placeholder="Add notes for this case..."></textarea>
                     </div>
                 </div>
                 <div class="drawer-footer">
-                    <button class="gov-btn danger">🚨 Escalate Further</button>
-                    <button class="gov-btn primary">✓ Mark Resolved</button>
+                    <button class="gov-btn danger" ng-click="escalateCase()">🚨 Escalate Further</button>
+                    <button class="gov-btn primary" ng-click="resolveCase()">✓ Mark Resolved</button>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        // Set current date
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', {
-            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-        });
+        var app = angular.module('adminApp', []);
 
-        // Language Dropdown
-        const langBtn = document.getElementById('langDropdownBtn');
-        const langMenu = document.getElementById('langDropdownMenu');
-        const langText = document.getElementById('currentLangText');
-        if (langBtn && langMenu) {
-            langBtn.addEventListener('click', (e) => { e.stopPropagation(); langMenu.classList.toggle('show'); });
-            document.addEventListener('click', () => langMenu.classList.remove('show'));
-            langMenu.querySelectorAll('.lang-option').forEach(option => {
-                option.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    langMenu.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
-                    option.classList.add('active');
-                    langText.textContent = option.dataset.lang.toUpperCase();
-                    langMenu.classList.remove('show');
-                    localStorage.setItem('selectedLang', option.dataset.lang);
+        app.controller('GrievanceController', ['$scope', function ($scope) {
+            // User
+            $scope.user = { name: 'Rajesh Kumar', initials: 'RK', role: 'Government Official' };
+            $scope.currentDate = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+            // Language
+            $scope.selectedLang = 'EN';
+            $scope.showLangMenu = false;
+            $scope.languages = [{ code: 'EN', name: 'English' }, { code: 'HI', name: 'हिन्दी' }];
+            $scope.notifications = 5;
+
+            // Filters
+            $scope.filters = { state: 'delhi', district: 'all', ward: 'all' };
+            $scope.filterBadgeText = 'Showing: Delhi NCT (All Districts)';
+            $scope.priorityFilter = 'all';
+            $scope.serviceFilter = 'all';
+            $scope.urgentFilter = false;
+
+            // Stats
+            $scope.stats = { pending: 89, slaRisk: 34, escalated: 12, resolved: 156 };
+
+            // Cases
+            $scope.cases = [
+                { id: 'GRV-2024-003', service: 'Gas', serviceIcon: '🔥', location: 'Ward 22, Rohini', severity: 'Critical', severityClass: 'danger', slaTime: '0h 45m', slaClass: 'critical', status: 'Escalated', statusClass: 'danger', slaProgress: 15 },
+                { id: 'GRV-2024-005', service: 'Water', serviceIcon: '💧', location: 'Ward 11, Dwarka', severity: 'High', severityClass: 'danger', slaTime: '1h 20m', slaClass: 'critical', status: 'In Progress', statusClass: 'warning', slaProgress: 25 },
+                { id: 'GRV-2024-001', service: 'Electricity', serviceIcon: '⚡', location: 'Ward 15, Saket', severity: 'High', severityClass: 'danger', slaTime: '2h 15m', slaClass: 'warning', status: 'In Progress', statusClass: 'warning', slaProgress: 40 },
+                { id: 'GRV-2024-002', service: 'Water', serviceIcon: '💧', location: 'Ward 8, Lajpat Nagar', severity: 'Medium', severityClass: 'warning', slaTime: '5h 30m', slaClass: 'warning', status: 'Assigned', statusClass: 'info', slaProgress: 60 },
+                { id: 'GRV-2024-004', service: 'Electricity', serviceIcon: '⚡', location: 'Ward 3, Central Delhi', severity: 'Low', severityClass: 'success', slaTime: '18h 00m', slaClass: 'safe', status: 'Pending', statusClass: 'info', slaProgress: 85 }
+            ];
+
+            // Insights
+            $scope.insights = [
+                { type: 'critical', icon: '🔴', title: '3 cases likely to breach SLA in next 1 hour', description: 'Immediate escalation recommended' },
+                { type: 'warning', icon: '🟠', title: 'Ward 22 has repeated gas complaints', description: 'Pattern detected - 5 in last 24 hrs' },
+                { type: 'warning', icon: '🟠', title: 'Electricity complaints rising since morning', description: '+23% compared to yesterday' },
+                { type: 'info', icon: '🔵', title: 'Water dept response time improved', description: 'Avg 2.4 hrs vs 3.1 hrs last week' },
+                { type: 'success', icon: '🟢', title: '156 resolved today - best in 7 days', description: 'Team performance: Excellent' }
+            ];
+
+            // Drawer
+            $scope.showDrawer = false;
+            $scope.selectedCase = {};
+
+            // Functions
+            $scope.toggleLangMenu = function ($event) { $event.stopPropagation(); $scope.showLangMenu = !$scope.showLangMenu; };
+            $scope.selectLang = function (lang, $event) { $event.preventDefault(); $scope.selectedLang = lang.code; $scope.showLangMenu = false; };
+            $scope.setPriorityFilter = function (filter) { $scope.priorityFilter = filter; };
+            $scope.setServiceFilter = function (filter) { $scope.serviceFilter = filter; };
+
+            $scope.filteredCases = function () {
+                return $scope.cases.filter(function (c) {
+                    if ($scope.priorityFilter !== 'all' && c.severity.toLowerCase() !== $scope.priorityFilter) return false;
+                    if ($scope.serviceFilter !== 'all' && c.service.toLowerCase() !== $scope.serviceFilter) return false;
+                    if ($scope.urgentFilter && !['critical'].includes(c.slaClass)) return false;
+                    return true;
                 });
-            });
-            const saved = localStorage.getItem('selectedLang');
-            if (saved) { langText.textContent = saved.toUpperCase(); langMenu.querySelectorAll('.lang-option').forEach(o => o.classList.toggle('active', o.dataset.lang === saved)); }
-        }
+            };
 
-        // Case Drawer Functions
-        function openCaseDrawer(caseId) {
-            const drawer = document.getElementById('caseDrawer');
-            const caseIdDisplay = document.getElementById('drawerCaseId');
-            caseIdDisplay.textContent = caseId;
-            drawer.classList.add('open');
-            document.body.style.overflow = 'hidden';
-        }
+            $scope.applyFilters = function () {
+                $scope.filterBadgeText = 'Showing: Delhi NCT - ' + ($scope.filters.district === 'all' ? 'All Districts' : $scope.filters.district);
+            };
 
-        function closeCaseDrawer() {
-            const drawer = document.getElementById('caseDrawer');
-            drawer.classList.remove('open');
-            document.body.style.overflow = '';
-        }
+            $scope.clearFilters = function () {
+                $scope.filters = { state: 'delhi', district: 'all', ward: 'all' };
+                $scope.filterBadgeText = 'Showing: Delhi NCT (All Districts)';
+            };
 
-        // Close drawer on Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeCaseDrawer();
-        });
+            $scope.openCaseDrawer = function (caseItem) {
+                $scope.selectedCase = angular.copy(caseItem);
+                $scope.showDrawer = true;
+            };
 
-        // Quick Filters
-        document.querySelectorAll('.quick-filter-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const filterGroup = btn.closest('.filter-group');
-                if (!btn.classList.contains('urgent')) {
-                    filterGroup.querySelectorAll('.quick-filter-btn').forEach(b => b.classList.remove('active'));
-                }
-                btn.classList.toggle('active');
-            });
-        });
-
-        // Priority Toggle
-        document.querySelectorAll('.period-toggle .toggle-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.period-toggle .toggle-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            });
-        });
-
-        // Geographic Filter Functionality
-        const stateFilter = document.getElementById('stateFilter');
-        const districtFilter = document.getElementById('districtFilter');
-        const wardFilter = document.getElementById('wardFilter');
-        const localityFilter = document.getElementById('localityFilter');
-        const applyFilterBtn = document.getElementById('applyFilterBtn');
-        const clearFilters = document.getElementById('clearFilters');
-        const filterBadgeText = document.getElementById('filterBadgeText');
-
-        // Mock data for different regions
-        const regionData = {
-            'delhi': { pending: 89, slaRisk: 34, escalated: 12, resolved: 156 },
-            'south': { pending: 28, slaRisk: 11, escalated: 4, resolved: 52 },
-            'north': { pending: 35, slaRisk: 14, escalated: 5, resolved: 61 },
-            'ward-15': { pending: 12, slaRisk: 5, escalated: 2, resolved: 18 },
-            'ward-22': { pending: 15, slaRisk: 8, escalated: 3, resolved: 22 },
-            'rohini': { pending: 8, slaRisk: 4, escalated: 1, resolved: 12 },
-            'dwarka': { pending: 6, slaRisk: 2, escalated: 1, resolved: 9 }
-        };
-
-        function getSelectedRegionName() {
-            const state = stateFilter.options[stateFilter.selectedIndex].text;
-            const district = districtFilter.value !== 'all' ? districtFilter.options[districtFilter.selectedIndex].text : '';
-            const ward = wardFilter.value !== 'all' ? wardFilter.options[wardFilter.selectedIndex].text : '';
-            const locality = localityFilter.value !== 'all' ? localityFilter.options[localityFilter.selectedIndex].text : '';
-
-            let region = state;
-            if (district) region = district;
-            if (ward) region = ward + ', ' + (district || state);
-            if (locality) region = locality + ', ' + (ward || district || state);
-
-            return region;
-        }
-
-        function updateDashboardData() {
-            const region = getSelectedRegionName();
-            const dataKey = localityFilter.value !== 'all' ? localityFilter.value :
-                wardFilter.value !== 'all' ? wardFilter.value :
-                    districtFilter.value !== 'all' ? districtFilter.value : 'delhi';
-
-            const data = regionData[dataKey] || regionData['delhi'];
-
-            filterBadgeText.textContent = `Showing: ${region}`;
-
-            document.getElementById('pendingCount').textContent = data.pending;
-            document.getElementById('slaRiskCount').textContent = data.slaRisk;
-            document.getElementById('escalatedCount').textContent = data.escalated;
-            document.getElementById('resolvedCount').textContent = data.resolved;
-
-            // Visual feedback
-            document.querySelectorAll('.stat-card').forEach(card => {
-                card.style.transition = 'transform 0.3s';
-                card.style.transform = 'scale(1.02)';
-                setTimeout(() => card.style.transform = 'scale(1)', 300);
-            });
-        }
-
-        if (applyFilterBtn) {
-            applyFilterBtn.addEventListener('click', updateDashboardData);
-        }
-
-        if (clearFilters) {
-            clearFilters.addEventListener('click', () => {
-                stateFilter.value = 'delhi';
-                districtFilter.value = 'all';
-                wardFilter.value = 'all';
-                localityFilter.value = 'all';
-                updateDashboardData();
-            });
-        }
-
-        // Preview on filter change
-        [stateFilter, districtFilter, wardFilter, localityFilter].forEach(select => {
-            if (select) {
-                select.addEventListener('change', () => {
-                    const region = getSelectedRegionName();
-                    filterBadgeText.textContent = `Preview: ${region} (Click Apply)`;
-                });
-            }
-        });
+            $scope.closeDrawer = function () { $scope.showDrawer = false; };
+            $scope.escalateCase = function () { alert('Case ' + $scope.selectedCase.id + ' escalated!'); $scope.closeDrawer(); };
+            $scope.resolveCase = function () { alert('Case ' + $scope.selectedCase.id + ' marked as resolved!'); $scope.closeDrawer(); };
+            $scope.generateReport = function () { alert('Generating grievance report...'); };
+            $scope.logout = function () { if (confirm('Are you sure you want to logout?')) alert('Logged out successfully'); };
+        }]);
     </script>
 </body>
 

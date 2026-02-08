@@ -1,90 +1,107 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="adminApp">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RWA Oversight - Suvidha</title>
+    <title>RWA Oversight - Suvidha City Control Room</title>
     <link rel="stylesheet" href="../../css/gov-style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <style>
-        .projects-grid {
+        .rwa-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 1.5rem;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
         }
 
-        .project-card {
+        .rwa-card {
             background: white;
-            border: 1px solid var(--gov-gray-200);
             border-radius: var(--radius-lg);
             padding: 1.5rem;
+            border: 1px solid var(--gov-gray-200);
+            transition: all 0.2s;
         }
 
-        .project-card:hover {
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
+        .rwa-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
-        .project-header {
+        .rwa-header {
             display: flex;
             justify-content: space-between;
+            align-items: flex-start;
             margin-bottom: 1rem;
         }
 
-        .project-title {
+        .rwa-header h4 {
             font-size: 1rem;
             font-weight: 600;
-            color: var(--gov-gray-800);
+            margin: 0;
         }
 
-        .project-rwa {
-            font-size: 0.8rem;
+        .rwa-header small {
             color: var(--gov-gray-500);
+            font-size: 0.8rem;
         }
 
-        .badge {
+        .status-badge {
             padding: 0.25rem 0.75rem;
             border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 600;
         }
 
-        .badge.danger {
-            background: var(--gov-danger-light);
-            color: var(--gov-danger);
-        }
-
-        .badge.warning {
-            background: var(--gov-warning-light);
-            color: var(--gov-warning);
-        }
-
-        .badge.success {
+        .status-badge.active {
             background: var(--gov-success-light);
             color: var(--gov-success);
         }
 
-        .badge.info {
-            background: var(--gov-info-light);
-            color: var(--gov-info);
+        .status-badge.review {
+            background: var(--gov-warning-light);
+            color: var(--gov-warning);
         }
 
-        .project-details {
+        .status-badge.inactive {
+            background: var(--gov-danger-light);
+            color: var(--gov-danger);
+        }
+
+        .rwa-stats {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(3, 1fr);
             gap: 1rem;
-            margin-bottom: 1rem;
+            margin: 1rem 0;
         }
 
-        .detail-item label {
-            display: block;
-            font-size: 0.75rem;
+        .rwa-stat {
+            text-align: center;
+            padding: 0.75rem;
+            background: var(--gov-gray-50);
+            border-radius: var(--radius-md);
+        }
+
+        .rwa-stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gov-primary);
+        }
+
+        .rwa-stat-label {
+            font-size: 0.7rem;
             color: var(--gov-gray-500);
+            text-transform: uppercase;
         }
 
-        .detail-item span {
-            font-weight: 600;
+        .rwa-progress {
+            margin: 1rem 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
         }
 
         .progress-bar {
@@ -97,9 +114,10 @@
         .progress-fill {
             height: 100%;
             border-radius: 4px;
+            transition: width 0.3s;
         }
 
-        .progress-fill.success {
+        .progress-fill.good {
             background: var(--gov-success);
         }
 
@@ -107,13 +125,40 @@
             background: var(--gov-warning);
         }
 
-        .progress-fill.info {
-            background: var(--gov-info);
+        .progress-fill.danger {
+            background: var(--gov-danger);
+        }
+
+        .rwa-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .rwa-actions button {
+            flex: 1;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            border: none;
+        }
+
+        .rwa-actions .primary {
+            background: var(--gov-primary);
+            color: white;
+        }
+
+        .rwa-actions .outline {
+            background: white;
+            border: 1px solid var(--gov-gray-300);
+            color: var(--gov-gray-700);
         }
     </style>
 </head>
 
-<body>
+<body ng-controller="RWAController">
+    <!-- Sidebar -->
     <aside class="gov-sidebar">
         <div class="sidebar-header">
             <div class="sidebar-brand">
@@ -133,186 +178,150 @@
             <a href="rwa.html" class="nav-item active"><span class="nav-icon">🏗️</span><span class="nav-text">RWA
                     Oversight</span></a>
             <a href="participation.html" class="nav-item"><span class="nav-icon">⭐</span><span
-                    class="nav-text">Participation</span></a>
+                    class="nav-text">Participation & Incentives</span></a>
             <a href="policy.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-text">Policy
                     Insights</span></a>
             <a href="audit.html" class="nav-item"><span class="nav-icon">🔐</span><span class="nav-text">Audit
                     Vault</span></a>
-            <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span><span class="nav-text">Settings</span></a>
+            <a href="field-operations.html" class="nav-item"><span class="nav-icon">👷</span><span
+                    class="nav-text">Field Operations</span></a>
+            <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span><span
+                    class="nav-text">Settings</span></a>
         </nav>
         <div class="sidebar-footer">
             <div class="user-profile">
-                <div class="user-avatar">RK</div>
+                <div class="user-avatar">{{user.initials}}</div>
                 <div class="user-info">
-                    <h4>Rajesh Kumar</h4>
-                    <p>Government Official</p>
+                    <h4>{{user.name}}</h4>
+                    <p>{{user.role}}</p>
                 </div>
-            </div><button class="logout-btn">🚪 Logout</button>
+            </div>
+            <button class="logout-btn" ng-click="logout()"><span>🚪</span><span>Logout</span></button>
         </div>
     </aside>
+
+    <!-- Main Content -->
     <main class="gov-main">
         <header class="gov-topbar">
             <div class="topbar-left">
                 <h2>RWA Oversight</h2>
-                <p id="currentDate"></p>
+                <p>{{currentDate}}</p>
             </div>
             <div class="topbar-right">
                 <button class="topbar-btn" title="Accessibility">♿</button>
-                <div class="lang-dropdown">
-                    <button class="lang-toggle-btn" id="langDropdownBtn">
-                        🌐 <span id="currentLangText">EN</span> ▼
-                    </button>
-                    <div class="lang-dropdown-menu" id="langDropdownMenu">
-                        <a href="#" class="lang-option active" data-lang="en">English</a>
-                        <a href="#" class="lang-option" data-lang="hi">हिन्दी (Hindi)</a>
-                        <a href="#" class="lang-option" data-lang="bn">বাংলা (Bengali)</a>
-                        <a href="#" class="lang-option" data-lang="ta">தமிழ் (Tamil)</a>
-                        <a href="#" class="lang-option" data-lang="te">తెలుగు (Telugu)</a>
-                        <a href="#" class="lang-option" data-lang="kn">ಕನ್ನಡ (Kannada)</a>
-                        <a href="#" class="lang-option" data-lang="pa">ਪੰਜਾਬੀ (Punjabi)</a>
-                        <a href="#" class="lang-option" data-lang="gu">ગુજરાતી (Gujarati)</a>
-                        <a href="#" class="lang-option" data-lang="ml">മലയാളം (Malayalam)</a>
-                        <a href="#" class="lang-option" data-lang="mr">मराठी (Marathi)</a>
-                        <a href="#" class="lang-option" data-lang="or">ଓଡ଼ିଆ (Odia)</a>
-                    </div>
-                </div>
-                <button class="topbar-btn notification-btn">
-                    🔔
-                    <span class="notification-badge">5</span>
-                </button>
+                <button class="topbar-btn notification-btn">🔔<span
+                        class="notification-badge">{{notifications}}</span></button>
             </div>
         </header>
+
         <div class="gov-content">
+            <!-- Stats Row -->
+            <div class="section-header">
+                <h3><span class="icon">🏗️</span> RWA Performance Overview</h3>
+            </div>
             <div class="stats-grid">
-                <div class="stat-card primary">
-                    <div class="stat-icon-box blue"><span>📁</span></div>
-                    <div class="stat-content">
-                        <div class="stat-value">45</div>
-                        <div class="stat-label">Total Projects</div>
-                    </div>
-                </div>
                 <div class="stat-card success">
                     <div class="stat-icon-box green"><span>✅</span></div>
                     <div class="stat-content">
-                        <div class="stat-value">28</div>
-                        <div class="stat-label">Completed</div>
+                        <div class="stat-value">{{stats.active}}</div>
+                        <div class="stat-label">Active RWAs</div>
+                        <small class="stat-context">Meeting targets</small>
                     </div>
                 </div>
                 <div class="stat-card warning">
-                    <div class="stat-icon-box orange"><span>🚧</span></div>
+                    <div class="stat-icon-box orange"><span>⚠️</span></div>
                     <div class="stat-content">
-                        <div class="stat-value">12</div>
-                        <div class="stat-label">In Progress</div>
+                        <div class="stat-value">{{stats.review}}</div>
+                        <div class="stat-label">Under Review</div>
+                        <small class="stat-context">Needs attention</small>
+                    </div>
+                </div>
+                <div class="stat-card primary">
+                    <div class="stat-icon-box blue"><span>🏘️</span></div>
+                    <div class="stat-content">
+                        <div class="stat-value">{{stats.households | number}}</div>
+                        <div class="stat-label">Total Households</div>
+                        <small class="stat-context">Covered by RWAs</small>
                     </div>
                 </div>
                 <div class="stat-card danger">
-                    <div class="stat-icon-box red"><span>⏰</span></div>
+                    <div class="stat-icon-box red"><span>📊</span></div>
                     <div class="stat-content">
-                        <div class="stat-value">5</div>
-                        <div class="stat-label">Delayed</div>
+                        <div class="stat-value">{{stats.collection}}%</div>
+                        <div class="stat-label">Avg Collection Rate</div>
+                        <small class="stat-context">This month</small>
                     </div>
                 </div>
             </div>
-            <div class="gov-card">
-                <div class="card-header">
-                    <h3>🏗️ RWA Fund Projects</h3>
-                </div>
-                <div class="projects-grid">
-                    <div class="project-card">
-                        <div class="project-header">
-                            <div>
-                                <div class="project-title">Park Renovation - Sector 15</div>
-                                <div class="project-rwa">Sector 15 RWA</div>
-                            </div><span class="badge success">On Track</span>
+
+            <!-- RWA Cards Grid -->
+            <div class="section-header" style="margin-top: 2rem;">
+                <h3><span class="icon">📋</span> RWA Details</h3>
+            </div>
+            <div class="rwa-grid">
+                <div class="rwa-card" ng-repeat="rwa in rwas">
+                    <div class="rwa-header">
+                        <div>
+                            <h4>{{rwa.name}}</h4>
+                            <small>{{rwa.location}}</small>
                         </div>
-                        <div class="project-details">
-                            <div class="detail-item"><label>Allocated</label><span>₹12,00,000</span></div>
-                            <div class="detail-item"><label>Deadline</label><span>Mar 15, 2026</span></div>
+                        <span class="status-badge" ng-class="rwa.statusClass">{{rwa.status}}</span>
+                    </div>
+                    <div class="rwa-stats">
+                        <div class="rwa-stat">
+                            <div class="rwa-stat-value">{{rwa.households}}</div>
+                            <div class="rwa-stat-label">Households</div>
                         </div>
-                        <div><label style="font-size:0.75rem;color:var(--gov-gray-500)">Progress: 75%</label>
-                            <div class="progress-bar">
-                                <div class="progress-fill success" style="width:75%"></div>
-                            </div>
+                        <div class="rwa-stat">
+                            <div class="rwa-stat-value">{{rwa.complaints}}</div>
+                            <div class="rwa-stat-label">Complaints</div>
+                        </div>
+                        <div class="rwa-stat">
+                            <div class="rwa-stat-value">{{rwa.resolved}}</div>
+                            <div class="rwa-stat-label">Resolved</div>
                         </div>
                     </div>
-                    <div class="project-card">
-                        <div class="project-header">
-                            <div>
-                                <div class="project-title">Street Light Installation</div>
-                                <div class="project-rwa">Ward 8 RWA</div>
-                            </div><span class="badge danger">Delayed</span>
+                    <div class="rwa-progress">
+                        <div class="progress-label">
+                            <span>Collection Rate</span>
+                            <span>{{rwa.collectionRate}}%</span>
                         </div>
-                        <div class="project-details">
-                            <div class="detail-item"><label>Allocated</label><span>₹8,50,000</span></div>
-                            <div class="detail-item"><label>Deadline</label><span>Feb 28, 2026</span></div>
-                        </div>
-                        <div><label style="font-size:0.75rem;color:var(--gov-gray-500)">Progress: 45%</label>
-                            <div class="progress-bar">
-                                <div class="progress-fill warning" style="width:45%"></div>
-                            </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" ng-class="rwa.progressClass"
+                                ng-style="{width: rwa.collectionRate + '%'}"></div>
                         </div>
                     </div>
-                    <div class="project-card">
-                        <div class="project-header">
-                            <div>
-                                <div class="project-title">Community Hall Repair</div>
-                                <div class="project-rwa">Block C RWA</div>
-                            </div><span class="badge success">Near Complete</span>
-                        </div>
-                        <div class="project-details">
-                            <div class="detail-item"><label>Allocated</label><span>₹5,25,000</span></div>
-                            <div class="detail-item"><label>Deadline</label><span>Apr 10, 2026</span></div>
-                        </div>
-                        <div><label style="font-size:0.75rem;color:var(--gov-gray-500)">Progress: 90%</label>
-                            <div class="progress-bar">
-                                <div class="progress-fill success" style="width:90%"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="project-card">
-                        <div class="project-header">
-                            <div>
-                                <div class="project-title">Water Tank Construction</div>
-                                <div class="project-rwa">Sector 22 RWA</div>
-                            </div><span class="badge info">In Progress</span>
-                        </div>
-                        <div class="project-details">
-                            <div class="detail-item"><label>Allocated</label><span>₹15,00,000</span></div>
-                            <div class="detail-item"><label>Deadline</label><span>May 20, 2026</span></div>
-                        </div>
-                        <div><label style="font-size:0.75rem;color:var(--gov-gray-500)">Progress: 30%</label>
-                            <div class="progress-bar">
-                                <div class="progress-fill info" style="width:30%"></div>
-                            </div>
-                        </div>
+                    <div class="rwa-actions">
+                        <button class="primary" ng-click="viewDetails(rwa)">View Details</button>
+                        <button class="outline" ng-click="contactRWA(rwa)">Contact</button>
                     </div>
                 </div>
             </div>
         </div>
     </main>
-    <script>
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
-        // Language Dropdown
-        const langBtn = document.getElementById('langDropdownBtn');
-        const langMenu = document.getElementById('langDropdownMenu');
-        const langText = document.getElementById('currentLangText');
-        if (langBtn && langMenu) {
-            langBtn.addEventListener('click', (e) => { e.stopPropagation(); langMenu.classList.toggle('show'); });
-            document.addEventListener('click', () => langMenu.classList.remove('show'));
-            langMenu.querySelectorAll('.lang-option').forEach(option => {
-                option.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    langMenu.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
-                    option.classList.add('active');
-                    langText.textContent = option.dataset.lang.toUpperCase();
-                    langMenu.classList.remove('show');
-                    localStorage.setItem('selectedLang', option.dataset.lang);
-                });
-            });
-            const saved = localStorage.getItem('selectedLang');
-            if (saved) { langText.textContent = saved.toUpperCase(); langMenu.querySelectorAll('.lang-option').forEach(o => o.classList.toggle('active', o.dataset.lang === saved)); }
-        }
+    <script>
+        var app = angular.module('adminApp', []);
+
+        app.controller('RWAController', ['$scope', function ($scope) {
+            $scope.user = { name: 'Rajesh Kumar', initials: 'RK', role: 'Government Official' };
+            $scope.currentDate = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            $scope.notifications = 5;
+
+            $scope.stats = { active: 45, review: 8, households: 12500, collection: 87 };
+
+            $scope.rwas = [
+                { name: 'Rohini Sector 7 RWA', location: 'Ward 22, North Delhi', status: 'Active', statusClass: 'active', households: 450, complaints: 12, resolved: 10, collectionRate: 94, progressClass: 'good' },
+                { name: 'Dwarka Sector 12 RWA', location: 'Ward 11, South West Delhi', status: 'Active', statusClass: 'active', households: 680, complaints: 8, resolved: 8, collectionRate: 91, progressClass: 'good' },
+                { name: 'Saket Block J RWA', location: 'Ward 15, South Delhi', status: 'Review', statusClass: 'review', households: 320, complaints: 25, resolved: 15, collectionRate: 72, progressClass: 'warning' },
+                { name: 'Lajpat Nagar III RWA', location: 'Ward 8, South Delhi', status: 'Active', statusClass: 'active', households: 280, complaints: 5, resolved: 5, collectionRate: 88, progressClass: 'good' },
+                { name: 'Model Town RWA', location: 'Ward 5, North Delhi', status: 'Inactive', statusClass: 'inactive', households: 190, complaints: 18, resolved: 8, collectionRate: 45, progressClass: 'danger' }
+            ];
+
+            $scope.viewDetails = function (rwa) { alert('Viewing details for: ' + rwa.name); };
+            $scope.contactRWA = function (rwa) { alert('Contacting: ' + rwa.name); };
+            $scope.logout = function () { if (confirm('Are you sure you want to logout?')) alert('Logged out successfully'); };
+        }]);
     </script>
 </body>
 

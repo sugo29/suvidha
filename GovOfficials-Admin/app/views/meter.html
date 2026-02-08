@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="adminApp">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meter Integrity - Suvidha City Control Room</title>
     <link rel="stylesheet" href="../../css/gov-style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <style>
-        /* Integrity Grid Layout */
         .integrity-grid {
             display: grid;
             grid-template-columns: 1fr 320px;
@@ -15,38 +15,19 @@
             margin-top: 1.5rem;
         }
 
-        /* Table Section */
-        .table-section {
-            overflow: hidden;
-        }
-
         .table-container {
             overflow-x: auto;
         }
 
-        /* Risk Priority Filters */
         .risk-filters {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
             padding: 1rem;
             background: var(--gov-gray-50);
             border-radius: var(--radius-md);
             margin: 1rem 0;
             flex-wrap: wrap;
-        }
-
-        .filter-group {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .filter-group-label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--gov-gray-500);
-            text-transform: uppercase;
         }
 
         .risk-filter-btn {
@@ -56,7 +37,7 @@
             border-radius: 20px;
             font-size: 0.8rem;
             cursor: pointer;
-            transition: all var(--transition-fast);
+            transition: all 0.2s;
         }
 
         .risk-filter-btn:hover {
@@ -75,13 +56,11 @@
             border-color: var(--gov-danger);
         }
 
-        .filter-divider {
-            width: 1px;
-            height: 24px;
-            background: var(--gov-gray-300);
+        .risk-filter-btn.warning.active {
+            background: var(--gov-warning);
+            border-color: var(--gov-warning);
         }
 
-        /* Meter Table */
         .meter-table {
             width: 100%;
             border-collapse: collapse;
@@ -97,17 +76,15 @@
         .meter-table th {
             background: var(--gov-gray-50);
             font-weight: 600;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 0.8rem;
             color: var(--gov-gray-600);
+            text-transform: uppercase;
         }
 
         .meter-table tr:hover {
             background: var(--gov-gray-50);
         }
 
-        /* Confidence Row Styling */
         .confidence-row {
             border-left: 4px solid transparent;
         }
@@ -125,7 +102,6 @@
             border-left-color: var(--gov-success);
         }
 
-        /* Badges */
         .badge {
             display: inline-block;
             padding: 0.25rem 0.75rem;
@@ -154,25 +130,24 @@
             color: var(--gov-info);
         }
 
-        /* Confidence Bar with Tooltip */
-        .confidence-cell {
+        .confidence-bar {
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        .confidence-bar {
+        .confidence-track {
             width: 80px;
-            height: 8px;
+            height: 6px;
             background: var(--gov-gray-200);
-            border-radius: 4px;
+            border-radius: 3px;
             overflow: hidden;
         }
 
         .confidence-fill {
             height: 100%;
-            border-radius: 4px;
-            transition: width 0.3s ease;
+            border-radius: 3px;
+            transition: width 0.3s;
         }
 
         .confidence-fill.high {
@@ -193,51 +168,6 @@
             min-width: 35px;
         }
 
-        .confidence-value.high {
-            color: var(--gov-success);
-        }
-
-        .confidence-value.medium {
-            color: var(--gov-warning);
-        }
-
-        .confidence-value.low {
-            color: var(--gov-danger);
-        }
-
-        .confidence-info {
-            position: relative;
-            cursor: help;
-        }
-
-        .confidence-info .info-icon {
-            font-size: 0.85rem;
-            color: var(--gov-gray-400);
-        }
-
-        .confidence-tooltip {
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--gov-gray-800);
-            color: white;
-            padding: 0.5rem 0.75rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.7rem;
-            white-space: nowrap;
-            opacity: 0;
-            visibility: hidden;
-            transition: all var(--transition-fast);
-            z-index: 100;
-        }
-
-        .confidence-info:hover .confidence-tooltip {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* Action Buttons */
         .action-btns {
             display: flex;
             gap: 0.5rem;
@@ -250,12 +180,6 @@
             cursor: pointer;
             font-size: 0.75rem;
             font-weight: 500;
-            transition: all var(--transition-fast);
-        }
-
-        .action-btn.success {
-            background: var(--gov-success);
-            color: white;
         }
 
         .action-btn.primary {
@@ -263,19 +187,18 @@
             color: white;
         }
 
-        .action-btn:hover {
-            transform: translateY(-1px);
-            opacity: 0.9;
+        .action-btn.outline {
+            background: white;
+            border: 1px solid var(--gov-gray-300);
+            color: var(--gov-gray-700);
         }
 
-        /* Table Footer */
         .table-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 1rem;
             border-top: 1px solid var(--gov-gray-200);
-            margin-top: 0.5rem;
         }
 
         .table-info {
@@ -283,43 +206,6 @@
             color: var(--gov-gray-500);
         }
 
-        .table-pagination {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .page-btn {
-            padding: 0.4rem 0.75rem;
-            border: 1px solid var(--gov-gray-200);
-            background: white;
-            border-radius: var(--radius-sm);
-            font-size: 0.75rem;
-            cursor: pointer;
-        }
-
-        .page-btn:hover {
-            border-color: var(--gov-primary);
-            color: var(--gov-primary);
-        }
-
-        .page-num {
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: var(--radius-sm);
-            font-size: 0.8rem;
-            cursor: pointer;
-        }
-
-        .page-num.active {
-            background: var(--gov-primary);
-            color: white;
-        }
-
-        /* Insights Panel */
         .insights-panel {
             height: fit-content;
         }
@@ -328,16 +214,15 @@
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
-            padding: 0.5rem 0;
         }
 
         .insight-item {
             display: flex;
-            align-items: flex-start;
             gap: 0.75rem;
             padding: 0.75rem;
             border-radius: var(--radius-md);
             border-left: 3px solid transparent;
+            font-size: 0.85rem;
         }
 
         .insight-item.critical {
@@ -360,397 +245,59 @@
             border-left-color: var(--gov-success);
         }
 
-        .insight-icon {
-            font-size: 1rem;
-        }
-
         .insight-content {
             flex: 1;
-            font-size: 0.85rem;
-            line-height: 1.4;
         }
 
         .insight-content small {
             display: block;
             color: var(--gov-gray-500);
-            margin-top: 0.25rem;
-        }
-
-        .insights-footer {
-            padding-top: 1rem;
-            border-top: 1px solid var(--gov-gray-200);
-            margin-top: 0.5rem;
-        }
-
-        .gov-btn.secondary {
-            background: var(--gov-gray-100);
-            color: var(--gov-gray-700);
-            border: 1px solid var(--gov-gray-200);
-        }
-
-        /* Meter Review Drawer */
-        .meter-drawer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 1000;
-            display: none;
-        }
-
-        .meter-drawer.open {
-            display: block;
-        }
-
-        .drawer-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-        }
-
-        .drawer-content {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 520px;
-            max-width: 100%;
-            height: 100%;
-            background: white;
-            box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
-            display: flex;
-            flex-direction: column;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-            }
-
-            to {
-                transform: translateX(0);
-            }
-        }
-
-        .drawer-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.25rem 1.5rem;
-            border-bottom: 1px solid var(--gov-gray-200);
-            background: var(--gov-gray-50);
-        }
-
-        .drawer-header h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .drawer-close {
-            width: 32px;
-            height: 32px;
-            border: none;
-            background: var(--gov-gray-200);
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        .drawer-close:hover {
-            background: var(--gov-danger);
-            color: white;
-        }
-
-        .drawer-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1.5rem;
-        }
-
-        .meter-id-display {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 1.5rem;
-        }
-
-        .meter-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: var(--gov-gray-500);
-        }
-
-        .meter-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .meter-photo {
-            background: var(--gov-gray-100);
-            border-radius: var(--radius-md);
-            height: 180px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .meter-photo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .photo-placeholder {
-            color: var(--gov-gray-400);
-            text-align: center;
-        }
-
-        .photo-badge {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            padding: 0.25rem 0.5rem;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            font-size: 0.7rem;
-            border-radius: var(--radius-sm);
-        }
-
-        .reading-comparison {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .reading-box {
-            background: var(--gov-gray-50);
-            padding: 1rem;
-            border-radius: var(--radius-md);
-            text-align: center;
-        }
-
-        .reading-box.current {
-            background: var(--gov-success-light);
-        }
-
-        .reading-box.anomaly {
-            background: var(--gov-danger-light);
-        }
-
-        .reading-title {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: var(--gov-gray-500);
-            margin-bottom: 0.5rem;
-        }
-
-        .reading-number {
-            font-size: 1.25rem;
-            font-weight: 700;
-        }
-
-        .reading-change {
             font-size: 0.75rem;
             margin-top: 0.25rem;
-        }
-
-        .reading-change.up {
-            color: var(--gov-danger);
-        }
-
-        .reading-change.normal {
-            color: var(--gov-success);
-        }
-
-        .ai-explanation {
-            background: linear-gradient(135deg, #EBF8FF 0%, #E6FFFA 100%);
-            border: 1px solid #90CDF4;
-            border-radius: var(--radius-md);
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .ai-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--gov-info);
-        }
-
-        .ai-text {
-            font-size: 0.85rem;
-            color: var(--gov-gray-700);
-            line-height: 1.5;
-        }
-
-        .meter-details {
-            margin-bottom: 1.5rem;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--gov-gray-100);
-        }
-
-        .detail-label {
-            font-size: 0.85rem;
-            color: var(--gov-gray-500);
-        }
-
-        .detail-value {
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .mini-map {
-            height: 120px;
-            background: var(--gov-gray-100);
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-
-        .map-marker {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1.5rem;
-        }
-
-        .drawer-footer {
-            display: flex;
-            gap: 1rem;
-            padding: 1.25rem 1.5rem;
-            border-top: 1px solid var(--gov-gray-200);
-            background: var(--gov-gray-50);
-        }
-
-        .drawer-footer .gov-btn {
-            flex: 1;
-        }
-
-        .gov-btn.warning {
-            background: var(--gov-warning);
-            color: white;
-        }
-
-        /* Responsive */
-        @media (max-width: 1200px) {
-            .integrity-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .insights-panel {
-                order: -1;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .risk-filters {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .filter-group {
-                flex-wrap: wrap;
-            }
-
-            .filter-divider {
-                display: none;
-            }
-
-            .drawer-content {
-                width: 100%;
-            }
-
-            .reading-comparison {
-                grid-template-columns: 1fr;
-            }
-
-            .table-footer {
-                flex-direction: column;
-                gap: 1rem;
-            }
         }
     </style>
 </head>
 
-<body>
+<body ng-controller="MeterController">
     <!-- Sidebar -->
     <aside class="gov-sidebar">
         <div class="sidebar-header">
             <div class="sidebar-brand">
                 <div class="brand-icon">🏛️</div>
                 <div class="brand-text">
-                    <h1>Suvidha</h1>
-                    <span>CITY CONTROL ROOM</span>
+                    <h1>Suvidha</h1><span>CITY CONTROL ROOM</span>
                 </div>
             </div>
         </div>
         <nav class="sidebar-nav">
-            <a href="dashboard.html" class="nav-item">
-                <span class="nav-icon">🏠</span>
-                <span class="nav-text">Dashboard</span>
-            </a>
-            <a href="grievance.html" class="nav-item">
-                <span class="nav-icon">📢</span>
-                <span class="nav-text">Grievance Command</span>
-            </a>
-            <a href="meter.html" class="nav-item active">
-                <span class="nav-icon">⚡</span>
-                <span class="nav-text">Meter Integrity</span>
-            </a>
-            <a href="rwa.html" class="nav-item">
-                <span class="nav-icon">🏗️</span>
-                <span class="nav-text">RWA Oversight</span>
-            </a>
-            <a href="participation.html" class="nav-item">
-                <span class="nav-icon">⭐</span>
-                <span class="nav-text">Participation & Incentives</span>
-            </a>
-            <a href="policy.html" class="nav-item">
-                <span class="nav-icon">📊</span>
-                <span class="nav-text">Policy Insights</span>
-            </a>
-            <a href="audit.html" class="nav-item">
-                <span class="nav-icon">🔐</span>
-                <span class="nav-text">Audit Vault</span>
-            </a>
-            <a href="settings.html" class="nav-item">
-                <span class="nav-icon">⚙️</span>
-                <span class="nav-text">Settings</span>
-            </a>
+            <a href="dashboard.html" class="nav-item"><span class="nav-icon">🏠</span><span
+                    class="nav-text">Dashboard</span></a>
+            <a href="grievance.html" class="nav-item"><span class="nav-icon">📢</span><span class="nav-text">Grievance
+                    Command</span></a>
+            <a href="meter.html" class="nav-item active"><span class="nav-icon">⚡</span><span class="nav-text">Meter
+                    Integrity</span></a>
+            <a href="rwa.html" class="nav-item"><span class="nav-icon">🏗️</span><span class="nav-text">RWA
+                    Oversight</span></a>
+            <a href="participation.html" class="nav-item"><span class="nav-icon">⭐</span><span
+                    class="nav-text">Participation & Incentives</span></a>
+            <a href="policy.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-text">Policy
+                    Insights</span></a>
+            <a href="audit.html" class="nav-item"><span class="nav-icon">🔐</span><span class="nav-text">Audit
+                    Vault</span></a>
+            <a href="field-operations.html" class="nav-item"><span class="nav-icon">👷</span><span
+                    class="nav-text">Field Operations</span></a>
+            <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span><span
+                    class="nav-text">Settings</span></a>
         </nav>
         <div class="sidebar-footer">
             <div class="user-profile">
-                <div class="user-avatar">RK</div>
+                <div class="user-avatar">{{user.initials}}</div>
                 <div class="user-info">
-                    <h4>Rajesh Kumar</h4>
-                    <p>Government Official</p>
-                    <small>Last Login: Today, 09:30 AM</small>
+                    <h4>{{user.name}}</h4>
+                    <p>{{user.role}}</p>
                 </div>
             </div>
-            <button class="logout-btn">
-                <span>🚪</span>
-                <span>Logout</span>
-            </button>
+            <button class="logout-btn" ng-click="logout()"><span>🚪</span><span>Logout</span></button>
         </div>
     </aside>
 
@@ -759,632 +306,192 @@
         <header class="gov-topbar">
             <div class="topbar-left">
                 <h2>Meter Integrity</h2>
-                <p id="currentDate"></p>
+                <p>{{currentDate}}</p>
             </div>
             <div class="topbar-right">
                 <button class="topbar-btn" title="Accessibility">♿</button>
                 <div class="lang-dropdown">
-                    <button class="lang-toggle-btn" id="langDropdownBtn">
-                        🌐 <span id="currentLangText">EN</span> ▼
-                    </button>
-                    <div class="lang-dropdown-menu" id="langDropdownMenu">
-                        <a href="#" class="lang-option active" data-lang="en">English</a>
-                        <a href="#" class="lang-option" data-lang="hi">हिन्दी (Hindi)</a>
-                        <a href="#" class="lang-option" data-lang="bn">বাংলা (Bengali)</a>
-                        <a href="#" class="lang-option" data-lang="ta">தமிழ் (Tamil)</a>
-                        <a href="#" class="lang-option" data-lang="te">తెలుగు (Telugu)</a>
-                        <a href="#" class="lang-option" data-lang="kn">ಕನ್ನಡ (Kannada)</a>
-                        <a href="#" class="lang-option" data-lang="pa">ਪੰਜਾਬੀ (Punjabi)</a>
-                        <a href="#" class="lang-option" data-lang="gu">ગુજરાતી (Gujarati)</a>
-                        <a href="#" class="lang-option" data-lang="ml">മലയാളം (Malayalam)</a>
-                        <a href="#" class="lang-option" data-lang="mr">मराठी (Marathi)</a>
-                        <a href="#" class="lang-option" data-lang="or">ଓଡ଼ିଆ (Odia)</a>
+                    <button class="lang-toggle-btn" ng-click="toggleLangMenu($event)">🌐 <span>{{selectedLang}}</span>
+                        ▼</button>
+                    <div class="lang-dropdown-menu" ng-show="showLangMenu">
+                        <a href="#" class="lang-option" ng-repeat="lang in languages"
+                            ng-class="{active: selectedLang === lang.code}"
+                            ng-click="selectLang(lang, $event)">{{lang.name}}</a>
                     </div>
                 </div>
-                <button class="topbar-btn notification-btn">
-                    🔔
-                    <span class="notification-badge">5</span>
-                </button>
+                <button class="topbar-btn notification-btn">🔔<span
+                        class="notification-badge">{{notifications}}</span></button>
             </div>
         </header>
 
         <div class="gov-content">
-            <!-- Geographic Filter Bar -->
-            <div class="geo-filter-bar">
-                <div class="filter-label">
-                    <span>📍</span>
-                    <span>Geographic Scope</span>
-                </div>
-                <div class="filter-controls">
-                    <div class="filter-select">
-                        <select id="stateFilter">
-                            <option value="delhi">Delhi NCT</option>
-                            <option value="up">Uttar Pradesh</option>
-                            <option value="haryana">Haryana</option>
-                        </select>
-                    </div>
-                    <span class="filter-arrow">→</span>
-                    <div class="filter-select">
-                        <select id="districtFilter">
-                            <option value="all">All Districts</option>
-                            <option value="south">South Delhi</option>
-                            <option value="north">North Delhi</option>
-                            <option value="east">East Delhi</option>
-                            <option value="west">West Delhi</option>
-                        </select>
-                    </div>
-                    <span class="filter-arrow">→</span>
-                    <div class="filter-select">
-                        <select id="wardFilter">
-                            <option value="all">All Wards</option>
-                            <option value="ward-8">Ward 8</option>
-                            <option value="ward-12">Ward 12</option>
-                            <option value="ward-15">Ward 15</option>
-                            <option value="ward-22">Ward 22</option>
-                        </select>
-                    </div>
-                    <span class="filter-arrow">→</span>
-                    <div class="filter-select">
-                        <select id="localityFilter">
-                            <option value="all">All Localities</option>
-                            <option value="sector-7">Sector 7</option>
-                            <option value="sector-8">Sector 8</option>
-                            <option value="sector-12">Sector 12</option>
-                            <option value="sector-15">Sector 15</option>
-                        </select>
-                    </div>
-                </div>
-                <button class="gov-btn primary" id="applyFilterBtn">Apply Filters</button>
-            </div>
-
-            <!-- Active Filter Badge -->
-            <div class="active-filter-badge">
-                <span id="filterBadgeText">Showing: Delhi NCT (All Areas)</span>
-                <button class="clear-filter" id="clearFilters">✕ Clear</button>
-            </div>
-
             <!-- Stats Row -->
             <div class="section-header">
-                <h3><span class="icon">📊</span> Integrity Snapshot</h3>
-                <span class="section-subtitle">Based on selected geography</span>
+                <h3><span class="icon">📊</span> Meter Integrity Overview</h3>
             </div>
             <div class="stats-grid">
-                <div class="stat-card success">
-                    <div class="stat-icon-box green">
-                        <span>✅</span>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-value" id="verifiedCount">342</div>
-                        <div class="stat-label">Verified</div>
-                        <small class="stat-context">AI confidence ≥ 90%</small>
-                    </div>
-                </div>
-                <div class="stat-card warning">
-                    <div class="stat-icon-box orange">
-                        <span>👁️</span>
-                    </div>
-                    <div class="stat-content">
-                        <div class="stat-value" id="reviewCount">28</div>
-                        <div class="stat-label">Needs Review</div>
-                        <small class="stat-context">Confidence 70-89%</small>
-                    </div>
-                </div>
                 <div class="stat-card danger">
-                    <div class="stat-icon-box red">
-                        <span>🚨</span>
-                    </div>
+                    <div class="stat-icon-box red"><span>🚨</span></div>
                     <div class="stat-content">
-                        <div class="stat-value" id="suspiciousCount">7</div>
-                        <div class="stat-label">Suspicious</div>
+                        <div class="stat-value">{{stats.suspicious}}</div>
+                        <div class="stat-label">Suspicious Meters</div>
                         <small class="stat-context">Requires investigation</small>
                     </div>
                 </div>
-                <div class="stat-card primary">
-                    <div class="stat-icon-box blue">
-                        <span>🤖</span>
-                    </div>
+                <div class="stat-card warning">
+                    <div class="stat-icon-box orange"><span>⚠️</span></div>
                     <div class="stat-content">
-                        <div class="stat-value" id="confidenceAvg">94%</div>
-                        <div class="stat-label">Avg AI Confidence</div>
-                        <small class="stat-context">Overall system trust</small>
+                        <div class="stat-value">{{stats.review}}</div>
+                        <div class="stat-label">Under Review</div>
+                        <small class="stat-context">Pending verification</small>
+                    </div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-icon-box green"><span>✅</span></div>
+                    <div class="stat-content">
+                        <div class="stat-value">{{stats.verified}}</div>
+                        <div class="stat-label">Verified Today</div>
+                        <small class="stat-context">Confirmed accurate</small>
+                    </div>
+                </div>
+                <div class="stat-card primary">
+                    <div class="stat-icon-box blue"><span>📊</span></div>
+                    <div class="stat-content">
+                        <div class="stat-value">{{stats.accuracy}}%</div>
+                        <div class="stat-label">Overall Accuracy</div>
+                        <small class="stat-context">AI confidence score</small>
                     </div>
                 </div>
             </div>
 
-            <!-- Integrity Grid: Table + Insights -->
+            <!-- Main Grid -->
             <div class="integrity-grid">
-                <!-- Table Section -->
-                <div class="table-section">
-                    <div class="gov-card">
-                        <div class="card-header">
-                            <h3><span class="icon">📊</span> AI Meter Readings</h3>
-                            <div class="period-toggle">
-                                <button class="toggle-btn active">Today</button>
-                                <button class="toggle-btn">This Week</button>
-                                <button class="toggle-btn">This Month</button>
-                            </div>
-                        </div>
-
-                        <!-- Risk Priority Filters -->
-                        <div class="risk-filters">
-                            <div class="filter-group">
-                                <span class="filter-group-label">Sort By:</span>
-                                <button class="risk-filter-btn active" data-sort="all">All Readings</button>
-                                <button class="risk-filter-btn danger" data-sort="suspicious">🚨 Suspicious
-                                    First</button>
-                                <button class="risk-filter-btn" data-sort="low-confidence">Low Confidence First</button>
-                            </div>
-                            <div class="filter-divider"></div>
-                            <div class="filter-group">
-                                <span class="filter-group-label">Utility:</span>
-                                <button class="risk-filter-btn active" data-utility="all">All</button>
-                                <button class="risk-filter-btn" data-utility="electricity">⚡ Electricity</button>
-                                <button class="risk-filter-btn" data-utility="water">💧 Water</button>
-                                <button class="risk-filter-btn" data-utility="gas">🔥 Gas</button>
-                            </div>
-                        </div>
-
-                        <div class="table-container">
-                            <table class="meter-table">
-                                <thead>
-                                    <tr>
-                                        <th>Meter ID</th>
-                                        <th>Location</th>
-                                        <th>Reading</th>
-                                        <th>
-                                            AI Confidence
-                                            <span class="confidence-info">
-                                                <span class="info-icon">ⓘ</span>
-                                                <span class="confidence-tooltip">≥90% Verified | 70-89% Review | <70%
-                                                        Suspicious</span>
-                                                </span>
-                                        </th>
-                                        <th>Status</th>
-                                        <th>Captured</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="confidence-row suspicious" data-confidence="45">
-                                        <td><strong>MTR-8849</strong></td>
-                                        <td>Block B, Sector 8<br><small style="color: var(--gov-gray-500)">Ward 8, South
-                                                Delhi</small></td>
-                                        <td>9,834 kWh</td>
-                                        <td>
-                                            <div class="confidence-cell">
-                                                <div class="confidence-bar">
-                                                    <div class="confidence-fill low" style="width: 45%"></div>
-                                                </div>
-                                                <span class="confidence-value low">45%</span>
-                                                <span class="confidence-info">
-                                                    <span class="info-icon">ⓘ</span>
-                                                    <span class="confidence-tooltip">Anomaly detected: Reading jump
-                                                        340%</span>
-                                                </span>
+                <!-- Meter Table -->
+                <div class="gov-card">
+                    <div class="card-header">
+                        <h3><span class="icon">⚡</span> Meter Reading Verification</h3>
+                    </div>
+                    <div class="risk-filters">
+                        <button class="risk-filter-btn" ng-class="{active: riskFilter === 'all'}"
+                            ng-click="setRiskFilter('all')">All</button>
+                        <button class="risk-filter-btn danger" ng-class="{active: riskFilter === 'suspicious'}"
+                            ng-click="setRiskFilter('suspicious')">🔴 Suspicious</button>
+                        <button class="risk-filter-btn warning" ng-class="{active: riskFilter === 'review'}"
+                            ng-click="setRiskFilter('review')">🟠 Review</button>
+                        <button class="risk-filter-btn" ng-class="{active: riskFilter === 'verified'}"
+                            ng-click="setRiskFilter('verified')">🟢 Verified</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="meter-table">
+                            <thead>
+                                <tr>
+                                    <th>Meter ID</th>
+                                    <th>Location</th>
+                                    <th>Current Reading</th>
+                                    <th>Expected</th>
+                                    <th>Variance</th>
+                                    <th>AI Confidence</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="confidence-row" ng-repeat="meter in filteredMeters()"
+                                    ng-class="meter.statusClass">
+                                    <td><strong>{{meter.id}}</strong></td>
+                                    <td>{{meter.location}}</td>
+                                    <td>{{meter.currentReading}}</td>
+                                    <td>{{meter.expectedReading}}</td>
+                                    <td><span
+                                            ng-class="{'text-danger': meter.variance > 20, 'text-warning': meter.variance > 10}">{{meter.variance}}%</span>
+                                    </td>
+                                    <td>
+                                        <div class="confidence-bar">
+                                            <div class="confidence-track">
+                                                <div class="confidence-fill" ng-class="meter.confidenceClass"
+                                                    ng-style="{width: meter.confidence + '%'}"></div>
                                             </div>
-                                        </td>
-                                        <td><span class="badge danger">Suspicious</span></td>
-                                        <td>10:15 AM</td>
-                                        <td class="action-btns">
+                                            <span class="confidence-value">{{meter.confidence}}%</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge" ng-class="meter.badgeClass">{{meter.status}}</span></td>
+                                    <td>
+                                        <div class="action-btns">
                                             <button class="action-btn primary"
-                                                onclick="openMeterDrawer('MTR-8849', 'suspicious')">👁 Inspect</button>
-                                        </td>
-                                    </tr>
-                                    <tr class="confidence-row review" data-confidence="76">
-                                        <td><strong>MTR-8848</strong></td>
-                                        <td>Block C, Sector 12<br><small style="color: var(--gov-gray-500)">Ward 12,
-                                                South Delhi</small></td>
-                                        <td>2,187 kWh</td>
-                                        <td>
-                                            <div class="confidence-cell">
-                                                <div class="confidence-bar">
-                                                    <div class="confidence-fill medium" style="width: 76%"></div>
-                                                </div>
-                                                <span class="confidence-value medium">76%</span>
-                                                <span class="confidence-info">
-                                                    <span class="info-icon">ⓘ</span>
-                                                    <span class="confidence-tooltip">Slight blur in image</span>
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td><span class="badge warning">Review</span></td>
-                                        <td>10:32 AM</td>
-                                        <td class="action-btns">
-                                            <button class="action-btn primary"
-                                                onclick="openMeterDrawer('MTR-8848', 'review')">👁 Inspect</button>
-                                        </td>
-                                    </tr>
-                                    <tr class="confidence-row verified" data-confidence="98">
-                                        <td><strong>MTR-8847</strong></td>
-                                        <td>Block A, Sector 15<br><small style="color: var(--gov-gray-500)">Ward 15,
-                                                North Delhi</small></td>
-                                        <td>4,521 kWh</td>
-                                        <td>
-                                            <div class="confidence-cell">
-                                                <div class="confidence-bar">
-                                                    <div class="confidence-fill high" style="width: 98%"></div>
-                                                </div>
-                                                <span class="confidence-value high">98%</span>
-                                            </div>
-                                        </td>
-                                        <td><span class="badge success">Verified</span></td>
-                                        <td>10:45 AM</td>
-                                        <td class="action-btns">
-                                            <button class="action-btn success" onclick="confirmReading('MTR-8847')">✓
-                                                Confirm</button>
-                                        </td>
-                                    </tr>
-                                    <tr class="confidence-row verified" data-confidence="92">
-                                        <td><strong>MTR-8850</strong></td>
-                                        <td>Block D, Sector 22<br><small style="color: var(--gov-gray-500)">Ward 22,
-                                                East Delhi</small></td>
-                                        <td>3,456 kWh</td>
-                                        <td>
-                                            <div class="confidence-cell">
-                                                <div class="confidence-bar">
-                                                    <div class="confidence-fill high" style="width: 92%"></div>
-                                                </div>
-                                                <span class="confidence-value high">92%</span>
-                                            </div>
-                                        </td>
-                                        <td><span class="badge success">Verified</span></td>
-                                        <td>09:58 AM</td>
-                                        <td class="action-btns">
-                                            <button class="action-btn success" onclick="confirmReading('MTR-8850')">✓
-                                                Confirm</button>
-                                        </td>
-                                    </tr>
-                                    <tr class="confidence-row verified" data-confidence="88">
-                                        <td><strong>MTR-8851</strong></td>
-                                        <td>Block A, Sector 7<br><small style="color: var(--gov-gray-500)">Ward 7, West
-                                                Delhi</small></td>
-                                        <td>6,789 kWh</td>
-                                        <td>
-                                            <div class="confidence-cell">
-                                                <div class="confidence-bar">
-                                                    <div class="confidence-fill high" style="width: 88%"></div>
-                                                </div>
-                                                <span class="confidence-value high">88%</span>
-                                            </div>
-                                        </td>
-                                        <td><span class="badge success">Verified</span></td>
-                                        <td>09:45 AM</td>
-                                        <td class="action-btns">
-                                            <button class="action-btn success" onclick="confirmReading('MTR-8851')">✓
-                                                Confirm</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="table-footer">
-                            <div class="table-info">Showing 5 of 377 readings</div>
-                            <div class="table-pagination">
-                                <button class="page-btn">← Previous</button>
-                                <span class="page-num active">1</span>
-                                <span class="page-num">2</span>
-                                <span class="page-num">3</span>
-                                <span class="page-num">...</span>
-                                <span class="page-num">38</span>
-                                <button class="page-btn">Next →</button>
-                            </div>
-                        </div>
+                                                ng-click="reviewMeter(meter)">Review</button>
+                                            <button class="action-btn outline" ng-click="flagMeter(meter)">Flag</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-footer">
+                        <span class="table-info">Showing {{filteredMeters().length}} of {{meters.length}} meters</span>
                     </div>
                 </div>
 
-                <!-- Integrity Insights Panel -->
+                <!-- Insights Panel -->
                 <div class="gov-card insights-panel">
                     <div class="card-header">
-                        <h3><span class="icon">🎯</span> Integrity Insights</h3>
+                        <h3><span class="icon">🤖</span> AI Insights</h3>
                     </div>
                     <div class="insights-list">
-                        <div class="insight-item critical">
-                            <span class="insight-icon">🚨</span>
+                        <div class="insight-item" ng-repeat="insight in insights" ng-class="insight.type">
+                            <div class="insight-icon">{{insight.icon}}</div>
                             <div class="insight-content">
-                                <strong>Sector 8 has 4 suspicious readings today</strong>
-                                <small>Concentrated anomalies detected</small>
-                            </div>
-                        </div>
-                        <div class="insight-item warning">
-                            <span class="insight-icon">⚠️</span>
-                            <div class="insight-content">
-                                <strong>Repeated anomalies in Block B</strong>
-                                <small>3 flagged readings in past 7 days</small>
-                            </div>
-                        </div>
-                        <div class="insight-item warning">
-                            <span class="insight-icon">📈</span>
-                            <div class="insight-content">
-                                <strong>MTR-8849 shows 340% reading jump</strong>
-                                <small>Previous: 2,890 kWh → Now: 9,834 kWh</small>
-                            </div>
-                        </div>
-                        <div class="insight-item info">
-                            <span class="insight-icon">🔍</span>
-                            <div class="insight-content">
-                                <strong>28 readings pending human review</strong>
-                                <small>AI confidence between 70-89%</small>
-                            </div>
-                        </div>
-                        <div class="insight-item success">
-                            <span class="insight-icon">✅</span>
-                            <div class="insight-content">
-                                <strong>342 readings auto-verified today</strong>
-                                <small>91% verification rate - excellent</small>
+                                <strong>{{insight.title}}</strong>
+                                <small>{{insight.description}}</small>
                             </div>
                         </div>
                     </div>
-                    <div class="insights-footer">
-                        <button class="gov-btn secondary" style="width: 100%">📄 Generate Integrity Report</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Meter Review Drawer -->
-        <div class="meter-drawer" id="meterDrawer">
-            <div class="drawer-overlay" onclick="closeMeterDrawer()"></div>
-            <div class="drawer-content">
-                <div class="drawer-header">
-                    <h3>📋 Meter Inspection</h3>
-                    <button class="drawer-close" onclick="closeMeterDrawer()">×</button>
-                </div>
-                <div class="drawer-body">
-                    <div class="meter-id-display">
-                        <span class="meter-label">Meter ID</span>
-                        <span class="meter-value" id="drawerMeterId">MTR-8849</span>
-                    </div>
-
-                    <!-- Meter Photo -->
-                    <div class="meter-photo">
-                        <div class="photo-placeholder">
-                            <span style="font-size: 3rem;">📷</span>
-                            <p>Meter Photo Captured by Field Worker</p>
-                        </div>
-                        <span class="photo-badge">Original Image</span>
-                    </div>
-
-                    <!-- Reading Comparison -->
-                    <div class="reading-comparison">
-                        <div class="reading-box">
-                            <div class="reading-title">Previous Reading</div>
-                            <div class="reading-number">2,890 kWh</div>
-                            <div class="reading-change">Jan 2026</div>
-                        </div>
-                        <div class="reading-box anomaly" id="currentReadingBox">
-                            <div class="reading-title">Current Reading</div>
-                            <div class="reading-number" id="drawerReading">9,834 kWh</div>
-                            <div class="reading-change up">↑ 340% increase</div>
-                        </div>
-                    </div>
-
-                    <!-- AI Explanation -->
-                    <div class="ai-explanation">
-                        <div class="ai-header">
-                            <span>🤖</span>
-                            <span>AI Analysis</span>
-                        </div>
-                        <div class="ai-text" id="drawerAIExplanation">
-                            <strong>Flagged as Suspicious (45% confidence)</strong><br><br>
-                            Reasons:<br>
-                            • Reading increased 340% vs previous month<br>
-                            • Significantly higher than neighborhood average<br>
-                            • Timestamp metadata mismatch detected<br><br>
-                            <em>Recommendation: Request physical re-verification</em>
-                        </div>
-                    </div>
-
-                    <!-- Meter Details -->
-                    <div class="meter-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Location</span>
-                            <span class="detail-value">Block B, Sector 8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Ward</span>
-                            <span class="detail-value">Ward 8, South Delhi</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Captured By</span>
-                            <span class="detail-value">Field Worker #FW-2847</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Timestamp</span>
-                            <span class="detail-value">08 Feb 2026, 10:15 AM</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Consumer Type</span>
-                            <span class="detail-value">Residential</span>
-                        </div>
-                    </div>
-
-                    <!-- GPS Mini Map -->
-                    <div class="mini-map">
-                        <span class="map-marker">📍</span>
-                        <p style="color: var(--gov-gray-400);">GPS: 28.5355° N, 77.3910° E</p>
-                    </div>
-                </div>
-                <div class="drawer-footer">
-                    <button class="gov-btn warning">🔁 Request Re-verification</button>
-                    <button class="gov-btn primary">✓ Confirm Reading</button>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        // Set current date
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', {
-            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-        });
+        var app = angular.module('adminApp', []);
 
-        // Language Dropdown
-        const langBtn = document.getElementById('langDropdownBtn');
-        const langMenu = document.getElementById('langDropdownMenu');
-        const langText = document.getElementById('currentLangText');
-        if (langBtn && langMenu) {
-            langBtn.addEventListener('click', (e) => { e.stopPropagation(); langMenu.classList.toggle('show'); });
-            document.addEventListener('click', () => langMenu.classList.remove('show'));
-            langMenu.querySelectorAll('.lang-option').forEach(option => {
-                option.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    langMenu.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
-                    option.classList.add('active');
-                    langText.textContent = option.dataset.lang.toUpperCase();
-                    langMenu.classList.remove('show');
-                    localStorage.setItem('selectedLang', option.dataset.lang);
-                });
-            });
-            const saved = localStorage.getItem('selectedLang');
-            if (saved) { langText.textContent = saved.toUpperCase(); langMenu.querySelectorAll('.lang-option').forEach(o => o.classList.toggle('active', o.dataset.lang === saved)); }
-        }
+        app.controller('MeterController', ['$scope', function ($scope) {
+            $scope.user = { name: 'Rajesh Kumar', initials: 'RK', role: 'Government Official' };
+            $scope.currentDate = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            $scope.selectedLang = 'EN';
+            $scope.showLangMenu = false;
+            $scope.languages = [{ code: 'EN', name: 'English' }, { code: 'HI', name: 'हिन्दी' }];
+            $scope.notifications = 5;
+            $scope.riskFilter = 'all';
 
-        // Meter Drawer Functions
-        function openMeterDrawer(meterId, status) {
-            const drawer = document.getElementById('meterDrawer');
-            const meterIdDisplay = document.getElementById('drawerMeterId');
-            meterIdDisplay.textContent = meterId;
-            drawer.classList.add('open');
-            document.body.style.overflow = 'hidden';
-        }
+            $scope.stats = { suspicious: 23, review: 45, verified: 312, accuracy: 94 };
 
-        function closeMeterDrawer() {
-            const drawer = document.getElementById('meterDrawer');
-            drawer.classList.remove('open');
-            document.body.style.overflow = '';
-        }
+            $scope.meters = [
+                { id: 'MTR-001234', location: 'Ward 12, Block A', currentReading: '4,520 kWh', expectedReading: '3,200 kWh', variance: 41, confidence: 23, status: 'Suspicious', statusClass: 'suspicious', badgeClass: 'danger', confidenceClass: 'low' },
+                { id: 'MTR-001235', location: 'Ward 12, Block B', currentReading: '2,890 kWh', expectedReading: '2,400 kWh', variance: 20, confidence: 56, status: 'Review', statusClass: 'review', badgeClass: 'warning', confidenceClass: 'medium' },
+                { id: 'MTR-001236', location: 'Ward 15, Block C', currentReading: '1,520 kWh', expectedReading: '1,480 kWh', variance: 3, confidence: 95, status: 'Verified', statusClass: 'verified', badgeClass: 'success', confidenceClass: 'high' },
+                { id: 'MTR-001237', location: 'Ward 8, Block D', currentReading: '3,100 kWh', expectedReading: '2,500 kWh', variance: 24, confidence: 34, status: 'Suspicious', statusClass: 'suspicious', badgeClass: 'danger', confidenceClass: 'low' },
+                { id: 'MTR-001238', location: 'Ward 22, Block E', currentReading: '2,200 kWh', expectedReading: '2,150 kWh', variance: 2, confidence: 98, status: 'Verified', statusClass: 'verified', badgeClass: 'success', confidenceClass: 'high' }
+            ];
 
-        function confirmReading(meterId) {
-            alert('✅ Reading for ' + meterId + ' confirmed and logged to audit trail.');
-        }
+            $scope.insights = [
+                { type: 'critical', icon: '🔴', title: '5 meters flagged for tampering', description: 'Pattern analysis detected anomalies' },
+                { type: 'warning', icon: '🟠', title: 'Ward 12 showing unusual patterns', description: '3 consecutive months of high variance' },
+                { type: 'info', icon: '🔵', title: 'AI model accuracy improved', description: '94% vs 89% last month' },
+                { type: 'success', icon: '🟢', title: '312 meters verified today', description: 'Above daily target of 250' }
+            ];
 
-        // Close drawer on Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeMeterDrawer();
-        });
+            $scope.toggleLangMenu = function ($event) { $event.stopPropagation(); $scope.showLangMenu = !$scope.showLangMenu; };
+            $scope.selectLang = function (lang, $event) { $event.preventDefault(); $scope.selectedLang = lang.code; $scope.showLangMenu = false; };
+            $scope.setRiskFilter = function (filter) { $scope.riskFilter = filter; };
 
-        // Risk Filter Buttons
-        document.querySelectorAll('.risk-filter-btn[data-sort]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.risk-filter-btn[data-sort]').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+            $scope.filteredMeters = function () {
+                if ($scope.riskFilter === 'all') return $scope.meters;
+                return $scope.meters.filter(function (m) { return m.status.toLowerCase() === $scope.riskFilter; });
+            };
 
-                // Sort table rows based on selection
-                const tbody = document.querySelector('.meter-table tbody');
-                const rows = Array.from(tbody.querySelectorAll('tr'));
-
-                rows.sort((a, b) => {
-                    const confA = parseInt(a.dataset.confidence) || 100;
-                    const confB = parseInt(b.dataset.confidence) || 100;
-
-                    if (btn.dataset.sort === 'suspicious') {
-                        return confA - confB; // Lowest confidence first
-                    } else if (btn.dataset.sort === 'low-confidence') {
-                        return confA - confB;
-                    }
-                    return 0; // Keep original order for 'all'
-                });
-
-                rows.forEach(row => tbody.appendChild(row));
-            });
-        });
-
-        // Utility Filter Buttons
-        document.querySelectorAll('.risk-filter-btn[data-utility]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.risk-filter-btn[data-utility]').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            });
-        });
-
-        // Period Toggle
-        document.querySelectorAll('.period-toggle .toggle-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.period-toggle .toggle-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            });
-        });
-
-        // Geographic Filter Functionality
-        const stateFilter = document.getElementById('stateFilter');
-        const districtFilter = document.getElementById('districtFilter');
-        const wardFilter = document.getElementById('wardFilter');
-        const localityFilter = document.getElementById('localityFilter');
-        const applyFilterBtn = document.getElementById('applyFilterBtn');
-        const clearFilters = document.getElementById('clearFilters');
-        const filterBadgeText = document.getElementById('filterBadgeText');
-
-        // Mock data for different regions
-        const regionData = {
-            'delhi': { verified: 342, review: 28, suspicious: 7, confidence: 94 },
-            'south': { verified: 112, review: 9, suspicious: 4, confidence: 91 },
-            'north': { verified: 98, review: 8, suspicious: 1, confidence: 96 },
-            'ward-8': { verified: 24, review: 3, suspicious: 4, confidence: 78 },
-            'ward-12': { verified: 31, review: 4, suspicious: 1, confidence: 93 },
-            'sector-8': { verified: 8, review: 1, suspicious: 4, confidence: 72 }
-        };
-
-        function getSelectedRegionName() {
-            const state = stateFilter.options[stateFilter.selectedIndex].text;
-            const district = districtFilter.value !== 'all' ? districtFilter.options[districtFilter.selectedIndex].text : '';
-            const ward = wardFilter.value !== 'all' ? wardFilter.options[wardFilter.selectedIndex].text : '';
-            const locality = localityFilter.value !== 'all' ? localityFilter.options[localityFilter.selectedIndex].text : '';
-
-            let region = state;
-            if (district) region = district;
-            if (ward) region = ward + ', ' + (district || state);
-            if (locality) region = locality + ', ' + (ward || district || state);
-
-            return region;
-        }
-
-        function updateDashboardData() {
-            const region = getSelectedRegionName();
-            const dataKey = localityFilter.value !== 'all' ? localityFilter.value :
-                wardFilter.value !== 'all' ? wardFilter.value :
-                    districtFilter.value !== 'all' ? districtFilter.value : 'delhi';
-
-            const data = regionData[dataKey] || regionData['delhi'];
-
-            filterBadgeText.textContent = `Showing: ${region}`;
-
-            document.getElementById('verifiedCount').textContent = data.verified;
-            document.getElementById('reviewCount').textContent = data.review;
-            document.getElementById('suspiciousCount').textContent = data.suspicious;
-            document.getElementById('confidenceAvg').textContent = data.confidence + '%';
-
-            // Visual feedback
-            document.querySelectorAll('.stat-card').forEach(card => {
-                card.style.transition = 'transform 0.3s';
-                card.style.transform = 'scale(1.02)';
-                setTimeout(() => card.style.transform = 'scale(1)', 300);
-            });
-        }
-
-        if (applyFilterBtn) {
-            applyFilterBtn.addEventListener('click', updateDashboardData);
-        }
-
-        if (clearFilters) {
-            clearFilters.addEventListener('click', () => {
-                stateFilter.value = 'delhi';
-                districtFilter.value = 'all';
-                wardFilter.value = 'all';
-                localityFilter.value = 'all';
-                updateDashboardData();
-            });
-        }
-
-        // Preview on filter change
-        [stateFilter, districtFilter, wardFilter, localityFilter].forEach(select => {
-            if (select) {
-                select.addEventListener('change', () => {
-                    const region = getSelectedRegionName();
-                    filterBadgeText.textContent = `Preview: ${region} (Click Apply)`;
-                });
-            }
-        });
+            $scope.reviewMeter = function (meter) { alert('Reviewing meter: ' + meter.id); };
+            $scope.flagMeter = function (meter) { alert('Flagging meter: ' + meter.id); };
+            $scope.logout = function () { if (confirm('Are you sure you want to logout?')) alert('Logged out successfully'); };
+        }]);
     </script>
 </body>
 

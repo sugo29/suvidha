@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="workerApp">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Field Agent Dashboard | Suvidha</title>
+    <link rel="stylesheet" href="../../css/worker-style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <style>
+        /* Worker Content Spacing Override */
+        .worker-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Dashboard Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.75rem;
+        }
+
+        .dashboard-main {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .dashboard-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Confidence Badge (Innovation 1) */
+        .confidence-badge {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            background: linear-gradient(135deg, rgba(56, 161, 105, 0.1) 0%, rgba(56, 161, 105, 0.05) 100%);
+            border: 1px solid rgba(56, 161, 105, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 0.85rem 1.5rem;
+            margin-bottom: 0;
+        }
+
+        .confidence-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .confidence-item.success {
+            color: var(--gov-success);
+        }
+
+        .confidence-item.warning {
+            color: var(--gov-warning);
+        }
+
+        .confidence-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .confidence-divider {
+            height: 20px;
+            width: 1px;
+            background: var(--gov-gray-300);
+        }
+
+        /* Assigned Area Card */
+        .area-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.35rem 1.75rem;
+            border: 1px solid var(--gov-gray-200);
+        }
+
+        .area-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .area-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--gov-info-light);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--gov-gray-700);
+        }
+
+        .area-chip-label {
+            font-weight: 400;
+            color: var(--gov-gray-500);
+        }
+
+        .area-chip-value {
+            font-weight: 600;
+        }
+
+        /* KPI Cards Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.25rem;
+        }
+
+        .kpi-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem 1.25rem;
+            border: 1px solid var(--gov-gray-200);
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .kpi-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--gov-gray-800);
+            line-height: 1;
+        }
+
+        .kpi-label {
+            font-size: 0.8rem;
+            color: var(--gov-gray-500);
+            margin-top: 0.35rem;
+        }
+
+        .kpi-percent {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            margin-top: 0.5rem;
+            display: inline-block;
+        }
+
+        .kpi-card.primary .kpi-icon {
+            color: var(--gov-primary);
+        }
+
+        .kpi-card.success .kpi-icon {
+            color: var(--gov-success);
+        }
+
+        .kpi-card.success .kpi-percent {
+            background: var(--gov-success-light);
+            color: var(--gov-success);
+        }
+
+        .kpi-card.warning .kpi-icon {
+            color: var(--gov-warning);
+        }
+
+        .kpi-card.warning .kpi-percent {
+            background: var(--gov-warning-light);
+            color: var(--gov-warning);
+        }
+
+        .kpi-card.danger .kpi-icon {
+            color: var(--gov-danger);
+        }
+
+        .kpi-card.danger .kpi-percent {
+            background: var(--gov-danger-light);
+            color: var(--gov-danger);
+        }
+
+        /* Pace Status Card (GAP 3 Fix) */
+        .pace-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.25rem 1.5rem;
+            border: 1px solid var(--gov-gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .pace-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .pace-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+        }
+
+        .pace-icon.on-track {
+            background: var(--gov-success-light);
+        }
+
+        .pace-icon.behind {
+            background: var(--gov-warning-light);
+        }
+
+        .pace-icon.critical {
+            background: var(--gov-danger-light);
+        }
+
+        .pace-info h4 {
+            font-size: 0.9rem;
+            color: var(--gov-gray-800);
+            font-weight: 600;
+        }
+
+        .pace-info p {
+            font-size: 0.8rem;
+            color: var(--gov-gray-500);
+        }
+
+        .pace-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .pace-status.on-track {
+            background: var(--gov-success-light);
+            color: var(--gov-success);
+        }
+
+        .pace-status.behind {
+            background: var(--gov-warning-light);
+            color: var(--gov-warning);
+        }
+
+        .pace-status.critical {
+            background: var(--gov-danger-light);
+            color: var(--gov-danger);
+        }
+
+        /* Progress Section */
+        .progress-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.25rem 1.5rem;
+            border: 1px solid var(--gov-gray-200);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .progress-title {
+            font-weight: 600;
+            color: var(--gov-gray-800);
+        }
+
+        .progress-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .progress-btn {
+            padding: 0.6rem 1.25rem;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .progress-btn.secondary {
+            background: var(--gov-gray-100);
+            color: var(--gov-gray-700);
+        }
+
+        .progress-btn.secondary:hover {
+            background: var(--gov-gray-200);
+        }
+
+        .progress-btn.primary {
+            background: linear-gradient(135deg, var(--gov-success) 0%, #2f855a 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(56, 161, 105, 0.3);
+        }
+
+        .progress-btn.primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(56, 161, 105, 0.4);
+        }
+
+        .progress-btn.primary:disabled {
+            background: var(--gov-gray-300);
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .progress-bar-container {
+            background: var(--gov-gray-100);
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .progress-segment {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: white;
+            transition: width 0.3s;
+        }
+
+        .progress-segment.completed {
+            background: var(--gov-success);
+        }
+
+        .progress-segment.pending {
+            background: var(--gov-warning);
+        }
+
+        .progress-segment.skipped {
+            background: var(--gov-danger);
+        }
+
+        .progress-legend {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.8rem;
+            color: var(--gov-gray-600);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+        }
+
+        .legend-dot.completed {
+            background: var(--gov-success);
+        }
+
+        .legend-dot.pending {
+            background: var(--gov-warning);
+        }
+
+        .legend-dot.skipped {
+            background: var(--gov-danger);
+        }
+
+        /* Day Completion Banner (Innovation 2) */
+        .day-complete-banner {
+            background: linear-gradient(135deg, rgba(56, 161, 105, 0.15) 0%, rgba(56, 161, 105, 0.08) 100%);
+            border: 2px solid var(--gov-success);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .day-complete-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .day-complete-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gov-success);
+            margin-bottom: 0.25rem;
+        }
+
+        .day-complete-text {
+            font-size: 0.9rem;
+            color: var(--gov-gray-600);
+        }
+
+        /* Task List */
+        .task-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gov-gray-200);
+            overflow: hidden;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: var(--gov-gray-50);
+            border-bottom: 1px solid var(--gov-gray-200);
+        }
+
+        .task-title {
+            font-weight: 600;
+            color: var(--gov-gray-800);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Route Toggle (GAP 1 Fix) */
+        .route-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--gov-gray-600);
+        }
+
+        .route-toggle-btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 16px;
+            border: 1px solid var(--gov-gray-200);
+            background: white;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .route-toggle-btn.active {
+            background: var(--gov-info);
+            color: white;
+            border-color: var(--gov-info);
+        }
+
+        .task-list {
+            max-height: 420px;
+            overflow-y: auto;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--gov-gray-100);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .task-item:hover {
+            background: var(--gov-gray-50);
+        }
+
+        .task-item.completed {
+            background: rgba(56, 161, 105, 0.04);
+        }
+
+        .task-item.skipped {
+            border-left: 4px solid var(--gov-danger);
+        }
+
+        .task-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--gov-gray-300);
+            border-radius: 6px;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .task-item.completed .task-checkbox {
+            background: var(--gov-success);
+            border-color: var(--gov-success);
+            color: white;
+        }
+
+        .task-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .task-name {
+            font-weight: 600;
+            color: var(--gov-gray-800);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Route Tags (GAP 1 Fix) */
+        .route-tag {
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .route-tag.next {
+            background: var(--gov-success-light);
+            color: var(--gov-success);
+        }
+
+        .route-tag.nearby {
+            background: var(--gov-info-light);
+            color: var(--gov-info);
+        }
+
+        .route-tag.far {
+            background: var(--gov-gray-100);
+            color: var(--gov-gray-500);
+        }
+
+        .task-address {
+            font-size: 0.85rem;
+            color: var(--gov-gray-500);
+        }
+
+        .task-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.4rem;
+        }
+
+        .task-status {
+            padding: 0.3rem 0.7rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .task-status.pending {
+            background: var(--gov-warning-light);
+            color: var(--gov-warning);
+        }
+
+        .task-status.completed {
+            background: var(--gov-success-light);
+            color: var(--gov-success);
+        }
+
+        .task-status.skipped {
+            background: var(--gov-danger-light);
+            color: var(--gov-danger);
+        }
+
+        /* Skip Reason Icons (GAP 2 Fix) */
+        .skip-reason {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.7rem;
+            color: var(--gov-danger);
+        }
+
+        .skip-reason-icon {
+            font-size: 0.9rem;
+        }
+
+        .task-time {
+            font-size: 0.75rem;
+            color: var(--gov-gray-500);
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 0.4rem;
+            margin-left: 0.75rem;
+        }
+
+        .task-action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .task-action-btn.warning {
+            background: var(--gov-warning-light);
+            color: var(--gov-warning);
+        }
+
+        .task-action-btn.warning:hover {
+            background: var(--gov-warning);
+            color: white;
+        }
+
+        /* Sidebar Cards */
+        .sidebar-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gov-gray-200);
+            overflow: hidden;
+        }
+
+        .sidebar-card-header {
+            padding: 1rem 1.25rem;
+            background: var(--gov-gray-50);
+            border-bottom: 1px solid var(--gov-gray-200);
+            font-weight: 600;
+            color: var(--gov-gray-800);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar-card-badge {
+            background: var(--gov-info);
+            color: white;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+
+        .sidebar-card-body {
+            padding: 1.25rem;
+        }
+
+        /* Smart Route Card */
+        .smart-route-content {
+            text-align: center;
+        }
+
+        .smart-route-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .smart-route-text {
+            font-size: 0.95rem;
+            color: var(--gov-gray-700);
+            margin-bottom: 0.75rem;
+        }
+
+        .smart-route-text strong {
+            color: var(--gov-primary);
+        }
+
+        .smart-route-savings {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.4rem 0.85rem;
+            background: var(--gov-success-light);
+            color: var(--gov-success);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Upload Confidence */
+        .confidence-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .confidence-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 0.75rem;
+            background: var(--gov-gray-50);
+            border-radius: var(--radius-sm);
+        }
+
+        .confidence-label {
+            font-size: 0.85rem;
+            color: var(--gov-gray-700);
+        }
+
+        .confidence-status {
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .confidence-status.ready {
+            color: var(--gov-success);
+        }
+
+        .all-systems-ready {
+            text-align: center;
+            padding: 0.75rem;
+            background: var(--gov-success-light);
+            border-radius: var(--radius-md);
+            margin-top: 0.75rem;
+            font-weight: 600;
+            color: var(--gov-success);
+            font-size: 0.85rem;
+        }
+
+        /* Quality Hint (Innovation 3) */
+        .quality-hint {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: rgba(49, 130, 206, 0.08);
+            border-radius: var(--radius-md);
+            margin-top: 0.75rem;
+            font-size: 0.8rem;
+            color: var(--gov-gray-600);
+        }
+
+        .quality-hint-icon {
+            color: var(--gov-info);
+        }
+
+        /* Daily Summary */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+        }
+
+        .summary-item {
+            padding: 0.75rem;
+            background: var(--gov-gray-50);
+            border-radius: var(--radius-sm);
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gov-gray-800);
+        }
+
+        .summary-label {
+            font-size: 0.7rem;
+            color: var(--gov-gray-500);
+            margin-top: 0.2rem;
+        }
+
+        /* Government Visibility Footer (GAP 4 Fix) */
+        .gov-visibility-footer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            background: rgba(26, 54, 93, 0.05);
+            border-radius: var(--radius-lg);
+            font-size: 0.8rem;
+            color: var(--gov-gray-600);
+        }
+
+        .gov-visibility-icon {
+            color: var(--gov-primary);
+        }
+
+        /* Issue Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.75rem;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gov-gray-200);
+        }
+
+        .modal-header-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--gov-warning-light);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .modal-header-text h3 {
+            font-size: 1.1rem;
+            color: var(--gov-gray-800);
+            margin-bottom: 0.15rem;
+        }
+
+        .modal-header-text p {
+            font-size: 0.8rem;
+            color: var(--gov-gray-500);
+        }
+
+        .issue-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .issue-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem;
+            border: 2px solid var(--gov-gray-200);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .issue-option:hover {
+            background: var(--gov-gray-50);
+            border-color: var(--gov-gray-300);
+        }
+
+        .issue-option.selected {
+            background: var(--gov-warning-light);
+            border-color: var(--gov-warning);
+        }
+
+        .issue-option-icon {
+            font-size: 1.25rem;
+        }
+
+        .issue-option-text {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--gov-gray-700);
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 0.875rem;
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-btn.cancel {
+            background: var(--gov-gray-100);
+            border: 1px solid var(--gov-gray-200);
+            color: var(--gov-gray-700);
+        }
+
+        .modal-btn.submit {
+            background: var(--gov-warning);
+            border: none;
+            color: white;
+        }
+
+        .modal-btn.submit:disabled {
+            background: var(--gov-gray-300);
+            cursor: not-allowed;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-sidebar {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .kpi-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .dashboard-sidebar {
+                grid-template-columns: 1fr;
+            }
+
+            .confidence-badge {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .progress-actions {
+                flex-direction: column;
+            }
+
+            .progress-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body ng-controller="DashboardController">
+    <!-- Sidebar -->
+    <aside class="worker-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <img src="/static/images/emblem.png" alt=""
+                        onerror="this.style.display='none'; this.parentNode.innerHTML='🏛️';">
+                </div>
+                <div class="brand-text">
+                    <h1>Suvidha</h1>
+                    <span>FIELD AGENT</span>
+                </div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item active">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">Dashboard</span>
+            </a>
+            <a href="search.html" class="nav-item">
+                <span class="nav-icon">🔍</span>
+                <span class="nav-text">Search Households</span>
+            </a>
+            <a href="report.html" class="nav-item">
+                <span class="nav-icon">📝</span>
+                <span class="nav-text">Report Issue</span>
+            </a>
+            <a href="settings.html" class="nav-item">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-text">Settings</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">{{user.initials}}</div>
+                <div class="user-info">
+                    <h4>{{user.name}}</h4>
+                    <p>Field Agent</p>
+                </div>
+            </div>
+            <button class="logout-btn" ng-click="logout()">
+                <span>🚪</span>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="worker-main-content">
+        <header class="worker-header">
+            <div class="header-left">
+                <h2>Field Agent Dashboard</h2>
+                <p>{{currentDate}}</p>
+            </div>
+            <div class="header-right">
+                <button class="topbar-btn" title="Accessibility">♿</button>
+                <div class="lang-dropdown">
+                    <button class="lang-toggle-btn" ng-click="toggleLangMenu($event)">
+                        🌐 <span>{{selectedLang}}</span> ▼
+                    </button>
+                    <div class="lang-dropdown-menu" ng-show="showLangMenu">
+                        <a href="#" class="lang-option" ng-repeat="lang in languages"
+                            ng-class="{active: selectedLang === lang.code}"
+                            ng-click="selectLang(lang, $event)">{{lang.name}}</a>
+                    </div>
+                </div>
+                <button class="topbar-btn notification-btn" title="Notifications">
+                    🔔<span class="notification-badge">{{notifications}}</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="worker-content">
+            <!-- Confidence Badge (Innovation 1) -->
+            <div class="confidence-badge">
+                <div class="confidence-item success">
+                    <span class="confidence-dot"></span>
+                    <span>✓ Field Readiness: High</span>
+                </div>
+                <span class="confidence-divider"></span>
+                <div class="confidence-item success">
+                    <span class="confidence-dot"></span>
+                    <span>📶 Network: Stable</span>
+                </div>
+                <span class="confidence-divider"></span>
+                <div class="confidence-item success">
+                    <span class="confidence-dot"></span>
+                    <span>📍 GPS: Active</span>
+                </div>
+            </div>
+
+            <!-- Day Complete Banner (Innovation 2) -->
+            <div class="day-complete-banner" ng-if="isDayComplete">
+                <div class="day-complete-icon">🎉</div>
+                <div class="day-complete-title">All Assigned Houses Covered for Today!</div>
+                <div class="day-complete-text">Great work! Your readings have been synced to the government dashboard.
+                </div>
+            </div>
+
+            <!-- Assigned Area -->
+            <div class="area-card">
+                <div class="area-chips">
+                    <div class="area-chip">
+                        <span class="area-chip-label">State:</span>
+                        <span class="area-chip-value">{{area.state}}</span>
+                    </div>
+                    <div class="area-chip">
+                        <span class="area-chip-label">District:</span>
+                        <span class="area-chip-value">{{area.district}}</span>
+                    </div>
+                    <div class="area-chip">
+                        <span class="area-chip-label">Ward:</span>
+                        <span class="area-chip-value">{{area.ward}}</span>
+                    </div>
+                    <div class="area-chip">
+                        <span class="area-chip-label">Locality:</span>
+                        <span class="area-chip-value">{{area.locality}}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card primary">
+                    <div class="kpi-icon">🏠</div>
+                    <div class="kpi-value">{{stats.assigned}}</div>
+                    <div class="kpi-label">Houses Assigned</div>
+                </div>
+                <div class="kpi-card success">
+                    <div class="kpi-icon">✓</div>
+                    <div class="kpi-value">{{stats.covered}}</div>
+                    <div class="kpi-label">Houses Covered</div>
+                    <div class="kpi-percent">{{stats.coveredPercent}}%</div>
+                </div>
+                <div class="kpi-card warning">
+                    <div class="kpi-icon">⏳</div>
+                    <div class="kpi-value">{{stats.pending}}</div>
+                    <div class="kpi-label">Houses Pending</div>
+                    <div class="kpi-percent">{{stats.pendingPercent}}%</div>
+                </div>
+                <div class="kpi-card danger">
+                    <div class="kpi-icon">⚠️</div>
+                    <div class="kpi-value">{{stats.skipped}}</div>
+                    <div class="kpi-label">Houses Skipped</div>
+                    <div class="kpi-percent">{{stats.skippedPercent}}%</div>
+                </div>
+                <div class="kpi-card" ng-class="paceStatus.class">
+                    <div class="kpi-icon">📊</div>
+                    <div class="kpi-value">{{stats.avgTime}}</div>
+                    <div class="kpi-label">Avg. Time/House</div>
+                </div>
+            </div>
+
+            <!-- Pace Status Card (GAP 3 Fix) -->
+            <div class="pace-card">
+                <div class="pace-left">
+                    <div class="pace-icon" ng-class="paceStatus.class">
+                        {{paceStatus.icon}}
+                    </div>
+                    <div class="pace-info">
+                        <h4>Schedule Status</h4>
+                        <p>Based on time elapsed and houses remaining</p>
+                    </div>
+                </div>
+                <span class="pace-status" ng-class="paceStatus.class">
+                    {{paceStatus.text}}
+                </span>
+            </div>
+
+            <!-- Main Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Main Column -->
+                <div class="dashboard-main">
+                    <!-- Progress Section -->
+                    <div class="progress-section">
+                        <div class="progress-header">
+                            <span class="progress-title">📊 Today's Coverage Progress</span>
+                            <div class="progress-actions">
+                                <button class="progress-btn secondary" ng-click="refresh()">
+                                    🔄 Refresh
+                                </button>
+                                <button class="progress-btn primary" ng-click="startMeterReading()"
+                                    ng-disabled="isDayComplete">
+                                    ▶️ Start Meter Reading
+                                </button>
+                            </div>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-segment completed" ng-style="{'width': stats.coveredPercent + '%'}"
+                                ng-if="stats.coveredPercent > 0">
+                                {{stats.coveredPercent}}%
+                            </div>
+                            <div class="progress-segment pending" ng-style="{'width': stats.pendingPercent + '%'}"
+                                ng-if="stats.pendingPercent > 0">
+                                {{stats.pendingPercent}}%
+                            </div>
+                            <div class="progress-segment skipped" ng-style="{'width': stats.skippedPercent + '%'}"
+                                ng-if="stats.skippedPercent > 0">
+                                {{stats.skippedPercent}}%
+                            </div>
+                        </div>
+                        <div class="progress-legend">
+                            <div class="legend-item">
+                                <span class="legend-dot completed"></span>
+                                <span>Completed ({{stats.covered}})</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-dot pending"></span>
+                                <span>Pending ({{stats.pending}})</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-dot skipped"></span>
+                                <span>Skipped ({{stats.skipped}})</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Task List -->
+                    <div class="task-section">
+                        <div class="task-header">
+                            <span class="task-title">📋 Today's Task List</span>
+                            <!-- Route Toggle (GAP 1 Fix) -->
+                            <div class="route-toggle">
+                                <span>🔀 Sort by:</span>
+                                <button class="route-toggle-btn" ng-class="{active: sortBy === 'route'}"
+                                    ng-click="setSortBy('route')">Distance</button>
+                                <button class="route-toggle-btn" ng-class="{active: sortBy === 'status'}"
+                                    ng-click="setSortBy('status')">Status</button>
+                            </div>
+                        </div>
+                        <div class="task-list">
+                            <div class="task-item" ng-repeat="task in sortedTasks track by task.id"
+                                ng-class="task.status" ng-click="openTask(task)">
+                                <div class="task-checkbox">
+                                    <span ng-if="task.status === 'completed'">✓</span>
+                                </div>
+                                <div class="task-info">
+                                    <div class="task-name">
+                                        House {{task.houseNo}} - {{task.name}}
+                                        <!-- Route Tags (GAP 1 Fix) -->
+                                        <span class="route-tag next" ng-if="task.routeTag === 'next'">⭐ Next</span>
+                                        <span class="route-tag nearby" ng-if="task.routeTag === 'nearby'">📍
+                                            Nearby</span>
+                                        <span class="route-tag far" ng-if="task.routeTag === 'far'">🚶 Far</span>
+                                    </div>
+                                    <div class="task-address">{{task.address}}</div>
+                                </div>
+                                <div class="task-right">
+                                    <span class="task-status" ng-class="task.status">
+                                        {{task.statusLabel}}
+                                    </span>
+                                    <!-- Skip Reason with Icons (GAP 2 Fix) -->
+                                    <span class="skip-reason" ng-if="task.status === 'skipped'">
+                                        <span class="skip-reason-icon">{{task.skipIcon}}</span>
+                                        <span>{{task.skipReason}}</span>
+                                    </span>
+                                    <span class="task-time" ng-if="task.status !== 'skipped'">{{task.time}}</span>
+                                </div>
+                                <div class="task-actions">
+                                    <button class="task-action-btn warning" ng-click="reportIssue(task, $event)"
+                                        title="Report Issue">
+                                        ⚠️
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Column -->
+                <div class="dashboard-sidebar">
+                    <!-- Smart Route Assist -->
+                    <div class="sidebar-card">
+                        <div class="sidebar-card-header">
+                            🧭 Smart Route Assist
+                            <span class="sidebar-card-badge">AI</span>
+                        </div>
+                        <div class="sidebar-card-body">
+                            <div class="smart-route-content">
+                                <div class="smart-route-icon">🗺️</div>
+                                <div class="smart-route-text">
+                                    Complete <strong>House {{nextHouse.houseNo}}</strong> → <strong>House
+                                        {{nextHouse.nextHouseNo}}</strong> next for optimal route.
+                                </div>
+                                <div class="smart-route-savings">
+                                    ⏱️ Save ~{{nextHouse.timeSaved}} min
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upload Confidence Check -->
+                    <div class="sidebar-card">
+                        <div class="sidebar-card-header">
+                            📤 Upload Confidence Check
+                        </div>
+                        <div class="sidebar-card-body">
+                            <div class="confidence-list">
+                                <div class="confidence-item-row">
+                                    <span class="confidence-label">📷 Camera</span>
+                                    <span class="confidence-status ready">✓ Ready</span>
+                                </div>
+                                <div class="confidence-item-row">
+                                    <span class="confidence-label">📍 GPS</span>
+                                    <span class="confidence-status ready">✓ Active</span>
+                                </div>
+                                <div class="confidence-item-row">
+                                    <span class="confidence-label">🕐 Timestamp</span>
+                                    <span class="confidence-status ready">✓ Synced</span>
+                                </div>
+                            </div>
+                            <div class="all-systems-ready">
+                                ✓ All Systems Ready
+                            </div>
+                            <!-- Quality Hint (Innovation 3) -->
+                            <div class="quality-hint">
+                                <span class="quality-hint-icon">💡</span>
+                                <span>Tip: Hold camera steady for clearer readings.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daily Summary -->
+                    <div class="sidebar-card">
+                        <div class="sidebar-card-header">
+                            📊 Daily Summary
+                        </div>
+                        <div class="sidebar-card-body">
+                            <div class="summary-grid">
+                                <div class="summary-item">
+                                    <div class="summary-value">{{summary.readings}}</div>
+                                    <div class="summary-label">Readings Uploaded</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-value">{{summary.issues}}</div>
+                                    <div class="summary-label">Issues Reported</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-value">{{summary.timeActive}}</div>
+                                    <div class="summary-label">Time Active</div>
+                                </div>
+                                <div class="summary-item">
+                                    <div class="summary-value">{{summary.meters}}</div>
+                                    <div class="summary-label">Meters (E/W/G)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Government Visibility Footer (GAP 4 Fix) -->
+            <div class="gov-visibility-footer">
+                <span class="gov-visibility-icon">👁️</span>
+                <span>Your progress is visible to ward supervisors in real time.</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- Issue Report Modal -->
+    <div class="modal-overlay" ng-if="showIssueModal" ng-click="closeModal()">
+        <div class="modal-content" ng-click="$event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-header-icon">⚠️</div>
+                <div class="modal-header-text">
+                    <h3>Report Issue</h3>
+                    <p>House {{selectedTask.houseNo}} • {{selectedTask.name}}</p>
+                </div>
+            </div>
+
+            <div class="issue-options">
+                <div class="issue-option" ng-repeat="option in issueOptions"
+                    ng-class="{selected: selectedIssue === option.id}" ng-click="selectIssue(option.id)">
+                    <span class="issue-option-icon">{{option.icon}}</span>
+                    <span class="issue-option-text">{{option.label}}</span>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="modal-btn cancel" ng-click="closeModal()">Cancel</button>
+                <button class="modal-btn submit" ng-click="submitIssue()" ng-disabled="!selectedIssue">
+                    Submit Issue
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var app = angular.module('workerApp', []);
+
+        app.controller('DashboardController', ['$scope', function ($scope) {
+            // User Info
+            $scope.user = {
+                name: 'Vikram Singh',
+                initials: 'VS'
+            };
+
+            // Date & Language
+            $scope.currentDate = new Date().toLocaleDateString('en-IN', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            $scope.selectedLang = 'EN';
+            $scope.showLangMenu = false;
+            $scope.languages = [
+                { code: 'EN', name: 'English' },
+                { code: 'HI', name: 'हिन्दी' }
+            ];
+            $scope.notifications = 3;
+
+            // Assigned Area
+            $scope.area = {
+                state: 'Delhi',
+                district: 'South Delhi',
+                ward: 'Ward 45',
+                locality: 'Saket'
+            };
+
+            // Stats
+            $scope.stats = {
+                assigned: 25,
+                covered: 17,
+                pending: 6,
+                skipped: 2,
+                coveredPercent: 68,
+                pendingPercent: 24,
+                skippedPercent: 8,
+                avgTime: '4.2 min'
+            };
+
+            // Pace Status (GAP 3 Fix)
+            $scope.paceStatus = {
+                text: 'On Track',
+                class: 'on-track',
+                icon: '✓'
+            };
+
+            // Calculate pace based on time and remaining houses
+            function calculatePace() {
+                var currentHour = new Date().getHours();
+                var pendingPercent = $scope.stats.pendingPercent;
+
+                // Work hours: 9 AM - 6 PM
+                var hoursWorked = Math.max(0, currentHour - 9);
+                var hoursRemaining = Math.max(0, 18 - currentHour);
+
+                if (pendingPercent === 0) {
+                    $scope.paceStatus = { text: 'Completed', class: 'on-track', icon: '🎉' };
+                } else if (pendingPercent <= 30 || hoursRemaining > 4) {
+                    $scope.paceStatus = { text: 'On Track', class: 'on-track', icon: '✓' };
+                } else if (pendingPercent <= 50) {
+                    $scope.paceStatus = { text: 'Behind Schedule', class: 'behind', icon: '⚠' };
+                } else {
+                    $scope.paceStatus = { text: 'Critical Delay', class: 'critical', icon: '⚡' };
+                }
+            }
+
+            // Task List with Route Tags and Skip Reasons (GAP 1, 2 Fix)
+            $scope.tasks = [
+                { id: 1, houseNo: '101', name: 'Sharma Residence', address: 'Block A, Flat 101', status: 'pending', statusLabel: 'Pending', time: '--', routeTag: 'next', distance: 0 },
+                { id: 2, houseNo: '102', name: 'Gupta Family', address: 'Block A, Flat 102', status: 'completed', statusLabel: 'Completed', time: '45 min ago', routeTag: 'nearby', distance: 50 },
+                { id: 3, houseNo: '103', name: 'Patel House', address: 'Block A, Flat 103', status: 'completed', statusLabel: 'Completed', time: '1 hr ago', routeTag: 'nearby', distance: 75 },
+                { id: 4, houseNo: '104', name: 'Singh Residence', address: 'Block A, Flat 104', status: 'pending', statusLabel: 'Pending', time: '--', routeTag: 'nearby', distance: 100 },
+                { id: 5, houseNo: '105', name: 'Kumar Family', address: 'Block A, Flat 105', status: 'skipped', statusLabel: 'Skipped', skipReason: 'House locked', skipIcon: '🔒', routeTag: 'far', distance: 200 },
+                { id: 6, houseNo: '106', name: 'Verma Residence', address: 'Block B, Flat 106', status: 'pending', statusLabel: 'Pending', time: '--', routeTag: 'far', distance: 300 },
+                { id: 7, houseNo: '107', name: 'Reddy House', address: 'Block B, Flat 107', status: 'pending', statusLabel: 'Pending', time: '--', routeTag: 'far', distance: 350 },
+                { id: 8, houseNo: '108', name: 'Joshi Family', address: 'Block B, Flat 108', status: 'skipped', statusLabel: 'Skipped', skipReason: 'Safety hazard', skipIcon: '⚠️', routeTag: 'far', distance: 400 }
+            ];
+
+            $scope.sortBy = 'route';
+            $scope.sortedTasks = [];
+
+            function sortTasks() {
+                var tasks = angular.copy($scope.tasks);
+                if ($scope.sortBy === 'route') {
+                    // Sort by distance (pending first, then by distance)
+                    tasks.sort(function (a, b) {
+                        var statusOrder = { 'pending': 0, 'skipped': 1, 'completed': 2 };
+                        if (statusOrder[a.status] !== statusOrder[b.status]) {
+                            return statusOrder[a.status] - statusOrder[b.status];
+                        }
+                        return a.distance - b.distance;
+                    });
+                } else {
+                    // Sort by status
+                    var statusOrder = { 'pending': 0, 'skipped': 1, 'completed': 2 };
+                    tasks.sort(function (a, b) {
+                        return statusOrder[a.status] - statusOrder[b.status];
+                    });
+                }
+
+                // Update route tags based on sort
+                var pendingCount = 0;
+                tasks.forEach(function (task) {
+                    if (task.status === 'pending') {
+                        if (pendingCount === 0) {
+                            task.routeTag = 'next';
+                        } else if (pendingCount <= 2) {
+                            task.routeTag = 'nearby';
+                        } else {
+                            task.routeTag = 'far';
+                        }
+                        pendingCount++;
+                    }
+                });
+
+                $scope.sortedTasks = tasks;
+            }
+
+            $scope.setSortBy = function (sort) {
+                $scope.sortBy = sort;
+                sortTasks();
+            };
+
+            // Day Complete Check (Innovation 2)
+            $scope.isDayComplete = false;
+            function checkDayComplete() {
+                $scope.isDayComplete = $scope.stats.pending === 0;
+            }
+
+            // Smart Route
+            $scope.nextHouse = {
+                houseNo: '101',
+                nextHouseNo: '104',
+                timeSaved: 8
+            };
+
+            // Daily Summary
+            $scope.summary = {
+                readings: 17,
+                issues: 2,
+                timeActive: '3h 45m',
+                meters: '14/2/1'
+            };
+
+            // Issue Modal
+            $scope.showIssueModal = false;
+            $scope.selectedTask = null;
+            $scope.selectedIssue = null;
+            $scope.issueOptions = [
+                { id: 'locked', icon: '🔒', label: 'House locked' },
+                { id: 'damaged', icon: '🔧', label: 'Meter damaged' },
+                { id: 'denied', icon: '🚫', label: 'Access denied' },
+                { id: 'safety', icon: '⚠️', label: 'Safety hazard' },
+                { id: 'other', icon: '📝', label: 'Other issue' }
+            ];
+
+            // Functions
+            $scope.toggleLangMenu = function ($event) {
+                $event.stopPropagation();
+                $scope.showLangMenu = !$scope.showLangMenu;
+            };
+
+            $scope.selectLang = function (lang, $event) {
+                $event.preventDefault();
+                $scope.selectedLang = lang.code;
+                $scope.showLangMenu = false;
+            };
+
+            $scope.refresh = function () {
+                alert('Dashboard refreshed successfully!\n\nLast sync: ' + new Date().toLocaleTimeString('en-IN'));
+            };
+
+            $scope.startMeterReading = function () {
+                if ($scope.isDayComplete) return;
+                var nextPending = $scope.sortedTasks.find(function (t) { return t.status === 'pending'; });
+                if (nextPending) {
+                    alert('Starting meter reading for:\n\nHouse ' + nextPending.houseNo + ' - ' + nextPending.name + '\n' + nextPending.address + '\n\n📷 Camera ready\n📍 GPS active\n🕐 Timestamp synced');
+                }
+            };
+
+            $scope.openTask = function (task) {
+                if (task.status === 'pending') {
+                    alert('Opening meter reading for:\n\nHouse ' + task.houseNo + ' - ' + task.name);
+                } else if (task.status === 'completed') {
+                    alert('Viewing completed reading for:\n\nHouse ' + task.houseNo + ' - ' + task.name + '\n\n(Read-only view)');
+                }
+            };
+
+            $scope.reportIssue = function (task, $event) {
+                $event.stopPropagation();
+                $scope.selectedTask = task;
+                $scope.selectedIssue = null;
+                $scope.showIssueModal = true;
+            };
+
+            $scope.selectIssue = function (issueId) {
+                $scope.selectedIssue = issueId;
+            };
+
+            $scope.closeModal = function () {
+                $scope.showIssueModal = false;
+                $scope.selectedTask = null;
+            };
+
+            $scope.submitIssue = function () {
+                if (!$scope.selectedIssue) return;
+
+                var issueOption = $scope.issueOptions.find(function (o) {
+                    return o.id === $scope.selectedIssue;
+                });
+
+                // Update task
+                var task = $scope.tasks.find(function (t) {
+                    return t.id === $scope.selectedTask.id;
+                });
+
+                if (task) {
+                    task.status = 'skipped';
+                    task.statusLabel = 'Skipped';
+                    task.skipReason = issueOption.label;
+                    task.skipIcon = issueOption.icon;
+
+                    // Update stats
+                    if ($scope.stats.pending > 0) {
+                        $scope.stats.pending--;
+                        $scope.stats.skipped++;
+                        $scope.stats.pendingPercent = Math.round(($scope.stats.pending / $scope.stats.assigned) * 100);
+                        $scope.stats.skippedPercent = Math.round(($scope.stats.skipped / $scope.stats.assigned) * 100);
+                    }
+
+                    sortTasks();
+                    checkDayComplete();
+                    calculatePace();
+                }
+
+                alert('Issue reported for House ' + $scope.selectedTask.houseNo + ':\n\n' +
+                    '• Reason: ' + issueOption.label + '\n' +
+                    '• Status: Marked as Skipped\n' +
+                    '• Visible to ward supervisors\n' +
+                    '• Logged with timestamp and GPS');
+
+                $scope.closeModal();
+            };
+
+            $scope.logout = function () {
+                if (confirm('Are you sure you want to logout?')) {
+                    alert('Logged out successfully\n\n• Session ended\n• All data synced\n• Progress visible to supervisors');
+                }
+            };
+
+            // Initialize
+            sortTasks();
+            checkDayComplete();
+            calculatePace();
+
+            // Close language menu on outside click
+            document.addEventListener('click', function () {
+                $scope.$apply(function () {
+                    $scope.showLangMenu = false;
+                });
+            });
+        }]);
+    </script>
+</body>
+
+</html>

@@ -1,384 +1,201 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="adminApp">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audit Vault - Suvidha</title>
+    <title>Audit Vault - Suvidha City Control Room</title>
     <link rel="stylesheet" href="../../css/gov-style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <style>
-        .legal-purpose-banner {
-            background: #f3f4f6;
-            border-left: 4px solid var(--gov-primary);
+        .audit-grid {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .audit-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .audit-table th,
+        .audit-table td {
             padding: 1rem;
-            border-radius: 6px;
-            margin-bottom: 1.5rem;
-            font-size: 0.85rem;
-            color: var(--gov-gray-700);
-            line-height: 1.5;
+            text-align: left;
+            border-bottom: 1px solid var(--gov-gray-200);
         }
 
-        .legal-purpose-title {
+        .audit-table th {
+            background: var(--gov-gray-50);
             font-weight: 600;
-            color: var(--gov-gray-900);
-            margin-bottom: 0.5rem;
-        }
-
-        .filter-section {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .filter-group {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-
-        .filter-label {
             font-size: 0.8rem;
-            font-weight: 600;
             color: var(--gov-gray-600);
             text-transform: uppercase;
         }
 
-        .filter-dropdown {
-            padding: 0.5rem 0.75rem;
-            border: 1px solid var(--gov-gray-300);
-            background: white;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            color: var(--gov-gray-700);
+        .audit-table tr:hover {
+            background: var(--gov-gray-50);
         }
 
-        .filter-dropdown:hover {
-            border-color: var(--gov-primary);
-        }
-
-        .filter-btns {
+        .audit-filters {
             display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .filter-btn {
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--gov-gray-300);
-            background: white;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            color: var(--gov-gray-700);
-            transition: all 0.2s;
-        }
-
-        .filter-btn:hover {
-            border-color: var(--gov-primary);
-            color: var(--gov-primary);
-        }
-
-        .filter-btn.active {
-            background: var(--gov-primary);
-            color: white;
-            border-color: var(--gov-primary);
-        }
-
-        .export-section {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .export-btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            background: var(--gov-primary);
-            color: white;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .export-btn:hover {
-            background: var(--gov-primary-dark);
-        }
-
-        .export-menu {
-            display: flex;
-            gap: 0.25rem;
-            flex-direction: column;
-            position: absolute;
-            background: white;
-            border: 1px solid var(--gov-gray-200);
-            border-radius: 4px;
-            padding: 0.25rem;
-            z-index: 10;
-            min-width: 120px;
-        }
-
-        .export-menu button {
-            padding: 0.5rem 0.75rem;
-            border: none;
-            background: transparent;
-            text-align: left;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.2s;
-        }
-
-        .export-menu button:hover {
-            background: var(--gov-gray-100);
-        }
-
-        .audit-log {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .log-item {
-            display: flex;
+            align-items: center;
             gap: 1rem;
             padding: 1rem;
-            background: white;
-            border: 1px solid var(--gov-gray-200);
-            border-radius: 6px;
-            align-items: flex-start;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .log-item:hover {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            border-color: var(--gov-primary);
-        }
-
-        .log-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            flex-shrink: 0;
-        }
-
-        .log-icon.success {
-            background: var(--gov-success-light);
-        }
-
-        .log-icon.warning {
-            background: var(--gov-warning-light);
-        }
-
-        .log-icon.danger {
-            background: var(--gov-danger-light);
-        }
-
-        .log-icon.info {
-            background: var(--gov-info-light);
-        }
-
-        .log-content {
-            flex: 1;
-        }
-
-        .log-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            gap: 1rem;
-        }
-
-        .log-action {
-            font-weight: 600;
-            color: var(--gov-gray-800);
-        }
-
-        .log-meta {
-            display: flex;
-            gap: 1rem;
-            font-size: 0.75rem;
-            color: var(--gov-gray-500);
-            margin-top: 0.25rem;
+            background: var(--gov-gray-50);
+            border-radius: var(--radius-md);
+            margin: 1rem 0;
             flex-wrap: wrap;
         }
 
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .log-official {
+        .filter-select {
+            padding: 0.5rem;
+            border: 1px solid var(--gov-gray-200);
+            border-radius: var(--radius-sm);
             font-size: 0.85rem;
-            color: var(--gov-gray-600);
-            margin-top: 0.5rem;
-            font-weight: 500;
         }
 
-        .log-details-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 0.75rem;
-            margin-top: 0.75rem;
-            font-size: 0.8rem;
-            color: var(--gov-gray-700);
-        }
-
-        .log-detail-item {
-            display: flex;
-            gap: 0.5rem;
-            align-items: flex-start;
-        }
-
-        .detail-label {
-            font-weight: 600;
-            color: var(--gov-gray-600);
-            min-width: 80px;
-        }
-
-        .log-reason {
-            font-size: 0.8rem;
-            color: var(--gov-gray-500);
-            margin-top: 0.5rem;
-            font-style: italic;
-        }
-
-        .log-time {
-            font-size: 0.75rem;
-            color: var(--gov-gray-400);
-            white-space: nowrap;
-        }
-
-        .log-source-badge {
+        .badge {
             display: inline-block;
-            padding: 0.2rem 0.5rem;
-            background: var(--gov-gray-200);
-            border-radius: 3px;
-            font-size: 0.7rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
             font-weight: 600;
-            color: var(--gov-gray-700);
         }
 
-        .log-source-badge.manual {
+        .badge.info {
             background: var(--gov-info-light);
             color: var(--gov-info);
         }
 
-        .immutability-notice {
-            background: #fef3c7;
-            border-left: 4px solid #f59e0b;
-            padding: 0.75rem;
-            border-radius: 6px;
+        .badge.warning {
+            background: var(--gov-warning-light);
+            color: var(--gov-warning);
+        }
+
+        .badge.danger {
+            background: var(--gov-danger-light);
+            color: var(--gov-danger);
+        }
+
+        .badge.success {
+            background: var(--gov-success-light);
+            color: var(--gov-success);
+        }
+
+        .action-btn {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
             font-size: 0.75rem;
-            color: #92400e;
-            margin-top: 1rem;
+            font-weight: 500;
+            background: var(--gov-primary);
+            color: white;
         }
 
-        .immutability-notice strong {
-            color: #78350f;
+        .action-btn:hover {
+            background: var(--gov-primary-dark);
         }
 
-        .log-details-drawer {
-            position: fixed;
-            right: 0;
-            top: 0;
-            width: 450px;
-            height: 100%;
-            background: white;
-            box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-        }
-
-        .log-details-drawer.show {
-            transform: translateX(0);
-        }
-
-        .drawer-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 999;
-            display: none;
-        }
-
-        .drawer-overlay.show {
-            display: block;
-        }
-
-        .drawer-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--gov-gray-200);
+        .table-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 1rem;
+            border-top: 1px solid var(--gov-gray-200);
         }
 
-        .drawer-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1.5rem;
+        .table-info {
+            font-size: 0.8rem;
+            color: var(--gov-gray-500);
         }
 
-        .drawer-section {
-            margin-bottom: 1.5rem;
-        }
-
-        .drawer-section-title {
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--gov-gray-700);
-            margin-bottom: 0.75rem;
-            text-transform: uppercase;
-        }
-
-        .drawer-section-content {
-            font-size: 0.85rem;
-            color: var(--gov-gray-700);
-            line-height: 1.6;
-        }
-
-        .drawer-stat {
+        .compliance-panel {
             display: flex;
-            justify-content: space-between;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid var(--gov-gray-100);
+            flex-direction: column;
+            gap: 1rem;
         }
 
-        .drawer-stat-value {
+        .compliance-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            border: 1px solid var(--gov-gray-200);
+        }
+
+        .compliance-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .compliance-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .compliance-icon.green {
+            background: var(--gov-success-light);
+        }
+
+        .compliance-icon.blue {
+            background: var(--gov-info-light);
+        }
+
+        .compliance-icon.purple {
+            background: #ede9fe;
+        }
+
+        .compliance-title {
             font-weight: 600;
-            color: var(--gov-primary);
+            font-size: 0.95rem;
         }
 
-        .close-btn {
-            background: none;
-            border: none;
+        .compliance-value {
             font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--gov-gray-700);
+            font-weight: 700;
+            color: var(--gov-gray-800);
+            margin: 0.5rem 0;
         }
 
-        .close-btn:hover {
-            color: var(--gov-gray-900);
+        .compliance-meta {
+            font-size: 0.75rem;
+            color: var(--gov-gray-500);
+        }
+
+        .integrity-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: var(--gov-success-light);
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+        }
+
+        .integrity-badge span {
+            font-size: 0.85rem;
+            color: var(--gov-success);
+            font-weight: 600;
         }
     </style>
 </head>
 
-<body>
+<body ng-controller="AuditController">
+    <!-- Sidebar -->
     <aside class="gov-sidebar">
         <div class="sidebar-header">
             <div class="sidebar-brand">
@@ -398,256 +215,199 @@
             <a href="rwa.html" class="nav-item"><span class="nav-icon">🏗️</span><span class="nav-text">RWA
                     Oversight</span></a>
             <a href="participation.html" class="nav-item"><span class="nav-icon">⭐</span><span
-                    class="nav-text">Participation</span></a>
+                    class="nav-text">Participation & Incentives</span></a>
             <a href="policy.html" class="nav-item"><span class="nav-icon">📊</span><span class="nav-text">Policy
                     Insights</span></a>
             <a href="audit.html" class="nav-item active"><span class="nav-icon">🔐</span><span class="nav-text">Audit
                     Vault</span></a>
-            <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span><span class="nav-text">Settings</span></a>
+            <a href="field-operations.html" class="nav-item"><span class="nav-icon">👷</span><span
+                    class="nav-text">Field Operations</span></a>
+            <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span><span
+                    class="nav-text">Settings</span></a>
         </nav>
         <div class="sidebar-footer">
             <div class="user-profile">
-                <div class="user-avatar">RK</div>
+                <div class="user-avatar">{{user.initials}}</div>
                 <div class="user-info">
-                    <h4>Rajesh Kumar</h4>
-                    <p>Government Official</p>
+                    <h4>{{user.name}}</h4>
+                    <p>{{user.role}}</p>
                 </div>
-            </div><button class="logout-btn">🚪 Logout</button>
+            </div>
+            <button class="logout-btn" ng-click="logout()"><span>🚪</span><span>Logout</span></button>
         </div>
     </aside>
+
+    <!-- Main Content -->
     <main class="gov-main">
         <header class="gov-topbar">
             <div class="topbar-left">
                 <h2>Audit Vault</h2>
-                <p id="currentDate"></p>
+                <p>{{currentDate}}</p>
             </div>
             <div class="topbar-right">
                 <button class="topbar-btn" title="Accessibility">♿</button>
-                <div class="lang-dropdown">
-                    <button class="lang-toggle-btn" id="langDropdownBtn">
-                        🌐 <span id="currentLangText">EN</span> ▼
-                    </button>
-                    <div class="lang-dropdown-menu" id="langDropdownMenu">
-                        <a href="#" class="lang-option active" data-lang="en">English</a>
-                        <a href="#" class="lang-option" data-lang="hi">हिन्दी (Hindi)</a>
-                        <a href="#" class="lang-option" data-lang="bn">বাংলা (Bengali)</a>
-                        <a href="#" class="lang-option" data-lang="ta">தமிழ் (Tamil)</a>
-                        <a href="#" class="lang-option" data-lang="te">తెలుగు (Telugu)</a>
-                        <a href="#" class="lang-option" data-lang="kn">ಕನ್ನಡ (Kannada)</a>
-                        <a href="#" class="lang-option" data-lang="pa">ਪੰਜਾਬੀ (Punjabi)</a>
-                        <a href="#" class="lang-option" data-lang="gu">ગુજરાતી (Gujarati)</a>
-                        <a href="#" class="lang-option" data-lang="ml">മലയാളം (Malayalam)</a>
-                        <a href="#" class="lang-option" data-lang="mr">मराठी (Marathi)</a>
-                        <a href="#" class="lang-option" data-lang="or">ଓଡ଼ିଆ (Odia)</a>
-                    </div>
-                </div>
-                <button class="topbar-btn notification-btn">
-                    🔔
-                    <span class="notification-badge">5</span>
-                </button>
+                <button class="topbar-btn notification-btn">🔔<span
+                        class="notification-badge">{{notifications}}</span></button>
             </div>
         </header>
+
         <div class="gov-content">
-            <!-- Legal Purpose Banner -->
-            <div class="legal-purpose-banner">
-                <div class="legal-purpose-title">🔐 Audit Vault - Legal Accountability System</div>
-                <p>This module maintains an immutable record of all administrative, financial, and policy actions for accountability, compliance, and legal review. Every action is logged with full forensic detail including who performed it, when it occurred, and the system state at that time.</p>
+            <!-- Stats Row -->
+            <div class="section-header">
+                <h3><span class="icon">🔐</span> Audit Overview</h3>
             </div>
-
-            <!-- Filter & Export Section -->
-            <div class="gov-card" style="margin-bottom: 1.5rem;">
-                <div style="padding: 1.5rem; border-bottom: 1px solid var(--gov-gray-200);">
-                    <div style="margin-bottom: 1rem;">
-                        <h3 style="margin: 0 0 0.75rem 0;">🔍 Search & Filter Audit Records</h3>
+            <div class="stats-grid">
+                <div class="stat-card primary">
+                    <div class="stat-icon-box blue"><span>📋</span></div>
+                    <div class="stat-content">
+                        <div class="stat-value">{{stats.totalLogs | number}}</div>
+                        <div class="stat-label">Total Audit Logs</div>
+                        <small class="stat-context">This month</small>
                     </div>
-
-                    <!-- Filter Controls -->
-                    <div class="filter-section">
-                        <div class="filter-group">
-                            <label class="filter-label">Severity</label>
-                            <div class="filter-btns">
-                                <button class="filter-btn" ng-class="{active: filterType === 'all'}" ng-click="setFilter('all')">All</button>
-                                <button class="filter-btn" ng-class="{active: filterType === 'success'}" ng-click="setFilter('success')">Success</button>
-                                <button class="filter-btn" ng-class="{active: filterType === 'warning'}" ng-click="setFilter('warning')">Warning</button>
-                                <button class="filter-btn" ng-class="{active: filterType === 'danger'}" ng-click="setFilter('danger')">Danger</button>
-                                <button class="filter-btn" ng-class="{active: filterType === 'info'}" ng-click="setFilter('info')">Info</button>
-                            </div>
-                        </div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-icon-box orange"><span>⚠️</span></div>
+                    <div class="stat-content">
+                        <div class="stat-value">{{stats.flagged}}</div>
+                        <div class="stat-label">Flagged Actions</div>
+                        <small class="stat-context">Requires review</small>
                     </div>
-
-                    <div class="filter-section">
-                        <div class="filter-group">
-                            <label class="filter-label">Action Type</label>
-                            <select class="filter-dropdown" ng-model="filterActionType" ng-change="setActionFilter(filterActionType)">
-                                <option value="All">All Actions</option>
-                                <option ng-repeat="action in uniqueActionTypes" value="{{action}}" ng-if="action !== 'All'">{{action}}</option>
-                            </select>
-                        </div>
-
-                        <div class="filter-group">
-                            <label class="filter-label">Source</label>
-                            <select class="filter-dropdown" ng-model="filterSource" ng-change="setSourceFilter(filterSource)">
-                                <option value="all">All Sources</option>
-                                <option value="Manual">Manual</option>
-                                <option value="System (AUTO)">System (AUTO)</option>
-                            </select>
-                        </div>
-
-                        <div class="export-section" style="margin-left: auto;">
-                            <button class="export-btn" ng-click="exportAuditLog('csv')">📥 Export as CSV</button>
-                            <button class="export-btn" ng-click="exportAuditLog('pdf')">📥 Export as PDF</button>
-                        </div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-icon-box green"><span>✅</span></div>
+                    <div class="stat-content">
+                        <div class="stat-value">{{stats.compliance}}%</div>
+                        <div class="stat-label">Compliance Rate</div>
+                        <small class="stat-context">Above target</small>
+                    </div>
+                </div>
+                <div class="stat-card info">
+                    <div class="stat-icon-box blue"><span>👥</span></div>
+                    <div class="stat-content">
+                        <div class="stat-value">{{stats.activeUsers}}</div>
+                        <div class="stat-label">Active Users</div>
+                        <small class="stat-context">Logged actions today</small>
                     </div>
                 </div>
             </div>
 
-            <!-- Audit Log Table -->
-            <div class="gov-card">
-                <div class="card-header">
-                    <h3>📝 Immutable Audit Records</h3>
-                    <p style="font-size: 0.8rem; color: var(--gov-gray-600); margin-top: 0.25rem;">Click any record to view forensic details</p>
-                </div>
-
-                <div class="audit-log">
-                    <div class="log-item" ng-repeat="log in logs | filter:filterLogs" ng-click="viewLogDetails(log)">
-                        <div class="log-icon" ng-class="log.type">{{log.icon}}</div>
-                        <div class="log-content">
-                            <div class="log-header">
-                                <div>
-                                    <div class="log-action">{{log.action}}</div>
-                                    <div class="log-meta">
-                                        <span class="meta-item"><strong>Log ID:</strong> {{log.id}}</span>
-                                        <span class="meta-item"><strong>Type:</strong> <span class="log-source-badge" ng-class="{manual: log.source === 'Manual'}">{{log.source}}</span></span>
-                                    </div>
-                                </div>
-                                <div class="log-time" style="text-align: right;">
-                                    <div><strong>{{log.date}}</strong></div>
-                                    <div>{{log.time}}</div>
-                                </div>
-                            </div>
-
-                            <div class="log-official">👤 {{log.official}} • {{log.department}}</div>
-
-                            <div class="log-details-row">
-                                <div class="log-detail-item">
-                                    <span class="detail-label">Related:</span>
-                                    <span>{{log.relatedId}}</span>
-                                </div>
-                                <div class="log-detail-item">
-                                    <span class="detail-label">Impact:</span>
-                                    <span><strong>{{log.impact}}</strong></span>
-                                </div>
-                            </div>
-
-                            <div class="log-reason">💬 {{log.reason}}</div>
-                        </div>
+            <!-- Audit Grid -->
+            <div class="audit-grid">
+                <!-- Audit Log Table -->
+                <div class="gov-card">
+                    <div class="card-header">
+                        <h3><span class="icon">📋</span> Audit Trail</h3>
+                    </div>
+                    <div class="audit-filters">
+                        <select class="filter-select" ng-model="filters.action">
+                            <option value="all">All Actions</option>
+                            <option value="login">Login</option>
+                            <option value="view">View</option>
+                            <option value="update">Update</option>
+                            <option value="export">Export</option>
+                        </select>
+                        <select class="filter-select" ng-model="filters.severity">
+                            <option value="all">All Severity</option>
+                            <option value="info">Info</option>
+                            <option value="warning">Warning</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                        <input type="date" class="filter-select" ng-model="filters.date">
+                    </div>
+                    <div class="table-container">
+                        <table class="audit-table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Resource</th>
+                                    <th>Severity</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="log in filteredLogs()">
+                                    <td><small>{{log.timestamp}}</small></td>
+                                    <td>{{log.user}}</td>
+                                    <td>{{log.action}}</td>
+                                    <td>{{log.resource}}</td>
+                                    <td><span class="badge" ng-class="log.severityClass">{{log.severity}}</span></td>
+                                    <td><button class="action-btn" ng-click="viewDetails(log)">View</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-footer">
+                        <span class="table-info">Showing {{filteredLogs().length}} of {{auditLogs.length}} logs</span>
                     </div>
                 </div>
 
-                <!-- Immutability Notice -->
-                <div class="immutability-notice">
-                    <strong>🔒 Immutability Guarantee:</strong> All audit records in this vault are append-only and cannot be modified, edited, or deleted by any user including administrators. This ensures complete accountability and legal compliance.
+                <!-- Compliance Panel -->
+                <div class="compliance-panel">
+                    <div class="compliance-card">
+                        <div class="compliance-header">
+                            <div class="compliance-icon green">🛡️</div>
+                            <div class="compliance-title">Data Integrity</div>
+                        </div>
+                        <div class="compliance-value">100%</div>
+                        <div class="compliance-meta">All records verified</div>
+                    </div>
+                    <div class="compliance-card">
+                        <div class="compliance-header">
+                            <div class="compliance-icon blue">📊</div>
+                            <div class="compliance-title">Retention Policy</div>
+                        </div>
+                        <div class="compliance-value">7 Years</div>
+                        <div class="compliance-meta">Compliant with regulations</div>
+                    </div>
+                    <div class="compliance-card">
+                        <div class="compliance-header">
+                            <div class="compliance-icon purple">🔒</div>
+                            <div class="compliance-title">Last Backup</div>
+                        </div>
+                        <div class="compliance-value">2h ago</div>
+                        <div class="compliance-meta">Auto-backup enabled</div>
+                    </div>
+                    <div class="integrity-badge">
+                        <span>✓</span>
+                        <span>Blockchain Verified</span>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Log Details Drawer -->
-    <div class="drawer-overlay" ng-class="{show: showLogDetails}" ng-click="closeLogDetails()"></div>
-    <div class="log-details-drawer" ng-class="{show: showLogDetails}">
-        <div class="drawer-header" ng-if="selectedLogEntry">
-            <h3 style="margin: 0;">Log Entry {{selectedLogEntry.id}}</h3>
-            <button class="close-btn" ng-click="closeLogDetails()">✕</button>
-        </div>
-        <div class="drawer-content" ng-if="selectedLogEntry">
-            <div class="drawer-section">
-                <div class="drawer-section-title">Action Details</div>
-                <div class="drawer-stat">
-                    <span>Action</span>
-                    <span class="drawer-stat-value">{{selectedLogEntry.action}}</span>
-                </div>
-                <div class="drawer-stat">
-                    <span>Official</span>
-                    <span class="drawer-stat-value" style="font-size: 0.85rem;">{{selectedLogEntry.official}}</span>
-                </div>
-                <div class="drawer-stat">
-                    <span>Department</span>
-                    <span class="drawer-stat-value" style="font-size: 0.85rem;">{{selectedLogEntry.department}}</span>
-                </div>
-                <div class="drawer-stat">
-                    <span>Source</span>
-                    <span class="drawer-stat-value">{{selectedLogEntry.source}}</span>
-                </div>
-            </div>
-
-            <div class="drawer-section">
-                <div class="drawer-section-title">Execution Details</div>
-                <div class="drawer-stat">
-                    <span>Timestamp</span>
-                    <span class="drawer-stat-value" style="font-size: 0.8rem;">{{selectedLogEntry.timestamp}}</span>
-                </div>
-                <div class="drawer-stat">
-                    <span>Date</span>
-                    <span class="drawer-stat-value">{{selectedLogEntry.date}}</span>
-                </div>
-                <div class="drawer-stat">
-                    <span>Time</span>
-                    <span class="drawer-stat-value">{{selectedLogEntry.time}}</span>
-                </div>
-                <div class="drawer-stat">
-                    <span>Severity</span>
-                    <span class="drawer-stat-value">{{selectedLogEntry.severity}}</span>
-                </div>
-            </div>
-
-            <div class="drawer-section">
-                <div class="drawer-section-title">Impact & Context</div>
-                <div class="drawer-stat">
-                    <span>Related ID</span>
-                    <span class="drawer-stat-value">{{selectedLogEntry.relatedId}}</span>
-                </div>
-                <div class="drawer-stat">
-                    <span>Impact</span>
-                    <span class="drawer-stat-value">{{selectedLogEntry.impact}}</span>
-                </div>
-                <div class="drawer-stat">
-                    <span>Reason</span>
-                    <span class="drawer-stat-value" style="font-size: 0.8rem;">{{selectedLogEntry.reason}}</span>
-                </div>
-            </div>
-
-            <div class="drawer-section">
-                <div class="drawer-section-title">Immutability Information</div>
-                <div class="drawer-section-content">
-                    This record is part of an immutable, append-only audit log. It cannot be modified, edited, or deleted by any user. The timestamp and all details are legally verified.
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        var app = angular.module('adminApp', []);
 
-        // Language Dropdown
-        const langBtn = document.getElementById('langDropdownBtn');
-        const langMenu = document.getElementById('langDropdownMenu');
-        const langText = document.getElementById('currentLangText');
-        if (langBtn && langMenu) {
-            langBtn.addEventListener('click', (e) => { e.stopPropagation(); langMenu.classList.toggle('show'); });
-            document.addEventListener('click', () => langMenu.classList.remove('show'));
-            langMenu.querySelectorAll('.lang-option').forEach(option => {
-                option.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    langMenu.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
-                    option.classList.add('active');
-                    langText.textContent = option.dataset.lang.toUpperCase();
-                    langMenu.classList.remove('show');
-                    localStorage.setItem('selectedLang', option.dataset.lang);
+        app.controller('AuditController', ['$scope', function ($scope) {
+            $scope.user = { name: 'Rajesh Kumar', initials: 'RK', role: 'Government Official' };
+            $scope.currentDate = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            $scope.notifications = 5;
+
+            $scope.stats = { totalLogs: 45678, flagged: 12, compliance: 99.8, activeUsers: 156 };
+            $scope.filters = { action: 'all', severity: 'all', date: null };
+
+            $scope.auditLogs = [
+                { timestamp: '08 Feb 2026, 02:45 PM', user: 'Rajesh Kumar', action: 'View', resource: 'Grievance Report', severity: 'Info', severityClass: 'info' },
+                { timestamp: '08 Feb 2026, 02:30 PM', user: 'Priya Sharma', action: 'Export', resource: 'Meter Data', severity: 'Warning', severityClass: 'warning' },
+                { timestamp: '08 Feb 2026, 02:15 PM', user: 'Amit Patel', action: 'Update', resource: 'Case GRV-2024-003', severity: 'Info', severityClass: 'info' },
+                { timestamp: '08 Feb 2026, 01:45 PM', user: 'System', action: 'Login', resource: 'Admin Portal', severity: 'Info', severityClass: 'info' },
+                { timestamp: '08 Feb 2026, 01:30 PM', user: 'Sunita Devi', action: 'Update', resource: 'RWA Settings', severity: 'Critical', severityClass: 'danger' }
+            ];
+
+            $scope.filteredLogs = function () {
+                return $scope.auditLogs.filter(function (log) {
+                    if ($scope.filters.action !== 'all' && log.action.toLowerCase() !== $scope.filters.action) return false;
+                    if ($scope.filters.severity !== 'all' && log.severity.toLowerCase() !== $scope.filters.severity) return false;
+                    return true;
                 });
-            });
-            const saved = localStorage.getItem('selectedLang');
-            if (saved) { langText.textContent = saved.toUpperCase(); langMenu.querySelectorAll('.lang-option').forEach(o => o.classList.toggle('active', o.dataset.lang === saved)); }
-        }
+            };
+
+            $scope.viewDetails = function (log) { alert('Viewing audit details for: ' + log.resource); };
+            $scope.logout = function () { if (confirm('Are you sure you want to logout?')) alert('Logged out successfully'); };
+        }]);
     </script>
 </body>
 
