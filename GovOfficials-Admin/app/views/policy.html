@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Policy Insights - Suvidha</title>
+    <link rel="stylesheet" href="../../css/gov-style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .ranking-table th,
+        .ranking-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gov-gray-200);
+        }
+
+        .ranking-table th {
+            background: var(--gov-gray-50);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--gov-gray-600);
+        }
+
+        .score-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .score-badge.success {
+            background: var(--gov-success-light);
+            color: var(--gov-success);
+        }
+
+        .score-badge.info {
+            background: var(--gov-info-light);
+            color: var(--gov-info);
+        }
+
+        .score-badge.warning {
+            background: var(--gov-warning-light);
+            color: var(--gov-warning);
+        }
+
+        .policy-summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-section {
+            margin-bottom: 1rem;
+        }
+
+        .summary-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+        }
+
+        .summary-text {
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .rank-row {
+            border-bottom: 1px solid var(--gov-gray-200);
+        }
+
+        .rank-row.expanded {
+            background: var(--gov-gray-50);
+        }
+
+        .explanation-row {
+            padding: 1rem;
+            background: var(--gov-gray-50);
+            font-size: 0.85rem;
+            color: var(--gov-gray-700);
+            cursor: default;
+            display: none;
+        }
+
+        .explanation-row.show {
+            display: table-row;
+        }
+
+        .explain-btn {
+            background: none;
+            border: none;
+            color: var(--gov-primary);
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-decoration: underline;
+            padding: 0;
+        }
+
+        .explain-btn:hover {
+            color: var(--gov-primary-dark);
+        }
+
+        .explanation-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .explanation-item {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .explanation-item strong {
+            color: var(--gov-primary);
+        }
+
+        .policy-impact-card {
+            padding: 1rem;
+            background: var(--gov-gray-50);
+            border-left: 4px solid var(--gov-primary);
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+        }
+
+        .impact-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .impact-link {
+            font-size: 0.9rem;
+            color: var(--gov-gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .impact-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .metric-value {
+            font-weight: 600;
+            color: var(--gov-success);
+        }
+
+        .effectiveness-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: var(--gov-success-light);
+            color: var(--gov-success);
+        }
+
+        .scenarios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .scenario-card {
+            padding: 1rem;
+            border: 1px solid var(--gov-gray-200);
+            border-radius: 8px;
+            background: white;
+        }
+
+        .scenario-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .scenario-detail {
+            font-size: 0.8rem;
+            color: var(--gov-gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .scenario-detail-label {
+            font-weight: 600;
+            color: var(--gov-gray-600);
+        }
+
+        .scenario-impact {
+            padding: 0.75rem;
+            background: var(--gov-success-light);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: var(--gov-success);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .scenario-confidence {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .confidence-badge {
+            background: var(--gov-info-light);
+            color: var(--gov-info);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        .risk-badge {
+            background: var(--gov-warning-light);
+            color: var(--gov-warning);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        .explore-btn {
+            width: 100%;
+            padding: 0.5rem;
+            background: var(--gov-primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .explore-btn:hover {
+            background: var(--gov-primary-dark);
+        }
+
+        .actions-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .action-card {
+            padding: 1.25rem;
+            border-left: 4px solid;
+            background: var(--gov-gray-50);
+            border-radius: 6px;
+        }
+
+        .action-card.high {
+            border-left-color: var(--gov-danger);
+        }
+
+        .action-card.medium {
+            border-left-color: var(--gov-warning);
+        }
+
+        .action-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .action-desc {
+            font-size: 0.85rem;
+            color: var(--gov-gray-700);
+            margin-bottom: 0.75rem;
+        }
+
+        .action-outcome {
+            font-size: 0.85rem;
+            color: var(--gov-primary);
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .action-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: var(--gov-warning-light);
+            color: var(--gov-warning);
+        }
+
+        .status-badge.approved {
+            background: var(--gov-success-light);
+            color: var(--gov-success);
+        }
+
+        .approve-btn {
+            padding: 0.4rem 0.75rem;
+            background: var(--gov-primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .approve-btn:hover {
+            background: var(--gov-primary-dark);
+        }
+
+        .chart-section-title {
+            font-size: 0.9rem;
+            color: var(--gov-gray-700);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <aside class="gov-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <div class="brand-icon">🏛️</div>
+                <div class="brand-text">
+                    <h1>Suvidha</h1><span>CITY CONTROL ROOM</span>
+                </div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item"><span class="nav-icon">🏠</span><span
+                    class="nav-text">Dashboard</span></a>
+            <a href="grievance.html" class="nav-item"><span class="nav-icon">📢</span><span class="nav-text">Grievance
+                    Command</span></a>
+            <a href="meter.html" class="nav-item"><span class="nav-icon">⚡</span><span class="nav-text">Meter
+                    Integrity</span></a>
+            <a href="rwa.html" class="nav-item"><span class="nav-icon">🏗️</span><span class="nav-text">RWA
+                    Oversight</span></a>
+            <a href="participation.html" class="nav-item"><span class="nav-icon">⭐</span><span
+                    class="nav-text">Participation</span></a>
+            <a href="policy.html" class="nav-item active"><span class="nav-icon">📊</span><span class="nav-text">Policy
+                    Insights</span></a>
+            <a href="audit.html" class="nav-item"><span class="nav-icon">🔐</span><span class="nav-text">Audit
+                    Vault</span></a>
+            <a href="settings.html" class="nav-item"><span class="nav-icon">⚙️</span><span class="nav-text">Settings</span></a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">RK</div>
+                <div class="user-info">
+                    <h4>Rajesh Kumar</h4>
+                    <p>Government Official</p>
+                </div>
+            </div><button class="logout-btn">🚪 Logout</button>
+        </div>
+    </aside>
+    <main class="gov-main">
+        <header class="gov-topbar">
+            <div class="topbar-left">
+                <h2>Policy Insights</h2>
+                <p id="currentDate"></p>
+            </div>
+            <div class="topbar-right">
+                <button class="topbar-btn" title="Accessibility">♿</button>
+                <div class="lang-dropdown">
+                    <button class="lang-toggle-btn" id="langDropdownBtn">
+                        🌐 <span id="currentLangText">EN</span> ▼
+                    </button>
+                    <div class="lang-dropdown-menu" id="langDropdownMenu">
+                        <a href="#" class="lang-option active" data-lang="en">English</a>
+                        <a href="#" class="lang-option" data-lang="hi">हिन्दी (Hindi)</a>
+                        <a href="#" class="lang-option" data-lang="bn">বাংলা (Bengali)</a>
+                        <a href="#" class="lang-option" data-lang="ta">தமிழ் (Tamil)</a>
+                        <a href="#" class="lang-option" data-lang="te">తెలుగు (Telugu)</a>
+                        <a href="#" class="lang-option" data-lang="kn">ಕನ್ನಡ (Kannada)</a>
+                        <a href="#" class="lang-option" data-lang="pa">ਪੰਜਾਬੀ (Punjabi)</a>
+                        <a href="#" class="lang-option" data-lang="gu">ગુજરાતી (Gujarati)</a>
+                        <a href="#" class="lang-option" data-lang="ml">മലയാളം (Malayalam)</a>
+                        <a href="#" class="lang-option" data-lang="mr">मराठी (Marathi)</a>
+                        <a href="#" class="lang-option" data-lang="or">ଓଡ଼ିଆ (Odia)</a>
+                    </div>
+                </div>
+                <button class="topbar-btn notification-btn">
+                    🔔
+                    <span class="notification-badge">5</span>
+                </button>
+            </div>
+        </header>
+        <div class="gov-content">
+            <!-- Policy Summary Card -->
+            <div class="gov-card policy-summary-card">
+                <div class="summary-section">
+                    <div class="summary-label">🧠 Key Insight</div>
+                    <div class="summary-text">Complaint volume reduced by 28% over 6 months, driven primarily by faster electricity issue resolution in high-performing wards.</div>
+                </div>
+                <div class="summary-section">
+                    <div class="summary-label">⚠️ Risk Alert</div>
+                    <div class="summary-text">Water-related complaints show slower improvement in low-performing wards (Wards 3, 11).</div>
+                </div>
+                <div class="summary-section">
+                    <div class="summary-label">💡 Opportunity</div>
+                    <div class="summary-text">Implementing best practices from Ward 15 (Rohini) could improve average satisfaction by 8-12%.</div>
+                </div>
+            </div>
+
+            <!-- Ward Performance Rankings with Explanations -->
+            <div class="gov-card" style="margin-bottom:1.5rem">
+                <div class="card-header">
+                    <h3>🏆 Ward Performance Grade Analysis</h3>
+                    <p style="font-size: 0.8rem; color: var(--gov-gray-600); margin-top: 0.25rem;">Click "Why this score?" to see detailed performance factors</p>
+                </div>
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>Ward</th>
+                            <th>Resolved</th>
+                            <th>Avg Time</th>
+                            <th>Satisfaction</th>
+                            <th>Score</th>
+                            <th>Trend</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="ward in wardRankings track by $index" class="rank-row">
+                            <td><strong>{{ward.name}}</strong></td>
+                            <td>{{ward.resolved}}</td>
+                            <td>{{ward.avgTime}}</td>
+                            <td>{{ward.satisfaction}}%</td>
+                            <td><span class="score-badge" ng-class="ward.scoreClass">{{ward.score}}</span></td>
+                            <td><strong ng-style="{color: ward.trend.includes('-') ? '#dd6b20' : '#38a169'}">{{ward.trend}}</strong></td>
+                            <td><button class="explain-btn" ng-click="toggleExplanation($index)">Why this score?</button></td>
+                        </tr>
+                        <tr ng-repeat="ward in wardRankings track by $index" class="explanation-row" ng-class="{show: selectedWardForExplanation === $index}">
+                            <td colspan="7">
+                                <div class="explanation-content">
+                                    <div><strong>Performance Factors:</strong> {{ward.explanation}}</div>
+                                    <div><strong>Community Participation Score:</strong> {{ward.participationScore}}/100</div>
+                                    <div><strong>Complaint Breakdown:</strong> Water: {{ward.waterComplaints}} | Electricity: {{ward.electricityComplaints}} | Gas: {{ward.gasComplaints}}</div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Policy Impact Correlation -->
+            <div class="gov-card" style="margin-bottom:1.5rem">
+                <div class="card-header">
+                    <h3>📊 Policy Impact Correlation Analysis</h3>
+                    <p style="font-size: 0.8rem; color: var(--gov-gray-600); margin-top: 0.25rem;">How incentive programs are linked to operational outcomes</p>
+                </div>
+                <div ng-repeat="impact in policyImpacts" class="policy-impact-card">
+                    <div class="impact-title">{{impact.policy}}</div>
+                    <div class="impact-link">→ {{impact.participationLink}}</div>
+                    <div class="impact-metric">
+                        <span class="metric-value">{{impact.impactMetric}}</span>
+                        <span class="effectiveness-badge">{{impact.effectiveness}}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- What-If Policy Scenarios -->
+            <div class="gov-card" style="margin-bottom:1.5rem">
+                <div class="card-header">
+                    <h3>🔮 Policy Scenario Analysis (Indicative)</h3>
+                    <p style="font-size: 0.8rem; color: var(--gov-gray-600); margin-top: 0.25rem;">⚠️ Based on historical patterns. Actual results may vary. Human review required.</p>
+                </div>
+                <div class="scenarios-grid">
+                    <div class="scenario-card" ng-repeat="scenario in scenarios">
+                        <div class="scenario-title">{{scenario.title}}</div>
+                        <div class="scenario-detail">
+                            <div class="scenario-detail-label">Assumption</div>
+                            {{scenario.assumption}}
+                        </div>
+                        <div class="scenario-impact">{{scenario.expectedImpact}}</div>
+                        <div class="scenario-confidence">
+                            <span class="confidence-badge">Confidence: {{scenario.confidence}}</span>
+                            <span class="risk-badge">Risk: {{scenario.riskLevel}}</span>
+                        </div>
+                        <button class="explore-btn" ng-click="exploreScenario(scenario)">Explore Scenario</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommended Policy Actions -->
+            <div class="gov-card" style="margin-bottom:1.5rem">
+                <div class="card-header">
+                    <h3>🧭 Recommended Policy Actions</h3>
+                    <p style="font-size: 0.8rem; color: var(--gov-gray-600); margin-top: 0.25rem;">Evidence-based recommendations (requires administrator approval)</p>
+                </div>
+                <div class="actions-grid">
+                    <div class="action-card" ng-repeat="action in recommendedActions" ng-class="action.priority">
+                        <div class="action-title">{{action.title}}</div>
+                        <div class="action-desc">{{action.description}}</div>
+                        <div class="action-outcome">💡 {{action.expectedOutcome}}</div>
+                        <div class="action-status">
+                            <span class="status-badge" ng-class="{approved: action.status === 'approved'}">{{action.status | uppercase}}</span>
+                            <button class="approve-btn" ng-if="action.status === 'pending'" ng-click="approveAction(action)">Approve</button>
+                            <span style="color: var(--gov-success); font-weight: 600;" ng-if="action.status === 'approved'">✓ Approved</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="revenue-grid">
+                <div class="gov-card chart-card">
+                    <div class="card-header">
+                        <h3>📉 Complaint Trend Analysis</h3>
+                        <p class="chart-section-title">6-month trend showing overall improvements</p>
+                    </div>
+                    <div class="chart-container"><canvas id="trendChart"></canvas></div>
+                </div>
+                <div class="gov-card chart-card">
+                    <div class="card-header">
+                        <h3>📊 Utility Performance Comparison</h3>
+                        <p class="chart-section-title">Monthly comparison across service categories</p>
+                    </div>
+                    <div class="chart-container"><canvas id="comparisonChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        new Chart(document.getElementById('trendChart'), { type: 'line', data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], datasets: [{ label: 'Complaints', data: [1200, 1150, 1080, 950, 890, 820], borderColor: '#38a169', backgroundColor: 'rgba(56,161,105,0.1)', tension: 0.4, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+        new Chart(document.getElementById('comparisonChart'), { type: 'bar', data: { labels: ['Electricity', 'Water', 'Gas'], datasets: [{ label: 'This Month', data: [450, 320, 180], backgroundColor: '#3182ce' }, { label: 'Last Month', data: [520, 380, 210], backgroundColor: '#a0aec0' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
+
+        // Language Dropdown
+        const langBtn = document.getElementById('langDropdownBtn');
+        const langMenu = document.getElementById('langDropdownMenu');
+        const langText = document.getElementById('currentLangText');
+        if (langBtn && langMenu) {
+            langBtn.addEventListener('click', (e) => { e.stopPropagation(); langMenu.classList.toggle('show'); });
+            document.addEventListener('click', () => langMenu.classList.remove('show'));
+            langMenu.querySelectorAll('.lang-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    langMenu.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
+                    option.classList.add('active');
+                    langText.textContent = option.dataset.lang.toUpperCase();
+                    langMenu.classList.remove('show');
+                    localStorage.setItem('selectedLang', option.dataset.lang);
+                });
+            });
+            const saved = localStorage.getItem('selectedLang');
+            if (saved) { langText.textContent = saved.toUpperCase(); langMenu.querySelectorAll('.lang-option').forEach(o => o.classList.toggle('active', o.dataset.lang === saved)); }
+        }
+    </script>
+</body>
+
+</html>

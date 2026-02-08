@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grievance Command - Suvidha City Control Room</title>
+    <link rel="stylesheet" href="../../css/gov-style.css">
+    <style>
+        /* Command Grid Layout */
+        .command-grid {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Table Section */
+        .table-section {
+            overflow: hidden;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        /* Quick Filters */
+        .quick-filters {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--gov-gray-50);
+            border-radius: var(--radius-md);
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-group-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gov-gray-500);
+            text-transform: uppercase;
+        }
+
+        .quick-filter-btn {
+            padding: 0.4rem 0.75rem;
+            border: 1px solid var(--gov-gray-200);
+            background: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .quick-filter-btn:hover {
+            border-color: var(--gov-primary);
+            color: var(--gov-primary);
+        }
+
+        .quick-filter-btn.active {
+            background: var(--gov-primary);
+            color: white;
+            border-color: var(--gov-primary);
+        }
+
+        .quick-filter-btn.urgent {
+            border-color: var(--gov-danger);
+            color: var(--gov-danger);
+        }
+
+        .quick-filter-btn.urgent:hover,
+        .quick-filter-btn.urgent.active {
+            background: var(--gov-danger);
+            color: white;
+        }
+
+        .filter-divider {
+            width: 1px;
+            height: 24px;
+            background: var(--gov-gray-300);
+        }
+
+        /* Grievance Table */
+        .grievance-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .grievance-table th,
+        .grievance-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gov-gray-200);
+        }
+
+        .grievance-table th {
+            background: var(--gov-gray-50);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gov-gray-600);
+        }
+
+        .grievance-table tr:hover {
+            background: var(--gov-gray-50);
+        }
+
+        /* SLA Row with left border indicator */
+        .sla-row {
+            border-left: 4px solid transparent;
+        }
+
+        .sla-row.critical {
+            border-left-color: var(--gov-danger);
+            background: rgba(229, 62, 62, 0.03);
+        }
+
+        .sla-row.warning {
+            border-left-color: var(--gov-warning);
+        }
+
+        .sla-row.safe {
+            border-left-color: var(--gov-success);
+        }
+
+        /* SLA Display with dot */
+        .sla-display {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sla-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        .sla-display.critical .sla-dot {
+            background: var(--gov-danger);
+        }
+
+        .sla-display.warning .sla-dot {
+            background: var(--gov-warning);
+        }
+
+        .sla-display.safe .sla-dot {
+            background: var(--gov-success);
+            animation: none;
+        }
+
+        .sla-display.critical .sla-time {
+            color: var(--gov-danger);
+            font-weight: 700;
+        }
+
+        .sla-display.warning .sla-time {
+            color: var(--gov-warning);
+            font-weight: 600;
+        }
+
+        .sla-display.safe .sla-time {
+            color: var(--gov-success);
+        }
+
+        /* Critical Urgent - SLA < 1 hour - Extra emphasis */
+        .sla-display.critical-urgent .sla-dot {
+            background: var(--gov-danger);
+            animation: pulse-urgent 0.8s infinite;
+        }
+
+        .sla-display.critical-urgent .sla-time {
+            color: var(--gov-danger);
+            font-weight: 800;
+            font-size: 1rem;
+            text-shadow: 0 0 8px rgba(229, 62, 62, 0.3);
+        }
+
+        @keyframes pulse-urgent {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.4;
+                transform: scale(1.4);
+            }
+        }
+
+        @keyframes pulse-dot {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(1.2);
+            }
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge.danger {
+            background: var(--gov-danger-light);
+            color: var(--gov-danger);
+        }
+
+        .badge.warning {
+            background: var(--gov-warning-light);
+            color: var(--gov-warning);
+        }
+
+        .badge.success {
+            background: var(--gov-success-light);
+            color: var(--gov-success);
+        }
+
+        .badge.info {
+            background: var(--gov-info-light);
+            color: var(--gov-info);
+        }
+
+        /* Action Button */
+        .action-btn {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+        }
+
+        .action-btn.primary {
+            background: var(--gov-primary);
+            color: white;
+        }
+
+        .action-btn.primary:hover {
+            background: var(--gov-primary-dark);
+            transform: translateY(-1px);
+        }
+
+        /* Table Footer */
+        .table-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-top: 1px solid var(--gov-gray-200);
+            margin-top: 0.5rem;
+        }
+
+        .table-info {
+            font-size: 0.8rem;
+            color: var(--gov-gray-500);
+        }
+
+        .table-pagination {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .page-btn {
+            padding: 0.4rem 0.75rem;
+            border: 1px solid var(--gov-gray-200);
+            background: white;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .page-btn:hover {
+            border-color: var(--gov-primary);
+            color: var(--gov-primary);
+        }
+
+        .page-num {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .page-num.active {
+            background: var(--gov-primary);
+            color: white;
+        }
+
+        /* Insights Panel */
+        .insights-panel {
+            height: fit-content;
+        }
+
+        .insights-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+        }
+
+        .insight-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            border-left: 3px solid transparent;
+        }
+
+        .insight-item.critical {
+            background: rgba(229, 62, 62, 0.05);
+            border-left-color: var(--gov-danger);
+        }
+
+        .insight-item.warning {
+            background: rgba(221, 107, 32, 0.05);
+            border-left-color: var(--gov-warning);
+        }
+
+        .insight-item.info {
+            background: rgba(49, 130, 206, 0.05);
+            border-left-color: var(--gov-info);
+        }
+
+        .insight-item.success {
+            background: rgba(56, 161, 105, 0.05);
+            border-left-color: var(--gov-success);
+        }
+
+        .insight-icon {
+            font-size: 1rem;
+        }
+
+        .insight-content {
+            flex: 1;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .insight-content small {
+            display: block;
+            color: var(--gov-gray-500);
+            margin-top: 0.25rem;
+        }
+
+        .insights-footer {
+            padding-top: 1rem;
+            border-top: 1px solid var(--gov-gray-200);
+            margin-top: 0.5rem;
+        }
+
+        .gov-btn.secondary {
+            background: var(--gov-gray-100);
+            color: var(--gov-gray-700);
+            border: 1px solid var(--gov-gray-200);
+        }
+
+        .gov-btn.secondary:hover {
+            background: var(--gov-gray-200);
+        }
+
+        .export-hint {
+            display: block;
+            text-align: center;
+            color: var(--gov-gray-500);
+            font-size: 0.7rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Case Review Drawer */
+        .case-drawer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000;
+            display: none;
+        }
+
+        .case-drawer.open {
+            display: block;
+        }
+
+        .drawer-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .drawer-content {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 480px;
+            max-width: 100%;
+            height: 100%;
+            background: white;
+            box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--gov-gray-200);
+            background: var(--gov-gray-50);
+        }
+
+        .drawer-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .drawer-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--gov-gray-200);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all var(--transition-fast);
+        }
+
+        .drawer-close:hover {
+            background: var(--gov-danger);
+            color: white;
+        }
+
+        .drawer-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .case-id-display {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.5rem;
+        }
+
+        .case-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--gov-gray-500);
+            margin-bottom: 0.25rem;
+        }
+
+        .case-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gov-gray-800);
+        }
+
+        .sla-clock {
+            background: var(--gov-gray-50);
+            padding: 1.25rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .clock-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--gov-gray-500);
+            margin-bottom: 0.5rem;
+        }
+
+        .clock-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .clock-value.critical {
+            color: var(--gov-danger);
+        }
+
+        .clock-value.warning {
+            color: var(--gov-warning);
+        }
+
+        .clock-value.safe {
+            color: var(--gov-success);
+        }
+
+        .clock-bar {
+            height: 6px;
+            background: var(--gov-gray-200);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .clock-progress {
+            height: 100%;
+            background: var(--gov-danger);
+            border-radius: 3px;
+        }
+
+        .case-details {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--gov-gray-100);
+        }
+
+        .detail-label {
+            font-size: 0.85rem;
+            color: var(--gov-gray-500);
+        }
+
+        .detail-value {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .case-timeline h4,
+        .case-notes h4 {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            color: var(--gov-gray-700);
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--gov-gray-200);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -1.5rem;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--gov-gray-300);
+            border: 2px solid white;
+        }
+
+        .timeline-dot.warning {
+            background: var(--gov-warning);
+        }
+
+        .timeline-content strong {
+            display: block;
+            font-size: 0.85rem;
+        }
+
+        .timeline-content small {
+            font-size: 0.75rem;
+            color: var(--gov-gray-500);
+        }
+
+        .case-notes {
+            margin-top: 1.5rem;
+        }
+
+        .case-notes textarea {
+            width: 100%;
+            height: 100px;
+            padding: 0.75rem;
+            border: 1px solid var(--gov-gray-200);
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 0.85rem;
+            resize: vertical;
+        }
+
+        .drawer-footer {
+            display: flex;
+            gap: 1rem;
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid var(--gov-gray-200);
+            background: var(--gov-gray-50);
+        }
+
+        .drawer-footer .gov-btn {
+            flex: 1;
+        }
+
+        .gov-btn.danger {
+            background: var(--gov-danger);
+            color: white;
+        }
+
+        .gov-btn.danger:hover {
+            background: #c53030;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .command-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .insights-panel {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .quick-filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                flex-wrap: wrap;
+            }
+
+            .filter-divider {
+                display: none;
+            }
+
+            .drawer-content {
+                width: 100%;
+            }
+
+            .table-footer {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="gov-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <div class="brand-icon">🏛️</div>
+                <div class="brand-text">
+                    <h1>Suvidha</h1>
+                    <span>CITY CONTROL ROOM</span>
+                </div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">Dashboard</span>
+            </a>
+            <a href="grievance.html" class="nav-item active">
+                <span class="nav-icon">📢</span>
+                <span class="nav-text">Grievance Command</span>
+            </a>
+            <a href="meter.html" class="nav-item">
+                <span class="nav-icon">⚡</span>
+                <span class="nav-text">Meter Integrity</span>
+            </a>
+            <a href="rwa.html" class="nav-item">
+                <span class="nav-icon">🏗️</span>
+                <span class="nav-text">RWA Oversight</span>
+            </a>
+            <a href="participation.html" class="nav-item">
+                <span class="nav-icon">⭐</span>
+                <span class="nav-text">Participation & Incentives</span>
+            </a>
+            <a href="policy.html" class="nav-item">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">Policy Insights</span>
+            </a>
+            <a href="audit.html" class="nav-item">
+                <span class="nav-icon">🔐</span>
+                <span class="nav-text">Audit Vault</span>
+            </a>
+            <a href="settings.html" class="nav-item">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-text">Settings</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">RK</div>
+                <div class="user-info">
+                    <h4>Rajesh Kumar</h4>
+                    <p>Government Official</p>
+                    <small>Last Login: Today, 09:30 AM</small>
+                </div>
+            </div>
+            <button class="logout-btn">
+                <span>🚪</span>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="gov-main">
+        <header class="gov-topbar">
+            <div class="topbar-left">
+                <h2>Grievance Command</h2>
+                <p id="currentDate"></p>
+            </div>
+            <div class="topbar-right">
+                <button class="topbar-btn" title="Accessibility">♿</button>
+                <div class="lang-dropdown">
+                    <button class="lang-toggle-btn" id="langDropdownBtn">
+                        🌐 <span id="currentLangText">EN</span> ▼
+                    </button>
+                    <div class="lang-dropdown-menu" id="langDropdownMenu">
+                        <a href="#" class="lang-option active" data-lang="en">English</a>
+                        <a href="#" class="lang-option" data-lang="hi">हिन्दी (Hindi)</a>
+                        <a href="#" class="lang-option" data-lang="bn">বাংলা (Bengali)</a>
+                        <a href="#" class="lang-option" data-lang="ta">தமிழ் (Tamil)</a>
+                        <a href="#" class="lang-option" data-lang="te">తెలుగు (Telugu)</a>
+                        <a href="#" class="lang-option" data-lang="kn">ಕನ್ನಡ (Kannada)</a>
+                        <a href="#" class="lang-option" data-lang="pa">ਪੰਜਾਬੀ (Punjabi)</a>
+                        <a href="#" class="lang-option" data-lang="gu">ગુજરાતી (Gujarati)</a>
+                        <a href="#" class="lang-option" data-lang="ml">മലയാളം (Malayalam)</a>
+                        <a href="#" class="lang-option" data-lang="mr">मराठी (Marathi)</a>
+                        <a href="#" class="lang-option" data-lang="or">ଓଡ଼ିଆ (Odia)</a>
+                    </div>
+                </div>
+                <button class="topbar-btn notification-btn">
+                    🔔
+                    <span class="notification-badge">5</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="gov-content">
+            <!-- Geographic Filter Bar -->
+            <div class="geo-filter-bar">
+                <div class="filter-label">
+                    <span class="filter-icon">📍</span>
+                    <span>Filter by Geography</span>
+                </div>
+                <div class="filter-controls">
+                    <div class="filter-select">
+                        <label>State</label>
+                        <select id="stateFilter">
+                            <option value="all">All States</option>
+                            <option value="delhi" selected>Delhi NCT</option>
+                            <option value="up">Uttar Pradesh</option>
+                            <option value="haryana">Haryana</option>
+                        </select>
+                    </div>
+                    <span class="filter-arrow">→</span>
+                    <div class="filter-select">
+                        <label>District</label>
+                        <select id="districtFilter">
+                            <option value="all">All Districts</option>
+                            <option value="south">South Delhi</option>
+                            <option value="north">North Delhi</option>
+                            <option value="central">Central Delhi</option>
+                        </select>
+                    </div>
+                    <span class="filter-arrow">→</span>
+                    <div class="filter-select">
+                        <label>Ward</label>
+                        <select id="wardFilter">
+                            <option value="all">All Wards</option>
+                            <option value="ward-15">Ward 15</option>
+                            <option value="ward-22">Ward 22</option>
+                            <option value="ward-8">Ward 8</option>
+                        </select>
+                    </div>
+                    <span class="filter-arrow">→</span>
+                    <div class="filter-select">
+                        <label>Locality</label>
+                        <select id="localityFilter">
+                            <option value="all">All Localities</option>
+                            <option value="rohini">Rohini</option>
+                            <option value="dwarka">Dwarka</option>
+                        </select>
+                    </div>
+                    <button class="filter-apply-btn" id="applyFilterBtn">
+                        <span>🔄</span> Apply Filters
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Filter Badge -->
+            <div class="active-filter-badge" id="activeFilterBadge">
+                <span class="badge-icon">📌</span>
+                <span class="badge-text" id="filterBadgeText">Showing: Delhi NCT (All Districts)</span>
+                <button class="badge-clear" id="clearFilters">✕ Clear</button>
+            </div>
+
+            <!-- Stats Row -->
+            <div class="section-header">
+                <h3><span class="icon">📊</span> Grievance Overview</h3>
+                <span class="section-context">For selected geography</span>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card warning">
+                    <div class="stat-icon-box orange">
+                        <span>⏳</span>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="pendingCount">89</div>
+                        <div class="stat-label">Pending Cases</div>
+                        <small class="stat-context">Awaiting action</small>
+                    </div>
+                </div>
+                <div class="stat-card danger">
+                    <div class="stat-icon-box red">
+                        <span>⚠️</span>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="slaRiskCount">34</div>
+                        <div class="stat-label">SLA At Risk</div>
+                        <small class="stat-context">
+                            < 2 hrs remaining</small>
+                    </div>
+                </div>
+                <div class="stat-card primary">
+                    <div class="stat-icon-box blue">
+                        <span>⬆️</span>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="escalatedCount">12</div>
+                        <div class="stat-label">Escalated</div>
+                        <small class="stat-context">Requires senior action</small>
+                    </div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-icon-box green">
+                        <span>✅</span>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="resolvedCount">156</div>
+                        <div class="stat-label">Resolved Today</div>
+                        <small class="stat-context">Closed successfully</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Grid with Table and Insights Panel -->
+            <div class="command-grid">
+                <!-- Grievance Table Section -->
+                <div class="gov-card table-section">
+                    <div class="card-header">
+                        <h3><span class="icon">📋</span> Cases Requiring Action</h3>
+                        <div class="period-toggle">
+                            <button class="toggle-btn active">All</button>
+                            <button class="toggle-btn">Critical</button>
+                            <button class="toggle-btn">High</button>
+                            <button class="toggle-btn">Medium</button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Filters -->
+                    <div class="quick-filters">
+                        <div class="filter-group">
+                            <span class="filter-group-label">Service:</span>
+                            <button class="quick-filter-btn active" data-filter="all">All</button>
+                            <button class="quick-filter-btn" data-filter="electricity">⚡ Electricity</button>
+                            <button class="quick-filter-btn" data-filter="water">💧 Water</button>
+                            <button class="quick-filter-btn" data-filter="gas">🔥 Gas</button>
+                        </div>
+                        <div class="filter-divider"></div>
+                        <div class="filter-group">
+                            <span class="filter-group-label">Urgency:</span>
+                            <button class="quick-filter-btn urgent" data-filter="sla-urgent">🔴 SLA < 2 hrs</button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="grievance-table">
+                            <thead>
+                                <tr>
+                                    <th>Case ID</th>
+                                    <th>Service</th>
+                                    <th>Location</th>
+                                    <th>Severity</th>
+                                    <th>SLA Countdown</th>
+                                    <th>Status</th>
+                                    <th>Case Review</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="sla-row critical">
+                                    <td><strong>GRV-2024-003</strong></td>
+                                    <td>🔥 Gas</td>
+                                    <td>Ward 22, Rohini</td>
+                                    <td><span class="badge danger">Critical</span></td>
+                                    <td>
+                                        <div class="sla-display critical-urgent">
+                                            <span class="sla-dot"></span>
+                                            <span class="sla-time">0h 45m</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge danger">Escalated</span></td>
+                                    <td><button class="action-btn primary"
+                                            onclick="openCaseDrawer('GRV-2024-003')">Review</button></td>
+                                </tr>
+                                <tr class="sla-row critical">
+                                    <td><strong>GRV-2024-005</strong></td>
+                                    <td>💧 Water</td>
+                                    <td>Ward 11, Dwarka</td>
+                                    <td><span class="badge danger">High</span></td>
+                                    <td>
+                                        <div class="sla-display critical">
+                                            <span class="sla-dot"></span>
+                                            <span class="sla-time">1h 20m</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge warning">In Progress</span></td>
+                                    <td><button class="action-btn primary"
+                                            onclick="openCaseDrawer('GRV-2024-005')">Review</button></td>
+                                </tr>
+                                <tr class="sla-row warning">
+                                    <td><strong>GRV-2024-001</strong></td>
+                                    <td>⚡ Electricity</td>
+                                    <td>Ward 15, Saket</td>
+                                    <td><span class="badge danger">High</span></td>
+                                    <td>
+                                        <div class="sla-display warning">
+                                            <span class="sla-dot"></span>
+                                            <span class="sla-time">2h 15m</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge warning">In Progress</span></td>
+                                    <td><button class="action-btn primary"
+                                            onclick="openCaseDrawer('GRV-2024-001')">Review</button></td>
+                                </tr>
+                                <tr class="sla-row warning">
+                                    <td><strong>GRV-2024-002</strong></td>
+                                    <td>💧 Water</td>
+                                    <td>Ward 8, Lajpat Nagar</td>
+                                    <td><span class="badge warning">Medium</span></td>
+                                    <td>
+                                        <div class="sla-display warning">
+                                            <span class="sla-dot"></span>
+                                            <span class="sla-time">5h 30m</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge info">Assigned</span></td>
+                                    <td><button class="action-btn primary"
+                                            onclick="openCaseDrawer('GRV-2024-002')">Review</button></td>
+                                </tr>
+                                <tr class="sla-row safe">
+                                    <td><strong>GRV-2024-004</strong></td>
+                                    <td>⚡ Electricity</td>
+                                    <td>Ward 3, Central Delhi</td>
+                                    <td><span class="badge success">Low</span></td>
+                                    <td>
+                                        <div class="sla-display safe">
+                                            <span class="sla-dot"></span>
+                                            <span class="sla-time">18h 00m</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge info">Pending</span></td>
+                                    <td><button class="action-btn primary"
+                                            onclick="openCaseDrawer('GRV-2024-004')">Review</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-footer">
+                        <span class="table-info">Showing 5 of 89 cases</span>
+                        <div class="table-pagination">
+                            <button class="page-btn">← Previous</button>
+                            <span class="page-num active">1</span>
+                            <span class="page-num">2</span>
+                            <span class="page-num">3</span>
+                            <button class="page-btn">Next →</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Command Insights Panel -->
+                <div class="gov-card insights-panel">
+                    <div class="card-header">
+                        <h3><span class="icon">🧠</span> Command Insights</h3>
+                    </div>
+                    <div class="insights-list">
+                        <div class="insight-item critical">
+                            <div class="insight-icon">🔴</div>
+                            <div class="insight-content">
+                                <strong>3 cases</strong> likely to breach SLA in next 1 hour
+                                <small>Immediate escalation recommended</small>
+                            </div>
+                        </div>
+                        <div class="insight-item warning">
+                            <div class="insight-icon">🟠</div>
+                            <div class="insight-content">
+                                <strong>Ward 22</strong> has repeated gas complaints
+                                <small>Pattern detected - 5 in last 24 hrs</small>
+                            </div>
+                        </div>
+                        <div class="insight-item warning">
+                            <div class="insight-icon">🟠</div>
+                            <div class="insight-content">
+                                <strong>Electricity</strong> complaints rising since morning
+                                <small>+23% compared to yesterday</small>
+                            </div>
+                        </div>
+                        <div class="insight-item info">
+                            <div class="insight-icon">🔵</div>
+                            <div class="insight-content">
+                                <strong>Water dept</strong> response time improved
+                                <small>Avg 2.4 hrs vs 3.1 hrs last week</small>
+                            </div>
+                        </div>
+                        <div class="insight-item success">
+                            <div class="insight-icon">🟢</div>
+                            <div class="insight-content">
+                                <strong>156 resolved</strong> today - best in 7 days
+                                <small>Team performance: Excellent</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="insights-footer">
+                        <button class="gov-btn secondary full-width">Generate Report</button>
+                        <small class="export-hint">Exports data for selected geography</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case Review Drawer -->
+        <div class="case-drawer" id="caseDrawer">
+            <div class="drawer-overlay" onclick="closeCaseDrawer()"></div>
+            <div class="drawer-content">
+                <div class="drawer-header">
+                    <h3>📋 Case Review</h3>
+                    <button class="drawer-close" onclick="closeCaseDrawer()">✕</button>
+                </div>
+                <div class="drawer-body">
+                    <div class="case-id-display">
+                        <span class="case-label">Case ID</span>
+                        <span class="case-value" id="drawerCaseId">GRV-2024-003</span>
+                    </div>
+
+                    <div class="sla-clock">
+                        <div class="clock-label">SLA Countdown</div>
+                        <div class="clock-value critical" id="drawerSlaTime">0h 45m</div>
+                        <div class="clock-bar">
+                            <div class="clock-progress" style="width: 15%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="case-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Service</span>
+                            <span class="detail-value">🔥 Gas Supply</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Location</span>
+                            <span class="detail-value">Ward 22, Rohini, North Delhi</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Severity</span>
+                            <span class="badge danger">Critical</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Assigned To</span>
+                            <span class="detail-value">Gas Dept - North Zone</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Filed On</span>
+                            <span class="detail-value">08 Feb 2026, 11:45 AM</span>
+                        </div>
+                    </div>
+
+                    <div class="case-timeline">
+                        <h4>Case Timeline</h4>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <strong>Complaint Filed</strong>
+                                    <small>08 Feb, 11:45 AM</small>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot"></div>
+                                <div class="timeline-content">
+                                    <strong>Auto-assigned to Gas Dept</strong>
+                                    <small>08 Feb, 11:47 AM</small>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-dot warning"></div>
+                                <div class="timeline-content">
+                                    <strong>Escalated - No Response</strong>
+                                    <small>08 Feb, 02:30 PM</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="case-notes">
+                        <h4>Officer Notes</h4>
+                        <textarea placeholder="Add notes for this case..."></textarea>
+                    </div>
+                </div>
+                <div class="drawer-footer">
+                    <button class="gov-btn danger">🚨 Escalate Further</button>
+                    <button class="gov-btn primary">✓ Mark Resolved</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Set current date
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', {
+            weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+        });
+
+        // Language Dropdown
+        const langBtn = document.getElementById('langDropdownBtn');
+        const langMenu = document.getElementById('langDropdownMenu');
+        const langText = document.getElementById('currentLangText');
+        if (langBtn && langMenu) {
+            langBtn.addEventListener('click', (e) => { e.stopPropagation(); langMenu.classList.toggle('show'); });
+            document.addEventListener('click', () => langMenu.classList.remove('show'));
+            langMenu.querySelectorAll('.lang-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    langMenu.querySelectorAll('.lang-option').forEach(o => o.classList.remove('active'));
+                    option.classList.add('active');
+                    langText.textContent = option.dataset.lang.toUpperCase();
+                    langMenu.classList.remove('show');
+                    localStorage.setItem('selectedLang', option.dataset.lang);
+                });
+            });
+            const saved = localStorage.getItem('selectedLang');
+            if (saved) { langText.textContent = saved.toUpperCase(); langMenu.querySelectorAll('.lang-option').forEach(o => o.classList.toggle('active', o.dataset.lang === saved)); }
+        }
+
+        // Case Drawer Functions
+        function openCaseDrawer(caseId) {
+            const drawer = document.getElementById('caseDrawer');
+            const caseIdDisplay = document.getElementById('drawerCaseId');
+            caseIdDisplay.textContent = caseId;
+            drawer.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCaseDrawer() {
+            const drawer = document.getElementById('caseDrawer');
+            drawer.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        // Close drawer on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeCaseDrawer();
+        });
+
+        // Quick Filters
+        document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const filterGroup = btn.closest('.filter-group');
+                if (!btn.classList.contains('urgent')) {
+                    filterGroup.querySelectorAll('.quick-filter-btn').forEach(b => b.classList.remove('active'));
+                }
+                btn.classList.toggle('active');
+            });
+        });
+
+        // Priority Toggle
+        document.querySelectorAll('.period-toggle .toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.period-toggle .toggle-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Geographic Filter Functionality
+        const stateFilter = document.getElementById('stateFilter');
+        const districtFilter = document.getElementById('districtFilter');
+        const wardFilter = document.getElementById('wardFilter');
+        const localityFilter = document.getElementById('localityFilter');
+        const applyFilterBtn = document.getElementById('applyFilterBtn');
+        const clearFilters = document.getElementById('clearFilters');
+        const filterBadgeText = document.getElementById('filterBadgeText');
+
+        // Mock data for different regions
+        const regionData = {
+            'delhi': { pending: 89, slaRisk: 34, escalated: 12, resolved: 156 },
+            'south': { pending: 28, slaRisk: 11, escalated: 4, resolved: 52 },
+            'north': { pending: 35, slaRisk: 14, escalated: 5, resolved: 61 },
+            'ward-15': { pending: 12, slaRisk: 5, escalated: 2, resolved: 18 },
+            'ward-22': { pending: 15, slaRisk: 8, escalated: 3, resolved: 22 },
+            'rohini': { pending: 8, slaRisk: 4, escalated: 1, resolved: 12 },
+            'dwarka': { pending: 6, slaRisk: 2, escalated: 1, resolved: 9 }
+        };
+
+        function getSelectedRegionName() {
+            const state = stateFilter.options[stateFilter.selectedIndex].text;
+            const district = districtFilter.value !== 'all' ? districtFilter.options[districtFilter.selectedIndex].text : '';
+            const ward = wardFilter.value !== 'all' ? wardFilter.options[wardFilter.selectedIndex].text : '';
+            const locality = localityFilter.value !== 'all' ? localityFilter.options[localityFilter.selectedIndex].text : '';
+
+            let region = state;
+            if (district) region = district;
+            if (ward) region = ward + ', ' + (district || state);
+            if (locality) region = locality + ', ' + (ward || district || state);
+
+            return region;
+        }
+
+        function updateDashboardData() {
+            const region = getSelectedRegionName();
+            const dataKey = localityFilter.value !== 'all' ? localityFilter.value :
+                wardFilter.value !== 'all' ? wardFilter.value :
+                    districtFilter.value !== 'all' ? districtFilter.value : 'delhi';
+
+            const data = regionData[dataKey] || regionData['delhi'];
+
+            filterBadgeText.textContent = `Showing: ${region}`;
+
+            document.getElementById('pendingCount').textContent = data.pending;
+            document.getElementById('slaRiskCount').textContent = data.slaRisk;
+            document.getElementById('escalatedCount').textContent = data.escalated;
+            document.getElementById('resolvedCount').textContent = data.resolved;
+
+            // Visual feedback
+            document.querySelectorAll('.stat-card').forEach(card => {
+                card.style.transition = 'transform 0.3s';
+                card.style.transform = 'scale(1.02)';
+                setTimeout(() => card.style.transform = 'scale(1)', 300);
+            });
+        }
+
+        if (applyFilterBtn) {
+            applyFilterBtn.addEventListener('click', updateDashboardData);
+        }
+
+        if (clearFilters) {
+            clearFilters.addEventListener('click', () => {
+                stateFilter.value = 'delhi';
+                districtFilter.value = 'all';
+                wardFilter.value = 'all';
+                localityFilter.value = 'all';
+                updateDashboardData();
+            });
+        }
+
+        // Preview on filter change
+        [stateFilter, districtFilter, wardFilter, localityFilter].forEach(select => {
+            if (select) {
+                select.addEventListener('change', () => {
+                    const region = getSelectedRegionName();
+                    filterBadgeText.textContent = `Preview: ${region} (Click Apply)`;
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
