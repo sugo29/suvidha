@@ -72,6 +72,10 @@ def index():
 
 @app.route('/<path:path>')
 def catch_all(path):
+    # Serve Government Dashboard files
+    if path.startswith('GovOfficials-Admin/'):
+        file_path = path[len('GovOfficials-Admin/'):]
+        return send_from_directory('GovOfficials-Admin', file_path)
     if path.startswith('static/'):
         return app.send_static_file(path[7:])
     elif path.startswith('api/'):
