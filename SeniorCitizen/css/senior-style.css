@@ -1383,11 +1383,13 @@ body {
 
 /* 💰 PRIMARY ACTION CARD */
 .primary-action-card {
-    background: linear-gradient(135deg, rgba(56, 161, 105, 0.08) 0%, rgba(56, 161, 105, 0.02) 100%);
-    border: 2px solid rgba(56, 161, 105, 0.25);
+    background: linear-gradient(135deg, rgba(56, 161, 105, 0.15) 0%, rgba(56, 161, 105, 0.12) 100%);
+    border: 2px solid rgba(56, 161, 105, 0.4);
     border-radius: var(--radius-xl);
     padding: 1.75rem;
     margin-bottom: 1.5rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(56, 161, 105, 0.1);
 }
 
 .primary-action-header {
@@ -1448,11 +1450,13 @@ body {
     align-items: flex-start;
     gap: 0.5rem;
     padding: 0.85rem 1rem;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.8);
     border-radius: var(--radius-md);
     font-size: 0.95rem;
     color: var(--gov-gray-600);
     line-height: 1.5;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .primary-action-footer {
@@ -1493,8 +1497,9 @@ body {
 
 .secondary-link {
     font-size: 0.95rem;
-    color: var(--gov-gray-500);
+    color: var(--gov-info);
     text-decoration: underline;
+    font-weight: 500;
 }
 
 .secondary-link:hover {
