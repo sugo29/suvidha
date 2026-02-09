@@ -80,113 +80,294 @@
         .area-card {
             background: white;
             border-radius: var(--radius-lg);
-            padding: 1.35rem 1.75rem;
+            padding: 1.5rem;
             border: 1px solid var(--gov-gray-200);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .area-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gov-gray-100);
+        }
+
+        .area-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--gov-gray-800);
+        }
+
+        .area-icon {
+            font-size: 1.1rem;
         }
 
         .area-chips {
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .area-chip {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: var(--gov-info-light);
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: var(--gov-gray-700);
+            gap: 0.75rem;
+            min-width: 140px;
+        }
+
+        .area-chip-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--gov-gray-50);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .area-chip-content {
+            display: flex;
+            flex-direction: column;
         }
 
         .area-chip-label {
-            font-weight: 400;
+            font-size: 0.7rem;
             color: var(--gov-gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .area-chip-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--gov-gray-800);
+        }
+
+        /* Day Selector Dropdown */
+        .day-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+
+        .day-selector-label {
+            font-size: 0.85rem;
+            color: var(--gov-gray-500);
+        }
+
+        .day-selector-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid var(--gov-gray-200);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gov-info);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .day-selector-btn:hover {
+            background: var(--gov-info-light);
+            border-color: var(--gov-info);
+        }
+
+        .day-dropdown {
+            position: relative;
+        }
+
+        .day-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: white;
+            border: 1px solid var(--gov-gray-200);
+            border-radius: var(--radius-md);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            min-width: 180px;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .day-dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: none;
+            background: none;
+            text-align: left;
+            font-size: 0.85rem;
+            color: var(--gov-gray-700);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .day-dropdown-item:hover {
+            background: var(--gov-gray-50);
+        }
+
+        .day-dropdown-item.active {
+            background: var(--gov-info-light);
+            color: var(--gov-info);
             font-weight: 600;
         }
 
-        /* KPI Cards Grid */
+        /* NEW KPI Cards - Matching Reference Design */
         .kpi-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 1.25rem;
+            gap: 1rem;
         }
 
         .kpi-card {
             background: white;
             border-radius: var(--radius-lg);
-            padding: 1.5rem 1.25rem;
+            padding: 1.25rem;
             border: 1px solid var(--gov-gray-200);
-            text-align: center;
+            border-left: 4px solid var(--gov-gray-300);
             transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
         }
 
         .kpi-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
         }
 
-        .kpi-icon {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
+        .kpi-card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
         }
 
-        .kpi-value {
-            font-size: 1.75rem;
+        .kpi-card-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .kpi-card-title {
+            font-size: 0.75rem;
+            color: var(--gov-gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .kpi-card-value {
+            font-size: 2rem;
             font-weight: 700;
             color: var(--gov-gray-800);
             line-height: 1;
+            margin-bottom: 0.5rem;
         }
 
-        .kpi-label {
-            font-size: 0.8rem;
-            color: var(--gov-gray-500);
-            margin-top: 0.35rem;
-        }
-
-        .kpi-percent {
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 0.2rem 0.5rem;
-            border-radius: 12px;
+        .kpi-card-progress {
+            height: 4px;
+            background: var(--gov-gray-100);
+            border-radius: 2px;
+            overflow: hidden;
             margin-top: 0.5rem;
-            display: inline-block;
         }
 
-        .kpi-card.primary .kpi-icon {
-            color: var(--gov-primary);
+        .kpi-card-progress-bar {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s ease;
         }
 
-        .kpi-card.success .kpi-icon {
-            color: var(--gov-success);
+        .kpi-card-percent {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gov-gray-500);
         }
 
-        .kpi-card.success .kpi-percent {
+        /* Card Variants */
+        .kpi-card.primary {
+            border-left-color: var(--gov-info);
+        }
+
+        .kpi-card.primary .kpi-card-icon {
+            background: var(--gov-info-light);
+            color: var(--gov-info);
+        }
+
+        .kpi-card.success {
+            border-left-color: var(--gov-success);
+        }
+
+        .kpi-card.success .kpi-card-icon {
             background: var(--gov-success-light);
             color: var(--gov-success);
         }
 
-        .kpi-card.warning .kpi-icon {
-            color: var(--gov-warning);
+        .kpi-card.success .kpi-card-progress-bar {
+            background: var(--gov-success);
         }
 
-        .kpi-card.warning .kpi-percent {
+        .kpi-card.success .kpi-card-percent {
+            color: var(--gov-success);
+        }
+
+        .kpi-card.warning {
+            border-left-color: var(--gov-warning);
+        }
+
+        .kpi-card.warning .kpi-card-icon {
             background: var(--gov-warning-light);
             color: var(--gov-warning);
         }
 
-        .kpi-card.danger .kpi-icon {
+        .kpi-card.warning .kpi-card-progress-bar {
+            background: var(--gov-warning);
+        }
+
+        .kpi-card.warning .kpi-card-percent {
+            color: var(--gov-warning);
+        }
+
+        .kpi-card.danger {
+            border-left-color: var(--gov-danger);
+            background: rgba(229, 62, 62, 0.04);
+        }
+
+        .kpi-card.danger .kpi-card-icon {
+            background: var(--gov-danger-light);
             color: var(--gov-danger);
         }
 
-        .kpi-card.danger .kpi-percent {
-            background: var(--gov-danger-light);
+        .kpi-card.danger .kpi-card-progress-bar {
+            background: var(--gov-danger);
+        }
+
+        .kpi-card.danger .kpi-card-percent {
             color: var(--gov-danger);
+        }
+
+        .kpi-card.info {
+            border-left-color: #805ad5;
+        }
+
+        .kpi-card.info .kpi-card-icon {
+            background: rgba(128, 90, 213, 0.15);
+            color: #805ad5;
         }
 
         /* Pace Status Card (GAP 3 Fix) */
@@ -467,8 +648,28 @@
         }
 
         .task-list {
-            max-height: 420px;
+            max-height: 550px;
             overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--gov-gray-300) var(--gov-gray-100);
+        }
+
+        .task-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .task-list::-webkit-scrollbar-track {
+            background: var(--gov-gray-100);
+            border-radius: 4px;
+        }
+
+        .task-list::-webkit-scrollbar-thumb {
+            background: var(--gov-gray-300);
+            border-radius: 4px;
+        }
+
+        .task-list::-webkit-scrollbar-thumb:hover {
+            background: var(--gov-gray-400);
         }
 
         .task-item {
@@ -1096,57 +1297,101 @@
                 </div>
             </div>
 
-            <!-- Assigned Area -->
+            <!-- Assigned Area Overview Card -->
             <div class="area-card">
+                <div class="area-header">
+                    <div class="area-title">
+                        <span class="area-icon">⚙️</span>
+                        <span>Assigned Area Overview</span>
+                    </div>
+                    <!-- Day Selector Dropdown -->
+                    <div class="day-dropdown">
+                        <button class="day-selector-btn" ng-click="toggleDayMenu($event)">
+                            On {{selectedDay.label}} <span>›</span>
+                        </button>
+                        <div class="day-dropdown-menu" ng-show="showDayMenu">
+                            <button class="day-dropdown-item" ng-repeat="day in dayOptions"
+                                ng-class="{active: selectedDay.id === day.id}" ng-click="selectDay(day)">
+                                {{day.label}}
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 <div class="area-chips">
                     <div class="area-chip">
-                        <span class="area-chip-label">State:</span>
-                        <span class="area-chip-value">{{area.state}}</span>
+                        <span class="area-chip-icon">📍</span>
+                        <div class="area-chip-content">
+                            <span class="area-chip-label">STATE</span>
+                            <span class="area-chip-value">{{area.state}}</span>
+                        </div>
                     </div>
                     <div class="area-chip">
-                        <span class="area-chip-label">District:</span>
-                        <span class="area-chip-value">{{area.district}}</span>
+                        <span class="area-chip-icon">🏛️</span>
+                        <div class="area-chip-content">
+                            <span class="area-chip-label">DISTRICT</span>
+                            <span class="area-chip-value">{{area.district}}</span>
+                        </div>
                     </div>
                     <div class="area-chip">
-                        <span class="area-chip-label">Ward:</span>
-                        <span class="area-chip-value">{{area.ward}}</span>
+                        <span class="area-chip-icon">🏠</span>
+                        <div class="area-chip-content">
+                            <span class="area-chip-label">WARD</span>
+                            <span class="area-chip-value">{{area.ward}}</span>
+                        </div>
                     </div>
                     <div class="area-chip">
-                        <span class="area-chip-label">Locality:</span>
-                        <span class="area-chip-value">{{area.locality}}</span>
+                        <span class="area-chip-icon">🏢</span>
+                        <div class="area-chip-content">
+                            <span class="area-chip-label">LOCALITY</span>
+                            <span class="area-chip-value">{{area.locality}}</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- KPI Cards -->
-            <div class="kpi-grid">
-                <div class="kpi-card primary">
-                    <div class="kpi-icon">🏠</div>
-                    <div class="kpi-value">{{stats.assigned}}</div>
-                    <div class="kpi-label">Houses Assigned</div>
-                </div>
-                <div class="kpi-card success">
-                    <div class="kpi-icon">✓</div>
-                    <div class="kpi-value">{{stats.covered}}</div>
-                    <div class="kpi-label">Houses Covered</div>
-                    <div class="kpi-percent">{{stats.coveredPercent}}%</div>
-                </div>
-                <div class="kpi-card warning">
-                    <div class="kpi-icon">⏳</div>
-                    <div class="kpi-value">{{stats.pending}}</div>
-                    <div class="kpi-label">Houses Pending</div>
-                    <div class="kpi-percent">{{stats.pendingPercent}}%</div>
-                </div>
-                <div class="kpi-card danger">
-                    <div class="kpi-icon">⚠️</div>
-                    <div class="kpi-value">{{stats.skipped}}</div>
-                    <div class="kpi-label">Houses Skipped</div>
-                    <div class="kpi-percent">{{stats.skippedPercent}}%</div>
-                </div>
-                <div class="kpi-card" ng-class="paceStatus.class">
-                    <div class="kpi-icon">📊</div>
-                    <div class="kpi-value">{{stats.avgTime}}</div>
-                    <div class="kpi-label">Avg. Time/House</div>
+                <!-- KPI Cards inside Area Card -->
+                <div class="kpi-grid">
+                    <div class="kpi-card primary">
+                        <div class="kpi-card-header">
+                            <span class="kpi-card-icon">🏠</span>
+                            <span class="kpi-card-title">Houses assigned</span>
+                        </div>
+                        <div class="kpi-card-value">{{stats.assigned}}</div>
+                    </div>
+                    <div class="kpi-card success">
+                        <div class="kpi-card-header">
+                            <span class="kpi-card-icon">✓</span>
+                            <span class="kpi-card-title">Houses covered</span>
+                        </div>
+                        <div class="kpi-card-value">{{stats.covered}}</div>
+                        <div class="kpi-card-progress">
+                            <div class="kpi-card-progress-bar" ng-style="{'width': stats.coveredPercent + '%'}"></div>
+                        </div>
+                        <div class="kpi-card-percent">{{stats.coveredPercent}}%</div>
+                    </div>
+                    <div class="kpi-card warning">
+                        <div class="kpi-card-header">
+                            <span class="kpi-card-icon">⏳</span>
+                            <span class="kpi-card-title">Houses pending</span>
+                        </div>
+                        <div class="kpi-card-value">{{stats.pending}}</div>
+                        <div class="kpi-card-progress">
+                            <div class="kpi-card-progress-bar" ng-style="{'width': stats.pendingPercent + '%'}"></div>
+                        </div>
+                    </div>
+                    <div class="kpi-card danger">
+                        <div class="kpi-card-header">
+                            <span class="kpi-card-icon">⚠️</span>
+                            <span class="kpi-card-title">Houses skipped</span>
+                        </div>
+                        <div class="kpi-card-value">{{stats.skipped}}</div>
+                    </div>
+                    <div class="kpi-card info">
+                        <div class="kpi-card-header">
+                            <span class="kpi-card-icon">📊</span>
+                            <span class="kpi-card-title">Easily granged</span>
+                        </div>
+                        <div class="kpi-card-value">{{stats.avgTime}}</div>
+                    </div>
                 </div>
             </div>
 
@@ -1409,25 +1654,117 @@
             ];
             $scope.notifications = 3;
 
-            // Assigned Area
-            $scope.area = {
-                state: 'Delhi',
-                district: 'South Delhi',
-                ward: 'Ward 45',
-                locality: 'Saket'
+            // Day Selector
+            $scope.showDayMenu = false;
+            $scope.dayOptions = [
+                { id: 'today', label: 'Today' },
+                { id: 'yesterday', label: 'Yesterday' },
+                { id: 'day_before', label: 'Day Before Yesterday' }
+            ];
+            $scope.selectedDay = $scope.dayOptions[0]; // Default: Today
+
+            // Day-wise Data
+            var dayData = {
+                today: {
+                    stats: {
+                        assigned: 35,
+                        covered: 12,
+                        pending: 22,
+                        skipped: 1,
+                        coveredPercent: 34,
+                        pendingPercent: 63,
+                        skippedPercent: 3,
+                        avgTime: '3.8 min'
+                    },
+                    tasks: [
+                        { id: 1, houseNo: '101', name: 'Sharma Residence', address: 'Block A, Flat 101', status: 'pending', statusLabel: 'Pending', time: '--', routeTag: 'next', distance: 0 },
+                        { id: 2, houseNo: '102', name: 'Gupta Family', address: 'Block A, Flat 102', status: 'completed', statusLabel: 'Completed', time: '45 min ago', routeTag: 'nearby', distance: 50 },
+                        { id: 3, houseNo: '103', name: 'Patel House', address: 'Block A, Flat 103', status: 'completed', statusLabel: 'Completed', time: '1 hr ago', routeTag: 'nearby', distance: 75 },
+                        { id: 4, houseNo: '104', name: 'Singh Residence', address: 'Block A, Flat 104', status: 'pending', statusLabel: 'Pending', time: '--', routeTag: 'nearby', distance: 100 },
+                        { id: 5, houseNo: '105', name: 'Kumar Family', address: 'Block A, Flat 105', status: 'skipped', statusLabel: 'Skipped', skipReason: 'House locked', skipIcon: '🔒', routeTag: 'far', distance: 200 },
+                        { id: 6, houseNo: '106', name: 'Verma Residence', address: 'Block B, Flat 106', status: 'pending', statusLabel: 'Pending', time: '--', routeTag: 'far', distance: 300 },
+                        { id: 7, houseNo: '107', name: 'Reddy House', address: 'Block B, Flat 107', status: 'pending', statusLabel: 'Pending', time: '--', routeTag: 'far', distance: 350 },
+                        { id: 8, houseNo: '108', name: 'Joshi Family', address: 'Block B, Flat 108', status: 'pending', statusLabel: 'Pending', time: '--', routeTag: 'far', distance: 400 }
+                    ],
+                    summary: { readings: 12, issues: 1, timeActive: '2h 15m', meters: '10/1/1' }
+                },
+                yesterday: {
+                    stats: {
+                        assigned: 30,
+                        covered: 28,
+                        pending: 0,
+                        skipped: 2,
+                        coveredPercent: 93,
+                        pendingPercent: 0,
+                        skippedPercent: 7,
+                        avgTime: '4.1 min'
+                    },
+                    tasks: [
+                        { id: 1, houseNo: '201', name: 'Mehta Residence', address: 'Block C, Flat 201', status: 'completed', statusLabel: 'Completed', time: 'Yesterday', routeTag: 'nearby', distance: 0 },
+                        { id: 2, houseNo: '202', name: 'Agarwal Family', address: 'Block C, Flat 202', status: 'completed', statusLabel: 'Completed', time: 'Yesterday', routeTag: 'nearby', distance: 50 },
+                        { id: 3, houseNo: '203', name: 'Kapoor House', address: 'Block C, Flat 203', status: 'completed', statusLabel: 'Completed', time: 'Yesterday', routeTag: 'nearby', distance: 75 },
+                        { id: 4, houseNo: '204', name: 'Malhotra Residence', address: 'Block C, Flat 204', status: 'completed', statusLabel: 'Completed', time: 'Yesterday', routeTag: 'nearby', distance: 100 },
+                        { id: 5, houseNo: '205', name: 'Bhatia Family', address: 'Block C, Flat 205', status: 'skipped', statusLabel: 'Skipped', skipReason: 'Access denied', skipIcon: '🚫', routeTag: 'far', distance: 200 },
+                        { id: 6, houseNo: '206', name: 'Chopra Residence', address: 'Block D, Flat 206', status: 'skipped', statusLabel: 'Skipped', skipReason: 'Meter damaged', skipIcon: '🔧', routeTag: 'far', distance: 300 }
+                    ],
+                    summary: { readings: 28, issues: 2, timeActive: '6h 45m', meters: '24/2/2' }
+                },
+                day_before: {
+                    stats: {
+                        assigned: 28,
+                        covered: 25,
+                        pending: 0,
+                        skipped: 3,
+                        coveredPercent: 89,
+                        pendingPercent: 0,
+                        skippedPercent: 11,
+                        avgTime: '4.5 min'
+                    },
+                    tasks: [
+                        { id: 1, houseNo: '301', name: 'Arora Residence', address: 'Block E, Flat 301', status: 'completed', statusLabel: 'Completed', time: '2 days ago', routeTag: 'nearby', distance: 0 },
+                        { id: 2, houseNo: '302', name: 'Jain Family', address: 'Block E, Flat 302', status: 'completed', statusLabel: 'Completed', time: '2 days ago', routeTag: 'nearby', distance: 50 },
+                        { id: 3, houseNo: '303', name: 'Bansal House', address: 'Block E, Flat 303', status: 'skipped', statusLabel: 'Skipped', skipReason: 'House locked', skipIcon: '🔒', routeTag: 'nearby', distance: 75 },
+                        { id: 4, houseNo: '304', name: 'Goel Residence', address: 'Block E, Flat 304', status: 'completed', statusLabel: 'Completed', time: '2 days ago', routeTag: 'nearby', distance: 100 },
+                        { id: 5, houseNo: '305', name: 'Mittal Family', address: 'Block E, Flat 305', status: 'skipped', statusLabel: 'Skipped', skipReason: 'Safety hazard', skipIcon: '⚠️', routeTag: 'far', distance: 200 }
+                    ],
+                    summary: { readings: 25, issues: 3, timeActive: '5h 30m', meters: '20/3/2' }
+                }
             };
 
-            // Stats
-            $scope.stats = {
-                assigned: 25,
-                covered: 17,
-                pending: 6,
-                skipped: 2,
-                coveredPercent: 68,
-                pendingPercent: 24,
-                skippedPercent: 8,
-                avgTime: '4.2 min'
+            // Day Selection Functions
+            $scope.toggleDayMenu = function ($event) {
+                $event.stopPropagation();
+                $scope.showDayMenu = !$scope.showDayMenu;
             };
+
+            $scope.selectDay = function (day) {
+                $scope.selectedDay = day;
+                $scope.showDayMenu = false;
+                loadDayData(day.id);
+            };
+
+            function loadDayData(dayId) {
+                var data = dayData[dayId];
+                if (data) {
+                    $scope.stats = data.stats;
+                    $scope.tasks = data.tasks;
+                    $scope.summary = data.summary;
+                    sortTasks();
+                    checkDayComplete();
+                    calculatePace();
+                }
+            }
+
+            // Assigned Area
+            $scope.area = {
+                state: 'Delhi NCT',
+                district: 'South East Delhi',
+                ward: 'Ward 9',
+                locality: 'Greenview Apartments'
+            };
+
+            // Initial Stats (Today)
+            $scope.stats = dayData.today.stats;
 
             // Pace Status (GAP 3 Fix)
             $scope.paceStatus = {
@@ -1456,17 +1793,8 @@
                 }
             }
 
-            // Task List with Route Tags and Skip Reasons (GAP 1, 2 Fix)
-            $scope.tasks = [
-                { id: 1, houseNo: '101', name: 'Sharma Residence', address: 'Block A, Flat 101', status: 'pending', statusLabel: 'Pending', time: '--', routeTag: 'next', distance: 0 },
-                { id: 2, houseNo: '102', name: 'Gupta Family', address: 'Block A, Flat 102', status: 'completed', statusLabel: 'Completed', time: '45 min ago', routeTag: 'nearby', distance: 50 },
-                { id: 3, houseNo: '103', name: 'Patel House', address: 'Block A, Flat 103', status: 'completed', statusLabel: 'Completed', time: '1 hr ago', routeTag: 'nearby', distance: 75 },
-                { id: 4, houseNo: '104', name: 'Singh Residence', address: 'Block A, Flat 104', status: 'pending', statusLabel: 'Pending', time: '--', routeTag: 'nearby', distance: 100 },
-                { id: 5, houseNo: '105', name: 'Kumar Family', address: 'Block A, Flat 105', status: 'skipped', statusLabel: 'Skipped', skipReason: 'House locked', skipIcon: '🔒', routeTag: 'far', distance: 200 },
-                { id: 6, houseNo: '106', name: 'Verma Residence', address: 'Block B, Flat 106', status: 'pending', statusLabel: 'Pending', time: '--', routeTag: 'far', distance: 300 },
-                { id: 7, houseNo: '107', name: 'Reddy House', address: 'Block B, Flat 107', status: 'pending', statusLabel: 'Pending', time: '--', routeTag: 'far', distance: 350 },
-                { id: 8, houseNo: '108', name: 'Joshi Family', address: 'Block B, Flat 108', status: 'skipped', statusLabel: 'Skipped', skipReason: 'Safety hazard', skipIcon: '⚠️', routeTag: 'far', distance: 400 }
-            ];
+            // Task List - Load from day data
+            $scope.tasks = dayData.today.tasks;
 
             $scope.sortBy = 'route';
             $scope.sortedTasks = [];
@@ -1526,13 +1854,8 @@
                 timeSaved: 8
             };
 
-            // Daily Summary
-            $scope.summary = {
-                readings: 17,
-                issues: 2,
-                timeActive: '3h 45m',
-                meters: '14/2/1'
-            };
+            // Daily Summary - Load from day data
+            $scope.summary = dayData.today.summary;
 
             // Issue Modal
             $scope.showIssueModal = false;
@@ -1645,10 +1968,11 @@
             checkDayComplete();
             calculatePace();
 
-            // Close language menu on outside click
+            // Close menus on outside click
             document.addEventListener('click', function () {
                 $scope.$apply(function () {
                     $scope.showLangMenu = false;
+                    $scope.showDayMenu = false;
                 });
             });
         }]);
