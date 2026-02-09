@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="seniorApp">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bills | Suvidha - Easy View</title>
+    <link rel="stylesheet" href="../../css/senior-style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <style>
+        .sc-content {
+            padding: 2rem 2.5rem;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--gov-gray-800);
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: var(--gov-gray-100);
+            border: 1px solid var(--gov-gray-200);
+            border-radius: var(--radius-md);
+            color: var(--gov-gray-700);
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: var(--gov-gray-200);
+        }
+
+        .comfort-message {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: var(--gov-info-light);
+            border-radius: var(--radius-md);
+            color: var(--gov-info);
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .bills-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .bill-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid var(--gov-gray-100);
+            border-radius: var(--radius-xl);
+            padding: 1.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+
+        .bill-card:hover {
+            border-color: var(--gov-info);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .bill-info {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .bill-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gov-info-light);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .bill-icon.electricity {
+            background: rgba(251, 191, 36, 0.2);
+        }
+
+        .bill-icon.water {
+            background: rgba(96, 165, 250, 0.2);
+        }
+
+        .bill-icon.gas {
+            background: rgba(251, 146, 60, 0.2);
+        }
+
+        .bill-details h4 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--gov-gray-800);
+            margin-bottom: 0.35rem;
+        }
+
+        .bill-due-date {
+            font-size: 1.05rem;
+            color: var(--gov-gray-700);
+            font-weight: 500;
+        }
+
+        .bill-units {
+            font-size: 0.85rem;
+            color: var(--gov-gray-400);
+            margin-top: 0.25rem;
+        }
+
+        .bill-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .bill-amount-box {
+            text-align: right;
+        }
+
+        .bill-amount {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--gov-gray-800);
+        }
+
+        .bill-status {
+            display: inline-block;
+            padding: 0.4rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 0.35rem;
+        }
+
+        .bill-status.unpaid {
+            background: var(--gov-warning-light);
+            color: var(--gov-warning);
+        }
+
+        .bill-status.paid {
+            background: var(--gov-success-light);
+            color: var(--gov-success);
+        }
+
+        .pay-btn-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pay-btn {
+            padding: 1rem 2rem;
+            background: var(--gov-success);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pay-btn:hover {
+            background: #2f855a;
+            transform: translateY(-2px);
+        }
+
+        /* Inline help tooltip */
+        .help-tooltip {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: var(--gov-gray-100);
+            border: 1px solid var(--gov-gray-200);
+            border-radius: 50%;
+            color: var(--gov-gray-500);
+            font-size: 0.85rem;
+            cursor: help;
+        }
+
+        .help-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            background: var(--gov-gray-800);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 400;
+            white-space: nowrap;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .tooltip-text::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 10px;
+            border-width: 6px;
+            border-style: solid;
+            border-color: var(--gov-gray-800) transparent transparent transparent;
+        }
+
+        .total-section {
+            background: var(--gov-gray-50);
+            border: 2px solid var(--gov-gray-200);
+            border-radius: var(--radius-xl);
+            padding: 1.75rem;
+            margin-top: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .total-label {
+            font-size: 1.25rem;
+            color: var(--gov-gray-600);
+        }
+
+        .total-amount {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--gov-gray-800);
+        }
+
+        .pay-all-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.5rem;
+        }
+
+        .pay-all-btn {
+            padding: 1.25rem 2.5rem;
+            background: var(--gov-info);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: 1.25rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pay-all-btn:hover {
+            background: var(--gov-primary-light);
+        }
+
+        .pay-all-reassurance {
+            font-size: 0.85rem;
+            color: var(--gov-gray-500);
+            font-style: italic;
+        }
+
+        .reassurance {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--gov-gray-500);
+            font-size: 1rem;
+            font-style: italic;
+            margin-top: 1.5rem;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-dialog {
+            background: white;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-dialog.small {
+            max-width: 400px;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .modal-title-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .modal-icon {
+            font-size: 1.75rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .modal-close-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: #f7fafc;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            color: #718096;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close-btn:hover {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-body.centered {
+            text-align: center;
+        }
+
+        .modal-body.success-body {
+            text-align: center;
+            padding: 2.5rem 2rem;
+        }
+
+        .modal-description {
+            font-size: 1.1rem;
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-note {
+            font-size: 0.95rem;
+            color: #718096;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+
+        .success-icon-large {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-body h3 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            border-top: 2px solid #e2e8f0;
+            justify-content: flex-end;
+        }
+
+        .modal-footer.centered {
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 0.85rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .modal-btn.secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .modal-btn.secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .modal-btn.primary {
+            background: var(--gov-info);
+            color: white;
+        }
+
+        .modal-btn.primary:hover {
+            background: #2b6cb0;
+        }
+
+        .modal-btn.danger {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .modal-btn.danger:hover {
+            background: #c53030;
+        }
+    </style>
+</head>
+
+<body ng-controller="BillsController">
+    <!-- Simplified Sidebar -->
+    <aside class="sc-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <img src="/static/images/suvidha-logo.png" alt="Suvidha"
+                        onerror="this.style.display='none'; this.parentNode.innerHTML='🏠';">
+                </div>
+                <div class="brand-text">
+                    <h1>Suvidha</h1>
+                    <span>Easy View</span>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">Home</span>
+            </a>
+            <a href="bills.html" class="nav-item active">
+                <span class="nav-icon">💳</span>
+                <span class="nav-text">My Bills</span>
+            </a>
+            <a href="complaints.html" class="nav-item">
+                <span class="nav-icon">📞</span>
+                <span class="nav-text">Help & Complaints</span>
+            </a>
+            <a href="updates.html" class="nav-item">
+                <span class="nav-icon">📍</span>
+                <span class="nav-text">My Area Updates</span>
+            </a>
+            <a href="settings.html" class="nav-item">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-text">Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">{{user.initials}}</div>
+                <div class="user-info">
+                    <h4>{{user.name}}</h4>
+                </div>
+            </div>
+            <button class="logout-btn" ng-click="logout()">
+                <span>↪️</span>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="sc-main-content">
+        <header class="sc-header">
+            <div class="header-left">
+                <h2>My Bills</h2>
+            </div>
+            <div class="header-right">
+                <div class="accessibility-controls">
+                    <button class="font-size-btn">A+</button>
+                    <button class="font-size-btn">A</button>
+                </div>
+                <div class="lang-dropdown">
+                    <button class="lang-toggle-btn">EN ▼</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="sc-content">
+            <div class="page-header">
+                <h3 class="page-title">Your Utility Bills</h3>
+                <a href="dashboard.html" class="back-btn">
+                    ← Back to Home
+                </a>
+            </div>
+
+            <div class="comfort-message">
+                💡 Take your time to review your bills. Nothing will be paid until you confirm.
+            </div>
+
+            <div class="bills-list">
+                <div class="bill-card" ng-repeat="bill in bills">
+                    <div class="bill-info">
+                        <div class="bill-icon" ng-class="bill.type.toLowerCase()">
+                            <span ng-if="bill.type === 'Electricity'">⚡</span>
+                            <span ng-if="bill.type === 'Water'">💧</span>
+                            <span ng-if="bill.type === 'Gas'">🔥</span>
+                        </div>
+                        <div class="bill-details">
+                            <h4>{{bill.type}} Bill</h4>
+                            <p class="bill-due-date">📅 Due by: {{bill.dueDate}}</p>
+                            <p class="bill-units">Units: {{bill.units}}</p>
+                        </div>
+                    </div>
+                    <div class="bill-right">
+                        <div class="bill-amount-box">
+                            <div class="bill-amount">₹{{bill.amount}}</div>
+                            <span class="bill-status" ng-class="bill.status">
+                                {{bill.status === 'paid' ? '✓ Paid' : 'Not Paid Yet'}}
+                            </span>
+                        </div>
+                        <div class="pay-btn-wrapper" ng-if="bill.status === 'unpaid'">
+                            <button class="pay-btn" ng-click="payBill(bill)">Pay Now</button>
+                            <span class="help-tooltip">❓
+                                <span class="tooltip-text">You can cancel before final payment</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="total-section">
+                <div>
+                    <div class="total-label">Total amount due</div>
+                    <div class="total-amount">₹{{totalDue}}</div>
+                </div>
+                <div class="pay-all-wrapper">
+                    <button class="pay-all-btn" ng-click="payAll()">
+                        Review & Pay All Bills →
+                    </button>
+                    <span class="pay-all-reassurance">🛡️ You will confirm each step</span>
+                </div>
+            </div>
+
+            <div class="reassurance">
+                🤝 Need help understanding your bill? Call us at 1800-123-4567
+            </div>
+        </div>
+    </main>
+
+    <button class="help-btn-fixed">
+        <span class="help-icon">?</span>
+        <span>Need Help?</span>
+    </button>
+
+    <!-- Payment Confirmation Modal -->
+    <div class="modal-overlay" ng-show="showPaymentModal" ng-click="closePaymentModal()">
+        <div class="modal-dialog" ng-click="$event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title-row">
+                    <span class="modal-icon">💰</span>
+                    <h2>Confirm Payment</h2>
+                </div>
+                <button class="modal-close-btn" ng-click="closePaymentModal()">✕</button>
+            </div>
+            <div class="modal-body centered">
+                <p class="modal-description">Pay <strong>{{selectedBill.type}}</strong> bill of <strong>₹{{selectedBill.amount}}</strong>?</p>
+                <p class="modal-note">You can always cancel if you change your mind.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" ng-click="closePaymentModal()">Cancel</button>
+                <button class="modal-btn primary" ng-click="confirmPayment()">✓ Pay Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Success Modal -->
+    <div class="modal-overlay" ng-show="showSuccessModal" ng-click="closeSuccessModal()">
+        <div class="modal-dialog small" ng-click="$event.stopPropagation()">
+            <div class="modal-body centered success-body">
+                <div class="success-icon-large">✓</div>
+                <h3>Payment Successful!</h3>
+                <p>{{selectedBill.type}} bill: ₹{{selectedBill.amount}}</p>
+                <p class="modal-note">Receipt sent to your phone. Thank you!</p>
+            </div>
+            <div class="modal-footer centered">
+                <button class="modal-btn primary" ng-click="closeSuccessModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pay All Confirmation Modal -->
+    <div class="modal-overlay" ng-show="showPayAllModal" ng-click="closePayAllModal()">
+        <div class="modal-dialog" ng-click="$event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title-row">
+                    <span class="modal-icon">💰</span>
+                    <h2>Confirm All Payments</h2>
+                </div>
+                <button class="modal-close-btn" ng-click="closePayAllModal()">✕</button>
+            </div>
+            <div class="modal-body centered">
+                <p class="modal-description">Pay all bills totaling <strong>₹{{totalDue}}</strong>?</p>
+                <p class="modal-note">Take your time to decide.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" ng-click="closePayAllModal()">Cancel</button>
+                <button class="modal-btn primary" ng-click="confirmPayAll()">✓ Pay All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pay All Success Modal -->
+    <div class="modal-overlay" ng-show="showPayAllSuccessModal" ng-click="closePayAllSuccessModal()">
+        <div class="modal-dialog small" ng-click="$event.stopPropagation()">
+            <div class="modal-body centered success-body">
+                <div class="success-icon-large">✓</div>
+                <h3>All Bills Paid Successfully!</h3>
+                <p>Total: ₹{{totalDue}}</p>
+                <p class="modal-note">Receipts sent to your phone. You're all set!</p>
+            </div>
+            <div class="modal-footer centered">
+                <button class="modal-btn primary" ng-click="closePayAllSuccessModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="modal-overlay" ng-show="showLogoutModal" ng-click="cancelLogout()">
+        <div class="modal-dialog small" ng-click="$event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title-row">
+                    <span class="modal-icon">👋</span>
+                    <h2>Log Out?</h2>
+                </div>
+            </div>
+            <div class="modal-body centered">
+                <p class="modal-description">Are you sure you want to log out?</p>
+                <p class="modal-note">You can always log back in with your phone number.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" ng-click="cancelLogout()">Stay Logged In</button>
+                <button class="modal-btn danger" ng-click="confirmLogout()">Yes, Log Out</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var app = angular.module('seniorApp', []);
+
+        app.controller('BillsController', ['$scope', function ($scope) {
+            $scope.user = {
+                name: 'Vikram Singh',
+                initials: 'VS'
+            };
+
+            $scope.bills = [
+                { id: 1, type: 'Electricity', amount: 1250, units: '156 kWh', dueDate: '15 Feb 2026', status: 'unpaid' },
+                { id: 2, type: 'Water', amount: 450, units: '12,000 L', dueDate: '20 Feb 2026', status: 'unpaid' },
+                { id: 3, type: 'Gas', amount: 800, units: '8 kg', dueDate: '25 Feb 2026', status: 'paid' }
+            ];
+
+            $scope.totalDue = $scope.bills
+                .filter(function (b) { return b.status === 'unpaid'; })
+                .reduce(function (sum, b) { return sum + b.amount; }, 0);
+
+            // Modal states
+            $scope.showPaymentModal = false;
+            $scope.showSuccessModal = false;
+            $scope.showPayAllModal = false;
+            $scope.showPayAllSuccessModal = false;
+            $scope.showLogoutModal = false;
+            $scope.selectedBill = null;
+
+            $scope.payBill = function (bill) {
+                $scope.selectedBill = bill;
+                $scope.showPaymentModal = true;
+                document.body.style.overflow = 'hidden';
+            };
+
+            $scope.confirmPayment = function () {
+                $scope.showPaymentModal = false;
+                $scope.showSuccessModal = true;
+                $scope.selectedBill.status = 'paid';
+                $scope.totalDue -= $scope.selectedBill.amount;
+            };
+
+            $scope.closePaymentModal = function () {
+                $scope.showPaymentModal = false;
+                document.body.style.overflow = 'auto';
+            };
+
+            $scope.closeSuccessModal = function () {
+                $scope.showSuccessModal = false;
+                document.body.style.overflow = 'auto';
+            };
+
+            $scope.payAll = function () {
+                $scope.showPayAllModal = true;
+                document.body.style.overflow = 'hidden';
+            };
+
+            $scope.confirmPayAll = function () {
+                $scope.showPayAllModal = false;
+                $scope.showPayAllSuccessModal = true;
+                $scope.bills.forEach(function (b) {
+                    if (b.status === 'unpaid') b.status = 'paid';
+                });
+                $scope.totalDue = 0;
+            };
+
+            $scope.closePayAllModal = function () {
+                $scope.showPayAllModal = false;
+                document.body.style.overflow = 'auto';
+            };
+
+            $scope.closePayAllSuccessModal = function () {
+                $scope.showPayAllSuccessModal = false;
+                document.body.style.overflow = 'auto';
+            };
+
+            $scope.logout = function () {
+                $scope.showLogoutModal = true;
+                document.body.style.overflow = 'hidden';
+            };
+
+            $scope.cancelLogout = function () {
+                $scope.showLogoutModal = false;
+                document.body.style.overflow = 'auto';
+            };
+
+            $scope.confirmLogout = function () {
+                $scope.showLogoutModal = false;
+                document.body.style.overflow = 'auto';
+            };
+        }]);
+    </script>
+</body>
+
+</html>
