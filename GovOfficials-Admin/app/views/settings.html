@@ -7,237 +7,8 @@
     <title>Settings - Suvidha City Control Room</title>
     <link rel="stylesheet" href="../../css/gov-style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-    <style>
-        .governance-banner {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .governance-banner .banner-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .governance-banner p {
-            font-size: 0.9rem;
-            line-height: 1.5;
-            opacity: 0.95;
-        }
-
-        .header-subtitle {
-            color: var(--gov-gray-600);
-            font-size: 0.85rem;
-            margin-top: 0.25rem;
-        }
-
-        .section-badge {
-            display: inline-block;
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 0.3rem 0.6rem;
-            border-radius: 4px;
-            margin-left: auto;
-        }
-
-        .section-badge.editable {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .section-badge.mixed {
-            background: #fff7ed;
-            color: #92400e;
-        }
-
-        .section-badge.locked {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .settings-card .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .locked-field {
-            background: #fafafa;
-            padding: 1rem;
-            border-radius: 6px;
-            border-left: 4px solid #dc2626;
-        }
-
-        .lock-indicator {
-            color: #dc2626;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .locked-display {
-            background: white;
-            padding: 0.75rem;
-            border: 1px solid var(--gov-gray-200);
-            border-radius: 4px;
-            font-weight: 500;
-            color: var(--gov-gray-700);
-            margin: 0.5rem 0;
-        }
-
-        .locked-checkbox {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-            padding: 0.5rem;
-            background: white;
-            border: 1px solid var(--gov-gray-200);
-            border-radius: 4px;
-            margin: 0.5rem 0;
-        }
-
-        .locked-checkbox input[type="checkbox"] {
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        .locked-checkbox span {
-            color: var(--gov-gray-700);
-            font-weight: 500;
-        }
-
-        .locked-explanation {
-            font-size: 0.8rem;
-            color: var(--gov-gray-600);
-            margin-top: 0.5rem;
-            font-style: italic;
-            background: #f3f4f6;
-            padding: 0.75rem;
-            border-radius: 4px;
-        }
-
-        .alert-section {
-            margin-bottom: 1rem;
-        }
-
-        .mandatory-alerts {
-            background: #fef2f2;
-            padding: 1rem;
-            border-radius: 6px;
-            border-left: 4px solid var(--gov-danger);
-        }
-
-        .mandatory-alerts .setting-group {
-            margin-bottom: 0.75rem;
-        }
-
-        .optional-alerts {
-            background: white;
-        }
-
-        .settings-alert {
-            padding: 0.75rem;
-            border-radius: 6px;
-            margin-bottom: 1rem;
-            font-size: 0.85rem;
-            border-left: 4px solid;
-        }
-
-        .settings-alert.security-alert {
-            background: #ede9fe;
-            border-left-color: #7c3aed;
-            color: #5b21b6;
-        }
-
-        .governance-statement {
-            background: #f0f9ff;
-            padding: 1rem;
-            border-radius: 6px;
-            border-left: 4px solid #0284c7;
-            margin-bottom: 1rem;
-        }
-
-        .governance-statement h4 {
-            color: #0c4a6e;
-            margin-bottom: 0.5rem;
-        }
-
-        .governance-statement p {
-            color: #0c4a6e;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin: 0;
-        }
-
-        .compliance-notice {
-            font-size: 0.85rem;
-            line-height: 1.5;
-        }
-
-        .governance-footer {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            background: #f9fafb;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-top: 2rem;
-            border: 1px solid var(--gov-gray-200);
-        }
-
-        .governance-footer-info {
-            background: white;
-            padding: 1rem;
-            border-radius: 6px;
-        }
-
-        .governance-footer-info h4 {
-            margin: 0 0 0.75rem 0;
-            color: var(--gov-gray-800);
-            font-size: 0.95rem;
-        }
-
-        .governance-footer-info p {
-            margin: 0;
-            color: var(--gov-gray-700);
-            font-size: 0.85rem;
-            line-height: 1.5;
-        }
-
-        .governance-footer-actions {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .gov-btn.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .toast-message {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            padding: 1rem 1.5rem;
-            background: var(--gov-success);
-            color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .toast-message.error {
-            background: var(--gov-danger);
-        }
-    </style>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body ng-controller="SettingsController">
@@ -307,320 +78,418 @@
         </header>
 
         <div class="gov-content">
-            <!-- Governance Banner -->
-            <div class="governance-banner">
-                <div class="banner-title">🏛️ Government-Compliant Settings</div>
-                <p><strong>Official Policy:</strong> Government officials can manage their profile and alerts, but
-                    system security, data handling, and integrations are centrally governed to ensure compliance and
-                    accountability.</p>
+            <!-- Page Header -->
+            <div class="settings-page-header">
+                <div class="header-content">
+                    <h1 class="page-title">⚙️ Settings & Preferences</h1>
+                    <p class="page-subtitle">Manage your profile, security, and system preferences</p>
+                </div>
             </div>
 
-            <!-- Settings Header -->
-            <div class="section-header">
-                <h3><span class="icon">⚙️</span> Settings & Configuration</h3>
-                <p class="header-subtitle">✓ Editable Sections · 🔒 Locked for Compliance</p>
+            <!-- Settings Tabs Navigation -->
+            <div class="settings-nav-tabs">
+                <button class="settings-tab-btn active" ng-click="activeTab = 'profile'" ng-class="{active: activeTab === 'profile'}">
+                    <i data-lucide="user" width="18" height="18"></i>
+                    <span>Profile</span>
+                </button>
+                <button class="settings-tab-btn" ng-click="activeTab = 'security'" ng-class="{active: activeTab === 'security'}">
+                    <i data-lucide="lock" width="18" height="18"></i>
+                    <span>Security</span>
+                </button>
+                <button class="settings-tab-btn" ng-click="activeTab = 'notifications'" ng-class="{active: activeTab === 'notifications'}">
+                    <i data-lucide="bell" width="18" height="18"></i>
+                    <span>Notifications</span>
+                </button>
+                <button class="settings-tab-btn" ng-click="activeTab = 'display'" ng-class="{active: activeTab === 'display'}">
+                    <i data-lucide="palette" width="18" height="18"></i>
+                    <span>Display</span>
+                </button>
+                <button class="settings-tab-btn" ng-click="activeTab = 'system'" ng-class="{active: activeTab === 'system'}">
+                    <i data-lucide="info" width="18" height="18"></i>
+                    <span>System</span>
+                </button>
             </div>
 
-            <!-- Settings Grid -->
-            <div class="settings-grid">
-                <!-- Profile Settings - EDITABLE -->
-                <div class="gov-card settings-card">
-                    <div class="card-header">
-                        <h3><span class="icon">👤</span> Profile Settings</h3>
-                        <span class="section-badge editable">✓ Editable</span>
-                    </div>
-                    <div class="settings-content">
-                        <div class="setting-group">
-                            <label>Full Name</label>
-                            <input type="text" ng-model="settings.profile.fullName" class="setting-input"
-                                placeholder="Enter full name">
+            <!-- Settings Content Area -->
+            <div class="settings-content-area">
+                
+                <!-- PROFILE SETTINGS TAB -->
+                <div class="settings-tab-content" ng-show="activeTab === 'profile'">
+                    <div class="settings-section">
+                        <div class="section-header">
+                            <h2>Personal Information</h2>
+                            <p>Update your profile details</p>
                         </div>
-                        <div class="setting-group">
-                            <label>Email Address</label>
-                            <input type="email" ng-model="settings.profile.email" class="setting-input"
-                                placeholder="Enter email">
+
+                        <div class="settings-card">
+                            <form ng-submit="saveProfile()" name="profileForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Full Name <span class="required">*</span></label>
+                                        <input type="text" ng-model="settings.profile.fullName" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email Address <span class="required">*</span></label>
+                                        <input type="email" ng-model="settings.profile.email" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Phone Number</label>
+                                        <input type="tel" ng-model="settings.profile.phone" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Designation</label>
+                                        <input type="text" ng-model="settings.profile.designation" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="form-group locked-setting">
+                                    <label>Department Assignment <span class="lock-badge">Locked</span></label>
+                                    <input type="text" value="{{settings.profile.department}}" class="form-control" readonly>
+                                    <small>Managed centrally for compliance</small>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn-primary">Save Changes</button>
+                                    <button type="button" class="btn-secondary" ng-click="resetProfile()">Cancel</button>
+                                </div>
+                            </form>
                         </div>
-                        <div class="setting-group">
-                            <label>Phone Number</label>
-                            <input type="tel" ng-model="settings.profile.phone" class="setting-input"
-                                placeholder="Enter phone number">
-                        </div>
-                        <div class="setting-group locked-field">
-                            <label>Department · <span class="lock-indicator">🔒 Centrally Managed</span></label>
-                            <div class="locked-display">{{settings.profile.department}}</div>
-                            <p class="locked-explanation">Department assignment is managed by the administrative system
-                                for compliance and oversight.</p>
-                        </div>
-                        <button class="gov-btn primary" ng-click="saveProfile()">Save Profile</button>
                     </div>
                 </div>
 
-                <!-- Security Settings -->
-                <div class="gov-card settings-card">
-                    <div class="card-header">
-                        <h3><span class="icon">🔒</span> Security Settings</h3>
-                        <span class="section-badge mixed">⚠️ Partially Locked</span>
-                    </div>
-                    <div class="settings-content">
-                        <div class="setting-group">
-                            <label>Current Password</label>
-                            <input type="password" ng-model="security.currentPassword" class="setting-input"
-                                placeholder="Enter current password">
+                <!-- SECURITY SETTINGS TAB -->
+                <div class="settings-tab-content" ng-show="activeTab === 'security'">
+                    <div class="settings-section">
+                        <div class="section-header">
+                            <h2>Security Settings</h2>
+                            <p>Protect your account with strong security measures</p>
                         </div>
-                        <div class="setting-group">
-                            <label>New Password</label>
-                            <input type="password" ng-model="security.newPassword" class="setting-input"
-                                placeholder="Enter new password">
-                        </div>
-                        <div class="setting-group">
-                            <label>Confirm Password</label>
-                            <input type="password" ng-model="security.confirmPassword" class="setting-input"
-                                placeholder="Confirm new password">
-                        </div>
-                        <button class="gov-btn primary" ng-click="changePassword()">Change Password</button>
-                        <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--gov-gray-200);">
-                        <div class="setting-group locked-field">
-                            <label>Two-Factor Authentication · <span class="lock-indicator">🔒 Mandatory</span></label>
-                            <div class="locked-checkbox"><input type="checkbox" disabled checked><span>Enabled -
-                                    <strong>Cannot be disabled</strong></span></div>
-                            <p class="locked-explanation">Two-factor authentication is mandatory for all government
-                                officials.</p>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Notification Settings -->
-                <div class="gov-card settings-card">
-                    <div class="card-header">
-                        <h3><span class="icon">🔔</span> Alert & Notification Settings</h3>
-                        <span class="section-badge mixed">⚠️ Partially Locked</span>
-                    </div>
-                    <div class="settings-content">
-                        <div class="alert-section mandatory-alerts">
-                            <h4 style="color: var(--gov-danger); margin-bottom: 0.75rem;">🚨 Mandatory Critical Alerts
-                                (Cannot Disable)</h4>
-                            <div class="setting-group"><label><input type="checkbox" disabled checked> SLA Breach
-                                    Alerts</label></div>
-                            <div class="setting-group"><label><input type="checkbox" disabled checked> Integrity
-                                    Violation Alerts</label></div>
-                            <div class="setting-group"><label><input type="checkbox" disabled checked> Security & Access
-                                    Alerts</label></div>
+                        <!-- Change Password Card -->
+                        <div class="settings-card">
+                            <h3 class="card-title">Change Password</h3>
+                            <form ng-submit="changePassword()" name="passwordForm">
+                                <div class="form-group">
+                                    <label>Current Password <span class="required">*</span></label>
+                                    <input type="password" ng-model="security.currentPassword" class="form-control" placeholder="Enter current password">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>New Password <span class="required">*</span></label>
+                                    <input type="password" ng-model="security.newPassword" class="form-control" placeholder="Enter new password">
+                                    <small>Minimum 12 characters, 1 uppercase, 1 number, 1 special character</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Confirm Password <span class="required">*</span></label>
+                                    <input type="password" ng-model="security.confirmPassword" class="form-control" placeholder="Confirm new password">
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn-primary">Update Password</button>
+                                    <button type="button" class="btn-secondary">Clear</button>
+                                </div>
+                            </form>
                         </div>
-                        <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid var(--gov-gray-200);">
-                        <div class="alert-section optional-alerts">
-                            <h4 style="margin-bottom: 0.75rem;">✓ Optional Notifications (Configurable)</h4>
-                            <div class="setting-group"><label><input type="checkbox"
-                                        ng-model="settings.notifications.emailAlerts"> Email Notifications</label></div>
-                            <div class="setting-group"><label><input type="checkbox"
-                                        ng-model="settings.notifications.smsAlerts"> SMS Notifications</label></div>
-                            <div class="setting-group"><label><input type="checkbox"
-                                        ng-model="settings.notifications.dailyReport"> Daily Summary Report</label>
+
+                        <!-- Two-Factor Authentication -->
+                        <div class="settings-card">
+                            <div class="card-header">
+                                <div>
+                                    <h3 class="card-title">Two-Factor Authentication (2FA)</h3>
+                                    <p class="card-subtitle">Mandatory for all government officials</p>
+                                </div>
+                                <span class="status-badge success">● Active</span>
                             </div>
-                            <div class="setting-group">
+                            <div class="security-status">
+                                <i data-lucide="check-circle" width="20" height="20" style="color: #38a169;"></i>
+                                <div>
+                                    <strong>Enabled via authenticator app</strong>
+                                    <p>Your account is protected with authenticated OTP verification</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Active Sessions -->
+                        <div class="settings-card">
+                            <h3 class="card-title">Active Sessions</h3>
+                            <div class="sessions-list">
+                                <div class="session-item">
+                                    <div class="session-info">
+                                        <strong>Current Session</strong>
+                                        <p>Chrome on Windows • 192.168.1.100</p>
+                                        <small>Last active: now</small>
+                                    </div>
+                                    <span class="session-badge current">Current</span>
+                                </div>
+                                <div class="session-item">
+                                    <div class="session-info">
+                                        <strong>Mobile Access</strong>
+                                        <p>Safari on iPhone • 192.168.1.105</p>
+                                        <small>Last active: 2 hours ago</small>
+                                    </div>
+                                    <button class="btn-sm-secondary">Logout</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NOTIFICATIONS SETTINGS TAB -->
+                <div class="settings-tab-content" ng-show="activeTab === 'notifications'">
+                    <div class="settings-section">
+                        <div class="section-header">
+                            <h2>Alert & Notification Preferences</h2>
+                            <p>Choose how you want to receive updates</p>
+                        </div>
+
+                        <!-- Mandatory Alerts -->
+                        <div class="settings-card mandatory">
+                            <h3 class="card-title">🚨 Mandatory Critical Alerts</h3>
+                            <p class="card-subtitle">These cannot be disabled for compliance and accountability</p>
+                            <div class="alerts-grid">
+                                <div class="alert-item locked">
+                                    <div class="alert-checkbox">
+                                        <input type="checkbox" disabled checked>
+                                        <strong>SLA Breach Alerts</strong>
+                                    </div>
+                                    <p>Receive alerts when service level agreements are breached</p>
+                                </div>
+                                <div class="alert-item locked">
+                                    <div class="alert-checkbox">
+                                        <input type="checkbox" disabled checked>
+                                        <strong>Integrity Violations</strong>
+                                    </div>
+                                    <p>Data integrity and system anomaly detection</p>
+                                </div>
+                                <div class="alert-item locked">
+                                    <div class="alert-checkbox">
+                                        <input type="checkbox" disabled checked>
+                                        <strong>Security & Access Alerts</strong>
+                                    </div>
+                                    <p>Unauthorized access attempts and security events</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Optional Alerts -->
+                        <div class="settings-card">
+                            <h3 class="card-title">✓ Optional Notifications</h3>
+                            <p class="card-subtitle">Configure these based on your preferences</p>
+                            <div class="alerts-grid">
+                                <div class="alert-item">
+                                    <div class="alert-checkbox">
+                                        <input type="checkbox" ng-model="settings.notifications.emailAlerts">
+                                        <strong>Email Notifications</strong>
+                                    </div>
+                                    <p>Receive updates via email</p>
+                                </div>
+                                <div class="alert-item">
+                                    <div class="alert-checkbox">
+                                        <input type="checkbox" ng-model="settings.notifications.smsAlerts">
+                                        <strong>SMS Notifications</strong>
+                                    </div>
+                                    <p>Get important updates via SMS</p>
+                                </div>
+                                <div class="alert-item">
+                                    <div class="alert-checkbox">
+                                        <input type="checkbox" ng-model="settings.notifications.dailyReport">
+                                        <strong>Daily Summary Report</strong>
+                                    </div>
+                                    <p>Receive daily digest of activities</p>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 1.5rem;">
                                 <label>Notification Frequency</label>
-                                <select ng-model="settings.notifications.frequency" class="setting-input">
+                                <select ng-model="settings.notifications.frequency" class="form-control">
                                     <option value="immediate">Immediate</option>
-                                    <option value="hourly">Hourly</option>
-                                    <option value="daily">Daily</option>
+                                    <option value="hourly">Hourly Digest</option>
+                                    <option value="daily">Daily Summary</option>
                                 </select>
                             </div>
+
+                            <div class="form-actions">
+                                <button class="btn-primary" ng-click="saveNotifications()">Save Preferences</button>
+                            </div>
                         </div>
-                        <button class="gov-btn primary" ng-click="saveNotifications()">Save Preferences</button>
                     </div>
                 </div>
 
-                <!-- Display Settings -->
-                <div class="gov-card settings-card">
-                    <div class="card-header">
-                        <h3><span class="icon">🎨</span> Display Settings</h3>
-                        <span class="section-badge mixed">⚠️ Partially Locked</span>
-                    </div>
-                    <div class="settings-content">
-                        <div class="setting-group locked-field">
-                            <label>Theme · <span class="lock-indicator">🔒 Government Standard</span></label>
-                            <div class="locked-display">Light (Government Unified Theme)</div>
+                <!-- DISPLAY SETTINGS TAB -->
+                <div class="settings-tab-content" ng-show="activeTab === 'display'">
+                    <div class="settings-section">
+                        <div class="section-header">
+                            <h2>Display & Interface</h2>
+                            <p>Customize the look and feel of your dashboard</p>
                         </div>
-                        <div class="setting-group">
-                            <label>Language</label>
-                            <select ng-model="settings.display.language" class="setting-input">
-                                <option value="en">English</option>
-                                <option value="hi">हिंदी (Hindi)</option>
-                                <option value="bn">বাংলা (Bengali)</option>
-                            </select>
+
+                        <div class="settings-card">
+                            <div class="form-row">
+                                <div class="form-group locked-setting">
+                                    <label>Theme <span class="lock-badge">Locked</span></label>
+                                    <input type="text" value="Light (Government Standard)" class="form-control" readonly>
+                                    <small>Enforced for unified government appearance</small>
+                                </div>
+                                <div class="form-group">
+                                    <label>Language</label>
+                                    <select ng-model="settings.display.language" class="form-control">
+                                        <option value="en">English</option>
+                                        <option value="hi">हिंदी (Hindi)</option>
+                                        <option value="bn">বাংলা (Bengali)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Date Format</label>
+                                    <select ng-model="settings.display.dateFormat" class="form-control">
+                                        <option value="dd/mm/yyyy">DD/MM/YYYY</option>
+                                        <option value="mm/dd/yyyy">MM/DD/YYYY</option>
+                                        <option value="yyyy-mm-dd">YYYY-MM-DD</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Time Format</label>
+                                    <select class="form-control">
+                                        <option>24 Hour (00:00)</option>
+                                        <option>12 Hour (12:00 AM)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="preferences-row">
+                                <div class="preference-item">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" ng-model="settings.display.compactView">
+                                        <span>Compact View</span>
+                                    </label>
+                                    <small>Reduce spacing and simplify layout</small>
+                                </div>
+                                <div class="preference-item">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" ng-model="settings.display.animations">
+                                        <span>Enable Animations</span>
+                                    </label>
+                                    <small>Smooth transitions and visual effects</small>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button class="btn-primary" ng-click="saveDisplay()">Save Display Settings</button>
+                            </div>
                         </div>
-                        <div class="setting-group">
-                            <label>Date Format</label>
-                            <select ng-model="settings.display.dateFormat" class="setting-input">
-                                <option value="dd/mm/yyyy">DD/MM/YYYY</option>
-                                <option value="mm/dd/yyyy">MM/DD/YYYY</option>
-                                <option value="yyyy-mm-dd">YYYY-MM-DD</option>
-                            </select>
-                        </div>
-                        <div class="setting-group"><label><input type="checkbox"
-                                    ng-model="settings.display.compactView"> Compact View</label></div>
-                        <button class="gov-btn primary" ng-click="saveDisplay()">Save Display Settings</button>
                     </div>
                 </div>
 
-                <!-- System Information -->
-                <div class="gov-card settings-card">
-                    <div class="card-header">
-                        <h3><span class="icon">ℹ️</span> System Information</h3>
-                        <span class="section-badge locked">🔒 Read-Only</span>
-                    </div>
-                    <div class="settings-content">
-                        <div class="info-row"><span class="info-label">Application Version:</span><span
-                                class="info-value">{{systemInfo.version}}</span></div>
-                        <div class="info-row"><span class="info-label">Last Updated:</span><span
-                                class="info-value">{{systemInfo.lastUpdated}}</span></div>
-                        <div class="info-row"><span class="info-label">Database Status:</span><span class="info-value"
-                                style="color: var(--gov-success);">{{systemInfo.dbStatus}}</span></div>
-                        <div class="info-row"><span class="info-label">Server Status:</span><span class="info-value"
-                                style="color: var(--gov-success);">{{systemInfo.serverStatus}}</span></div>
-                        <div class="info-row"><span class="info-label">Last Backup:</span><span
-                                class="info-value">{{systemInfo.lastBackup}}</span></div>
-                    </div>
-                </div>
-            </div>
+                <!-- SYSTEM INFO TAB -->
+                <div class="settings-tab-content" ng-show="activeTab === 'system'">
+                    <div class="settings-section">
+                        <div class="section-header">
+                            <h2>System Information</h2>
+                            <p>Application and server status information</p>
+                        </div>
 
-            <!-- Governance Footer -->
-            <div class="settings-actions governance-footer">
-                <div class="governance-footer-info">
-                    <h4>📋 Settings Changes & Compliance</h4>
-                    <p>All changes to profile, password, notifications, and display settings are automatically saved.
-                        <strong>Locked settings cannot be modified</strong> and are managed centrally.</p>
-                </div>
-                <div class="governance-footer-actions">
-                    <button class="gov-btn outline" ng-click="generateReport()">📄 Generate Compliance Report</button>
-                    <button class="gov-btn outline" ng-click="downloadAudit()">📥 Download Audit Trail</button>
+                        <!-- Status Cards -->
+                        <div class="status-cards-grid">
+                            <div class="status-card">
+                                <div class="status-header">
+                                    <i data-lucide="package" width="24" height="24"></i>
+                                    <span class="status-badge success">Active</span>
+                                </div>
+                                <div class="status-body">
+                                    <h4>Application Version</h4>
+                                    <p class="version-number">v2.4.1</p>
+                                    <small>Latest build</small>
+                                </div>
+                            </div>
+
+                            <div class="status-card">
+                                <div class="status-header">
+                                    <i data-lucide="database" width="24" height="24"></i>
+                                    <span class="status-badge success">Connected</span>
+                                </div>
+                                <div class="status-body">
+                                    <h4>Database Status</h4>
+                                    <p>99.9% Uptime</p>
+                                    <small>Last ping: 2 seconds ago</small>
+                                </div>
+                            </div>
+
+                            <div class="status-card">
+                                <div class="status-header">
+                                    <i data-lucide="server" width="24" height="24"></i>
+                                    <span class="status-badge success">Running</span>
+                                </div>
+                                <div class="status-body">
+                                    <h4>Server Status</h4>
+                                    <p>All systems operational</p>
+                                    <small>Response time: 45ms</small>
+                                </div>
+                            </div>
+
+                            <div class="status-card">
+                                <div class="status-header">
+                                    <i data-lucide="save" width="24" height="24"></i>
+                                    <span class="status-badge success">Updated</span>
+                                </div>
+                                <div class="status-body">
+                                    <h4>Last Backup</h4>
+                                    <p>Feb 8, 2026</p>
+                                    <small>03:00 AM IST</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- System Details -->
+                        <div class="settings-card">
+                            <h3 class="card-title">Detailed System Information</h3>
+                            <div class="system-details">
+                                <div class="detail-row">
+                                    <span>Last Updated:</span>
+                                    <strong>{{systemInfo.lastUpdated}}</strong>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Application Build:</span>
+                                    <strong>Build #2024.02.08</strong>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Database Version:</span>
+                                    <strong>PostgreSQL 15.2</strong>
+                                </div>
+                                <div class="detail-row">
+                                    <span>API Version:</span>
+                                    <strong>v3.2.1</strong>
+                                </div>
+                                <div class="detail-row">
+                                    <span>Compliance Status:</span>
+                                    <strong style="color: #38a169;">✓ Fully Compliant</strong>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button class="btn-outline" ng-click="generateReport()">📄 Generate Audit Report</button>
+                                <button class="btn-outline" ng-click="downloadLogs()">📥 Download System Logs</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
     <!-- Toast Message -->
-    <div class="toast-message" ng-show="toastMessage" ng-class="{error: toastType === 'error'}">
-        <span>{{toastMessage}}</span>
+    <div class="toast-message" ng-show="successMessage" ng-class="{error: successMessage.type === 'error'}">
+        <span>{{successMessage.text}}</span>
     </div>
 
     <script>
-        var app = angular.module('adminApp', []);
-
-        app.controller('SettingsController', ['$scope', '$timeout', function ($scope, $timeout) {
-            // User
-            $scope.user = { name: 'Rajesh Kumar', initials: 'RK', role: 'Government Official' };
-
-            // Date
-            $scope.currentDate = new Date().toLocaleDateString('en-IN', {
-                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-            });
-
-            // Language
-            $scope.selectedLang = 'EN';
-            $scope.showLangMenu = false;
-            $scope.languages = [
-                { code: 'EN', name: 'English' },
-                { code: 'HI', name: 'हिन्दी (Hindi)' },
-                { code: 'BN', name: 'বাংলা (Bengali)' }
-            ];
-            $scope.notifications = 5;
-
-            // Settings
-            $scope.settings = {
-                profile: {
-                    fullName: 'Rajesh Kumar',
-                    email: 'rajesh.kumar@gov.in',
-                    phone: '+91 98765 43210',
-                    department: 'Municipal Corporation - South Delhi'
-                },
-                notifications: {
-                    emailAlerts: true,
-                    smsAlerts: true,
-                    dailyReport: true,
-                    frequency: 'immediate'
-                },
-                display: {
-                    language: 'en',
-                    dateFormat: 'dd/mm/yyyy',
-                    compactView: false
-                }
-            };
-
-            $scope.security = {
-                currentPassword: '',
-                newPassword: '',
-                confirmPassword: ''
-            };
-
-            $scope.systemInfo = {
-                version: 'v2.4.1',
-                lastUpdated: 'February 5, 2026',
-                dbStatus: 'Connected',
-                serverStatus: 'Active',
-                lastBackup: 'Feb 8, 2026 - 03:00 AM'
-            };
-
-            // Toast
-            $scope.toastMessage = '';
-            $scope.toastType = '';
-
-            $scope.showToast = function (message, type) {
-                $scope.toastMessage = message;
-                $scope.toastType = type || 'success';
-                $timeout(function () { $scope.toastMessage = ''; }, 3000);
-            };
-
-            // Functions
-            $scope.toggleLangMenu = function ($event) {
-                $event.stopPropagation();
-                $scope.showLangMenu = !$scope.showLangMenu;
-            };
-
-            $scope.selectLang = function (lang, $event) {
-                $event.preventDefault();
-                $scope.selectedLang = lang.code;
-                $scope.showLangMenu = false;
-            };
-
-            $scope.saveProfile = function () {
-                $scope.showToast('Profile saved successfully!');
-            };
-
-            $scope.changePassword = function () {
-                if (!$scope.security.currentPassword || !$scope.security.newPassword) {
-                    $scope.showToast('Please fill in all password fields', 'error');
-                    return;
-                }
-                if ($scope.security.newPassword !== $scope.security.confirmPassword) {
-                    $scope.showToast('Passwords do not match', 'error');
-                    return;
-                }
-                $scope.showToast('Password changed successfully!');
-                $scope.security = { currentPassword: '', newPassword: '', confirmPassword: '' };
-            };
-
-            $scope.saveNotifications = function () {
-                $scope.showToast('Notification preferences saved!');
-            };
-
-            $scope.saveDisplay = function () {
-                $scope.showToast('Display settings saved!');
-            };
-
-            $scope.generateReport = function () {
-                $scope.showToast('Generating compliance report...');
-            };
-
-            $scope.downloadAudit = function () {
-                $scope.showToast('Downloading audit trail...');
-            };
-
-            $scope.logout = function () {
-                if (confirm('Are you sure you want to logout?')) {
-                    alert('Logged out successfully');
-                }
-            };
-        }]);
+        // Initialize Lucide Icons
+        lucide.createIcons();
     </script>
 </body>
 

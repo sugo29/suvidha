@@ -838,12 +838,16 @@ app.controller('AuditController', ['$scope', function ($scope) {
 
 // Settings Controller - Government-Compliant with Governance Enforcement
 app.controller('SettingsController', ['$scope', function ($scope) {
+    // Initialize tab state
+    $scope.activeTab = 'profile';
+
     // Initialize settings object with government-grade enforcement
     $scope.settings = {
         profile: {
             fullName: 'Rajesh Kumar',
             email: 'rajesh.kumar@gov.in',
             phone: '+91-9876543210',
+            designation: 'Senior Government Official',
             department: 'grievance',
             departmentName: 'Grievance Management'  // Read-only display
         },
@@ -892,7 +896,7 @@ app.controller('SettingsController', ['$scope', function ($scope) {
     };
 
     // Save profile settings (only name, email, phone - NOT department)
-    $scope.saveProfileSettings = function () {
+    $scope.saveProfile = function () {
         // Department change not allowed here - would require admin approval
         $scope.successMessage = {
             type: 'success',
@@ -904,9 +908,16 @@ app.controller('SettingsController', ['$scope', function ($scope) {
             });
         }, 3000);
     };
+    
+    $scope.resetProfile = function () {
+        // Reset profile to original values
+        $scope.settings.profile.fullName = 'Rajesh Kumar';
+        $scope.settings.profile.email = 'rajesh.kumar@gov.in';
+        $scope.settings.profile.phone = '+91-9876543210';
+    };
 
-    // Change password
-    $scope.changePassword = function () {
+    // Save notification settings - enforce mandatory alerts
+    $scope.saveNotifications = function () {
         if ($scope.settings.security.newPassword !== $scope.settings.security.confirmPassword) {
             $scope.successMessage = {
                 type: 'error',
@@ -929,7 +940,7 @@ app.controller('SettingsController', ['$scope', function ($scope) {
     };
 
     // Save notification settings - enforce mandatory alerts
-    $scope.saveNotificationSettings = function () {
+    $scope.saveNotifications = function () {
         // Force mandatory alerts to always be true (governance enforcement)
         $scope.settings.notifications.mandatorySlaBreachAlerts = true;
         $scope.settings.notifications.mandatoryIntegrityAlerts = true;
@@ -947,7 +958,7 @@ app.controller('SettingsController', ['$scope', function ($scope) {
     };
 
     // Save display settings (theme is locked)
-    $scope.saveDisplaySettings = function () {
+    $scope.saveDisplay = function () {
         // Enforce government theme (cannot change from light)
         $scope.settings.display.theme = 'light';
 
@@ -976,7 +987,7 @@ app.controller('SettingsController', ['$scope', function ($scope) {
     };
 
     // Generate compliance report
-    $scope.generateComplianceReport = function () {
+    $scope.generateReport = function () {
         var report = 'COMPLIANCE REPORT\n';
         report += 'Generated: ' + new Date().toLocaleDateString('en-IN') + ' ' + new Date().toLocaleTimeString('en-IN') + '\n\n';
         report += 'OFFICIAL: ' + $scope.settings.profile.fullName + '\n';
@@ -1015,9 +1026,44 @@ app.controller('SettingsController', ['$scope', function ($scope) {
             });
         }, 3000);
     };
+    
+    // Download system logs
+    $scope.downloadLogs = function () {
+        var logs = 'SYSTEM LOGS - ' + new Date().toLocaleDateString('en-IN') + '\n';
+        logs += '═══════════════════════════════════════════\n\n';
+        logs += '[2026-02-08 02:30 PM] INFO: Password changed by ' + $scope.settings.profile.fullName + '\n';
+        logs += '[2026-02-08 02:25 PM] INFO: Settings page accessed\n';
+        logs += '[2026-02-08 01:15 PM] INFO: Profile data updated\n';
+        logs += '[2026-02-08 12:30 PM] DEBUG: API call to /api/settings\n';
+        logs += '[2026-02-07 04:45 PM] INFO: Email address modified\n';
+        logs += '[2026-02-07 03:20 PM] INFO: Notification preferences updated\n';
+        logs += '[2026-02-07 02:10 PM] DEBUG: Database connection established\n';
+        logs += '[2026-02-07 01:05 PM] INFO: System backup completed\n\n';
+        logs += 'All system logs are retained for 7 years in compliance with government standards.\n';
+
+        var blob = new Blob([logs], { type: 'text/plain;charset=utf-8;' });
+        var link = document.createElement('a');
+        var url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'system-logs-' + new Date().getTime() + '.txt');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        $scope.successMessage = {
+            type: 'success',
+            text: '✓ System logs downloaded'
+        };
+        setTimeout(function () {
+            $scope.$apply(function () {
+                $scope.successMessage = null;
+            });
+        }, 3000);
+    };
 
     // Download audit trail
-    $scope.downloadAuditTrail = function () {
+    $scope.downloadAudit = function () {
         var trail = 'AUDIT TRAIL - SETTINGS CHANGES\n';
         trail += 'Generated: ' + new Date().toLocaleDateString('en-IN') + '\n';
         trail += 'Official: ' + $scope.settings.profile.fullName + '\n\n';
