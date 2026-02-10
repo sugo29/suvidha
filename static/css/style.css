@@ -9286,3 +9286,534 @@ input:checked+.toggle-slider:before {
         margin-bottom: 20px;
     }
 }
+
+/* ============================================
+   WASTE MANAGEMENT PAGE STYLES
+   ============================================ */
+
+/* Waste Status Grid */
+.waste-status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.waste-status-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 247, 250, 0.95) 100%);
+    border: 1px solid rgba(200, 210, 220, 0.4);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.waste-status-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-color: rgba(26, 54, 93, 0.2);
+}
+
+.card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.card-icon.pickup { background: rgba(72, 187, 120, 0.15); color: #48bb78; }
+.card-icon.recycle { background: rgba(74, 144, 226, 0.15); color: #4a90e2; }
+.card-icon.points { background: rgba(237, 137, 54, 0.15); color: #ed8936; }
+.card-icon.next { background: rgba(156, 39, 176, 0.15); color: #9c27b0; }
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.card-body h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text-secondary, #4a5568);
+}
+
+.card-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-primary, #1a365d);
+    margin: 0;
+}
+
+.card-label {
+    font-size: 0.8rem;
+    color: var(--color-text-tertiary, #718096);
+    margin: 0;
+}
+
+.card-badge {
+    align-self: flex-start;
+    padding: 0.35rem 0.75rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.card-badge.success { background: rgba(48, 154, 61, 0.15); color: #30a63d; }
+.card-badge.info { background: rgba(26, 54, 93, 0.15); color: #1a365d; }
+.card-badge.primary { background: rgba(237, 137, 54, 0.15); color: #ed8936; }
+.card-badge.secondary { background: rgba(156, 39, 176, 0.15); color: #9c27b0; }
+
+/* Policy Cards Customization for Waste Management */
+.policy-card.policy-report .policy-icon.alert { background: rgba(231, 76, 60, 0.15); color: #e74c3c; }
+.policy-card.policy-track .policy-icon.live { background: rgba(46, 213, 115, 0.15); color: #2ed573; }
+.policy-card.policy-ai .policy-icon.ai { background: rgba(100, 108, 255, 0.15); color: #646cff; }
+.policy-card.policy-guide .policy-icon.guide { background: rgba(241, 196, 15, 0.15); color: #f1c40f; }
+
+/* Guideline Cards */
+.guideline-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 247, 250, 0.95) 100%);
+    border: 1px solid rgba(200, 210, 220, 0.4);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.guideline-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-color: rgba(26, 54, 93, 0.2);
+}
+
+.guideline-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.guideline-card h3 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-primary, #1a365d);
+}
+
+.guideline-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    text-align: left;
+    color: var(--color-text-secondary, #4a5568);
+}
+
+.guideline-card li::before {
+    content: '✓ ';
+    font-weight: 700;
+    color: #48bb78;
+    margin-right: 0.35rem;
+}
+
+/* Map Section */
+.map-section {
+    margin-bottom: 1.5rem;
+}
+
+.map-container {
+    border: 1px solid rgba(200, 210, 220, 0.4);
+    border-radius: 0.5rem;
+    height: 300px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e9f0f7 100%);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.map-grid {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image:
+        linear-gradient(rgba(200, 200, 220, 0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200, 200, 220, 0.15) 1px, transparent 1px);
+    background-size: 40px 40px;
+}
+
+.map-marker {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    z-index: 10;
+}
+
+.map-marker.truck {
+    top: 30%;
+    left: 65%;
+    animation: bounce 2s infinite;
+}
+
+.map-marker.user {
+    top: 60%;
+    left: 35%;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.marker-label {
+    background: white;
+    padding: 0.35rem 0.65rem;
+    border-radius: 0.25rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: var(--color-text-secondary, #4a5568);
+}
+
+.marker-icon {
+    font-size: 1.5rem;
+}
+
+/* Truck Info Card */
+.truck-info-card {
+    background: linear-gradient(135deg, rgba(26, 54, 93, 0.05) 0%, rgba(26, 54, 93, 0.02) 100%);
+    border: 1px solid rgba(26, 54, 93, 0.15);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.truck-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.truck-details h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--color-primary, #1a365d);
+}
+
+.truck-details p {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.85rem;
+    color: var(--color-text-tertiary, #718096);
+}
+
+.status-badge.pulse {
+    padding: 0.4rem 0.8rem;
+    background: rgba(46, 213, 115, 0.9);
+    color: white;
+    border-radius: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.truck-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.metric {
+    text-align: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 0.5rem;
+    border: 1px solid rgba(200, 210, 220, 0.4);
+}
+
+.metric-label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--color-text-tertiary, #718096);
+    font-weight: 500;
+    margin-bottom: 0.35rem;
+}
+
+.metric-value {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-primary, #1a365d);
+}
+
+.truck-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.detail-label {
+    font-size: 0.8rem;
+    color: var(--color-text-tertiary, #718096);
+    font-weight: 500;
+}
+
+.detail-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text-secondary, #4a5568);
+}
+
+/* Waste Management Form Styles */
+.waste-form-group {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.waste-form-label {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 600;
+    color: var(--color-text-secondary, #4a5568);
+    font-size: 0.95rem;
+}
+
+.waste-form-control {
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(200, 210, 220, 0.6);
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: white;
+    transition: all 0.2s;
+}
+
+.waste-form-control:focus {
+    outline: none;
+    border-color: var(--color-primary, #1a365d);
+    box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
+}
+
+.waste-form-control[readonly] {
+    background: rgba(200, 210, 220, 0.1);
+}
+
+.waste-textarea-control {
+    resize: vertical;
+}
+
+.form-hint {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--color-text-tertiary, #718096);
+    margin-top: 0.25rem;
+}
+
+/* File Input for Waste Management */
+.file-input-wrapper {
+    position: relative;
+}
+
+.file-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.file-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    border: 2px dashed rgba(26, 54, 93, 0.3);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: rgba(26, 54, 93, 0.02);
+}
+
+.file-input:focus + .file-label,
+.file-label:hover {
+    border-color: var(--color-primary, #1a365d);
+    background: rgba(26, 54, 93, 0.05);
+}
+
+.file-label i {
+    color: var(--color-primary, #1a365d);
+}
+
+.file-label span {
+    color: var(--color-primary, #1a365d);
+    font-weight: 500;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+/* Success Alert */
+.success-alert {
+    background: rgba(46, 213, 115, 0.1);
+    border: 1px solid rgba(46, 213, 115, 0.3);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    animation: slideIn 0.3s ease;
+}
+
+.success-alert i {
+    color: #2ed573;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.alert-text h4 {
+    margin: 0;
+    color: #2ed573;
+    font-size: 1rem;
+}
+
+.alert-text p {
+    margin: 0.25rem 0 0 0;
+    color: var(--color-text-secondary, #4a5568);
+    font-size: 0.9rem;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* FAQ Section */
+.faq-container {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.faq-item {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 247, 250, 0.95) 100%);
+    border: 1px solid rgba(200, 210, 220, 0.4);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.faq-question {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    color: var(--color-primary, #1a365d);
+    transition: all 0.2s;
+    font-size: 0.95rem;
+}
+
+.faq-question:hover {
+    background: rgba(26, 54, 93, 0.05);
+}
+
+.faq-question i {
+    transition: transform 0.3s ease;
+}
+
+.faq-question i.rotate {
+    transform: rotate(180deg);
+}
+
+.faq-answer {
+    padding: 0 1.5rem 1rem;
+    color: var(--color-text-secondary, #4a5568);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    background: rgba(26, 54, 93, 0.02);
+    border-top: 1px solid rgba(200, 210, 220, 0.4);
+}
+
+.faq-answer p {
+    margin: 0;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 1rem;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(200, 210, 220, 0.4);
+    border-top-color: var(--color-primary, #1a365d);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive - Waste Management */
+@media (max-width: 768px) {
+    .waste-status-grid,
+    .truck-metrics,
+    .truck-details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .map-container {
+        height: 250px;
+    }
+}

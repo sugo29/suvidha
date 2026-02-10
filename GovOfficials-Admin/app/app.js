@@ -44,6 +44,10 @@ app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $lo
             templateUrl: './app/views/settings.html',
             controller: 'SettingsController'
         })
+        .when('/waste-management', {
+            templateUrl: './app/views/waste-management.html',
+            controller: 'WasteManagementController'
+        })
         .otherwise({
             redirectTo: '/'
         });
@@ -1309,3 +1313,91 @@ app.controller('FieldOperationsController', ['$scope', function ($scope) {
         // Drawer would open here
     };
 }]);
+
+// Waste Management Controller
+app.controller('WasteManagementController', ['$scope', '$timeout', function ($scope, $timeout) {
+    $scope.stats = {
+        totalWaste: '1,482',
+        householdStatus: 71,
+        vehicles: 214,
+        urgent: 32
+    };
+
+    $scope.filters = {
+        district: 'All Districts',
+        ward: 'All Wards',
+        locality: 'All Localities'
+    };
+
+    $scope.applyFilters = function() {
+        // Filter logic here
+    };
+
+    $scope.wasteRecords = [
+        { houseId: 'W-2213', time: '9:10 AM', type: 'Segregated', points: '+20' },
+        { houseId: 'W-1974', time: '8:55 AM', type: 'Mixed', points: '+5' },
+        { houseId: 'W-9921', time: '8:40 AM', type: 'Segregated', points: '+20' }
+    ];
+
+    $scope.topWards = [
+        { name: 'Dwarka', percentage: 82 },
+        { name: 'Rohini', percentage: 78 },
+        { name: 'Saket', percentage: 75 }
+    ];
+
+    $scope.leaderboard = [
+        { name: 'Lakshmi N.', points: 2300 },
+        { name: 'Ramesh K.', points: 2160 },
+        { name: 'Divya P.', points: 2120 }
+    ];
+
+    $timeout(function () {
+        initWasteCharts();
+    }, 300);
+}]);
+
+// Chart initialization function for Waste Management
+function initWasteCharts() {
+    var ctx = document.getElementById('wasteCollectionChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Tue'],
+                datasets: [
+                    {
+                        label: 'Biodegradable',
+                        data: [250, 260, 270, 265, 280, 275, 270, 285, 290],
+                        borderColor: '#4caf50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Non-biodegradable',
+                        data: [150, 145, 140, 150, 155, 160, 165, 158, 155],
+                        borderColor: '#ff9800',
+                        backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Mixed',
+                        data: [100, 95, 90, 85, 80, 75, 70, 68, 65],
+                        borderColor: '#f44336',
+                        backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+}

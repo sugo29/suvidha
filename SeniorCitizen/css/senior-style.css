@@ -20,7 +20,7 @@
     --gov-warning: #dd6b20;
     --gov-warning-light: rgba(221, 107, 32, 0.15);
     --gov-danger: #e53e3e;
-    --gov-danger-light: rgba(229, 62, 62, 0.15);
+    --gov-danger-light: rgba(229, 62, 62, 0.3);
     --gov-info: #3182ce;
     --gov-info-light: rgba(49, 130, 206, 0.15);
 
@@ -1176,8 +1176,8 @@ body {
     flex-wrap: wrap;
     gap: 1rem;
     padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, rgba(229, 62, 62, 0.08) 0%, rgba(229, 62, 62, 0.03) 100%);
-    border: 2px solid rgba(229, 62, 62, 0.2);
+    background: linear-gradient(135deg, rgba(229, 62, 62, 0.3) 0%, rgba(229, 62, 62, 0.3) 100%);
+    border: 2px solid rgba(229, 62, 62, 0.3);
     border-radius: var(--radius-lg);
     margin-bottom: 1.5rem;
 }
@@ -1770,8 +1770,8 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 1.25rem 1.5rem;
-    background: linear-gradient(135deg, rgba(229, 62, 62, 0.1) 0%, rgba(229, 62, 62, 0.02) 100%);
-    border-bottom: 1px solid rgba(229, 62, 62, 0.15);
+    background: linear-gradient(135deg, rgba(229, 62, 62, 0.3) 0%, rgba(229, 62, 62, 0.3) 100%);
+    border-bottom: 1px solid rgba(229, 62, 62, 0.3);
 }
 
 .emergency-modal-title {
@@ -1861,7 +1861,7 @@ body {
 
 .emergency-option.gas:hover {
     border-color: #e53e3e;
-    background: rgba(229, 62, 62, 0.08);
+    background: rgba(229, 62, 62, 0.3);
 }
 
 .emergency-option.general:hover {

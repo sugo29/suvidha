@@ -33,6 +33,7 @@
     <script src="/static/app/controllers/community.controller.js"></script>
     <script src="/static/app/controllers/records.controller.js"></script>
     <script src="/static/app/controllers/profile.controller.js"></script>
+    <script src="/static/app/controllers/waste.controller.js"></script>
     <script src="/static/js/main.js"></script>
     <script src="/static/js/charts.js"></script>
 </head>
@@ -85,6 +86,10 @@
             <a href="#!/records" class="sidebar-link" ng-class="{active: currentPage == 'records'}">
                 <i data-lucide="file-text"></i>
                 <span class="sidebar-link-text">Records</span>
+            </a>
+            <a href="#!/waste-management" class="sidebar-link" ng-class="{active: currentPage == 'waste-management'}">
+                <i data-lucide="trash-2"></i>
+                <span class="sidebar-link-text">Waste Management</span>
             </a>
         </nav>
 

@@ -51,5 +51,38 @@
             self.submitServiceRequest = function(data) {
                 return self.post('/services/submit', data);
             };
+
+            self.getWasteData = function() {
+                return self.get('/waste').catch(function(error) {
+                    // Return mock data if API fails
+                    return {
+                        data: {
+                            user: {
+                                name: 'User',
+                                address: '123 Main Street, City'
+                            },
+                            status: {
+                                lastPickup: 'Today, 10:30 AM',
+                                wasteType: 'Segregated ✓',
+                                pointsEarned: 15,
+                                nextScheduledPickup: 'Tomorrow, 10:00 AM',
+                                binStatus: 'Normal'
+                            }
+                        }
+                    };
+                });
+            };
+
+            self.submitWasteIssue = function(data) {
+                return self.post('/waste/issue', data).catch(function(error) {
+                    // Return success even if API fails (for demo purposes)
+                    return {
+                        data: {
+                            success: true,
+                            message: 'Issue reported successfully'
+                        }
+                    };
+                });
+            };
         }]);
 })();

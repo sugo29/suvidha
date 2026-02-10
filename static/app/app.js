@@ -71,6 +71,12 @@
                     controllerAs: 'vm',
                     requireAuth: true
                 })
+                .when('/waste-management', {
+                    templateUrl: '/static/app/views/waste-management.html',
+                    controller: 'WasteManagementController',
+                    controllerAs: 'vm',
+                    requireAuth: true
+                })
                 .otherwise({
                     redirectTo: '/auth'
                 });
