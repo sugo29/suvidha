@@ -7,6 +7,42 @@
 
 var app = angular.module('seniorApp', ['ngRoute']);
 
+// Font Size Service - Accessible to all controllers
+app.factory('FontSizeService', ['$rootScope', function($rootScope) {
+    return {
+        currentFontSize: localStorage.getItem('Senior_FontSize') || 'normal',
+        
+        increase: function() {
+            document.documentElement.classList.add('font-size-increased');
+            this.currentFontSize = 'increased';
+            localStorage.setItem('Senior_FontSize', 'increased');
+            $rootScope.$broadcast('fontSizeChanged', 'increased');
+        },
+        
+        decrease: function() {
+            document.documentElement.classList.remove('font-size-increased');
+            this.currentFontSize = 'normal';
+            localStorage.setItem('Senior_FontSize', 'normal');
+            $rootScope.$broadcast('fontSizeChanged', 'normal');
+        },
+        
+        getCurrentSize: function() {
+            return this.currentFontSize;
+        },
+        
+        applyOnLoad: function() {
+            if (this.currentFontSize === 'increased') {
+                document.documentElement.classList.add('font-size-increased');
+            }
+        }
+    };
+}]);
+
+// Apply saved font size preference on app startup
+app.run(['FontSizeService', function(FontSizeService) {
+    FontSizeService.applyOnLoad();
+}]);
+
 // Route Configuration
 app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
     $routeProvider
@@ -46,7 +82,7 @@ app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $lo
 }]);
 
 // Dashboard Controller - Complete with Modal Management
-app.controller('DashboardController', ['$scope', '$location', function ($scope, $location) {
+app.controller('DashboardController', ['$scope', '$location', '$rootScope', 'FontSizeService', function ($scope, $location, $rootScope, FontSizeService) {
     // ========================================
     // USER DATA & INITIALIZATION
     // ========================================
@@ -350,10 +386,42 @@ app.controller('DashboardController', ['$scope', '$location', function ($scope, 
             });
         });
     });
+
+    // ========================================
+    // FONT SIZE ACCESSIBILITY
+    // ========================================
+    $scope.currentFontSize = FontSizeService.getCurrentSize();
+
+    $scope.increaseFontSize = function () {
+        FontSizeService.increase();
+        $scope.currentFontSize = 'increased';
+    };
+
+    $scope.decreaseFontSize = function () {
+        FontSizeService.decrease();
+        $scope.currentFontSize = 'normal';
+    };
+
+    $scope.$on('fontSizeChanged', function(event, newSize) {
+        $scope.currentFontSize = newSize;
+    });
 }]);
 
 // Bills Controller
-app.controller('BillsController', ['$scope', '$location', function ($scope, $location) {
+app.controller('BillsController', ['$scope', '$location', '$rootScope', 'FontSizeService', function ($scope, $location, $rootScope, FontSizeService) {
+    // Font Size Accessibility
+    $scope.currentFontSize = FontSizeService.getCurrentSize();
+    $scope.increaseFontSize = function () {
+        FontSizeService.increase();
+        $scope.currentFontSize = 'increased';
+    };
+    $scope.decreaseFontSize = function () {
+        FontSizeService.decrease();
+        $scope.currentFontSize = 'normal';
+    };
+    $scope.$on('fontSizeChanged', function(event, newSize) {
+        $scope.currentFontSize = newSize;
+    });
     $scope.bills = [
         { id: 1, type: 'Electricity', amount: 1250, dueDate: '15 Feb 2026', status: 'unpaid', provider: 'DM Water Supply' },
         { id: 2, type: 'Water', amount: 450, dueDate: '20 Feb 2026', status: 'unpaid', provider: 'Municipal Corporation' },
@@ -382,7 +450,20 @@ app.controller('BillsController', ['$scope', '$location', function ($scope, $loc
 }]);
 
 // Pay Controller
-app.controller('PayController', ['$scope', '$location', function ($scope, $location) {
+app.controller('PayController', ['$scope', '$location', '$rootScope', 'FontSizeService', function ($scope, $location, $rootScope, FontSizeService) {
+    // Font Size Accessibility
+    $scope.currentFontSize = FontSizeService.getCurrentSize();
+    $scope.increaseFontSize = function () {
+        FontSizeService.increase();
+        $scope.currentFontSize = 'increased';
+    };
+    $scope.decreaseFontSize = function () {
+        FontSizeService.decrease();
+        $scope.currentFontSize = 'normal';
+    };
+    $scope.$on('fontSizeChanged', function(event, newSize) {
+        $scope.currentFontSize = newSize;
+    });
     $scope.bills = [
         { id: 1, type: 'Electricity', amount: 1250, dueDate: '15 Feb 2026', status: 'unpaid' },
         { id: 2, type: 'Water', amount: 450, dueDate: '20 Feb 2026', status: 'unpaid' },
@@ -427,7 +508,20 @@ app.controller('PayController', ['$scope', '$location', function ($scope, $locat
 }]);
 
 // Complaints Controller
-app.controller('ComplaintsController', ['$scope', function ($scope) {
+app.controller('ComplaintsController', ['$scope', '$rootScope', 'FontSizeService', function ($scope, $rootScope, FontSizeService) {
+    // Font Size Accessibility
+    $scope.currentFontSize = FontSizeService.getCurrentSize();
+    $scope.increaseFontSize = function () {
+        FontSizeService.increase();
+        $scope.currentFontSize = 'increased';
+    };
+    $scope.decreaseFontSize = function () {
+        FontSizeService.decrease();
+        $scope.currentFontSize = 'normal';
+    };
+    $scope.$on('fontSizeChanged', function(event, newSize) {
+        $scope.currentFontSize = newSize;
+    });
     $scope.complaints = [
         { id: 1, type: 'Meter Reading', title: 'Meter showing high reading', status: 'resolved', date: '05 Feb 2026' },
         { id: 2, type: 'Billing Issue', title: 'Charged for extra usage', status: 'pending', date: '08 Feb 2026' }
@@ -473,7 +567,20 @@ app.controller('ComplaintsController', ['$scope', function ($scope) {
 }]);
 
 // Updates Controller
-app.controller('UpdatesController', ['$scope', function ($scope) {
+app.controller('UpdatesController', ['$scope', '$rootScope', 'FontSizeService', function ($scope, $rootScope, FontSizeService) {
+    // Font Size Accessibility
+    $scope.currentFontSize = FontSizeService.getCurrentSize();
+    $scope.increaseFontSize = function () {
+        FontSizeService.increase();
+        $scope.currentFontSize = 'increased';
+    };
+    $scope.decreaseFontSize = function () {
+        FontSizeService.decrease();
+        $scope.currentFontSize = 'normal';
+    };
+    $scope.$on('fontSizeChanged', function(event, newSize) {
+        $scope.currentFontSize = newSize;
+    });
     $scope.updates = [
         { id: 1, title: 'Water Supply Maintenance', date: '10 Feb 2026', type: 'info', description: 'Scheduled maintenance on Main Street' },
         { id: 2, title: 'New Payment Options Available', date: '8 Feb 2026', type: 'success', description: 'You can now pay via Google Pay!' },
@@ -491,7 +598,20 @@ app.controller('UpdatesController', ['$scope', function ($scope) {
 }]);
 
 // Settings Controller
-app.controller('SettingsController', ['$scope', function ($scope) {
+app.controller('SettingsController', ['$scope', '$rootScope', 'FontSizeService', function ($scope, $rootScope, FontSizeService) {
+    // Font Size Accessibility
+    $scope.currentFontSize = FontSizeService.getCurrentSize();
+    $scope.increaseFontSize = function () {
+        FontSizeService.increase();
+        $scope.currentFontSize = 'increased';
+    };
+    $scope.decreaseFontSize = function () {
+        FontSizeService.decrease();
+        $scope.currentFontSize = 'normal';
+    };
+    $scope.$on('fontSizeChanged', function(event, newSize) {
+        $scope.currentFontSize = newSize;
+    });
     $scope.settings = {
         notifications: true,
         language: 'EN',
@@ -528,6 +648,41 @@ app.controller('SettingsController', ['$scope', function ($scope) {
 }]);
 
 // Global Service for User Data
+// Live Waste Service Controller
+app.controller('LiveWasteServiceController', ['$scope', '$rootScope', 'FontSizeService', function ($scope, $rootScope, FontSizeService) {
+    // Font Size Accessibility
+    $scope.currentFontSize = FontSizeService.getCurrentSize();
+    $scope.increaseFontSize = function () {
+        FontSizeService.increase();
+        $scope.currentFontSize = 'increased';
+    };
+    $scope.decreaseFontSize = function () {
+        FontSizeService.decrease();
+        $scope.currentFontSize = 'normal';
+    };
+    $scope.$on('fontSizeChanged', function(event, newSize) {
+        $scope.currentFontSize = newSize;
+    });
+}]);
+
+// Waste Management Controller
+app.controller('WasteManagementController', ['$scope', '$rootScope', 'FontSizeService', function ($scope, $rootScope, FontSizeService) {
+    // Font Size Accessibility
+    $scope.currentFontSize = FontSizeService.getCurrentSize();
+    $scope.increaseFontSize = function () {
+        FontSizeService.increase();
+        $scope.currentFontSize = 'increased';
+    };
+    $scope.decreaseFontSize = function () {
+        FontSizeService.decrease();
+        $scope.currentFontSize = 'normal';
+    };
+    $scope.$on('fontSizeChanged', function(event, newSize) {
+        $scope.currentFontSize = newSize;
+    });
+}]);
+
+// User Service
 app.factory('UserService', function () {
     return {
         user: {

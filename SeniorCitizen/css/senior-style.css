@@ -74,7 +74,7 @@ html {
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: linear-gradient(135deg, rgba(26, 54, 93, 0.05) 0%, rgba(44, 82, 130, 0.03) 100%),
+    background: rgba(255, 255, 255, 0.1),
         url('/static/images/backdrop.png');
     background-size: cover;
     background-position: center;
@@ -393,6 +393,12 @@ body {
 .font-size-btn:hover {
     background: var(--gov-gray-100);
     color: var(--gov-gray-800);
+}
+
+.font-size-btn.active {
+    background: var(--gov-info);
+    color: white;
+    border-color: var(--gov-info);
 }
 
 /* Language Dropdown - Matching Gov-Admin */
@@ -1956,4 +1962,81 @@ body {
     .task-status {
         margin-left: auto;
     }
+}
+
+/* ============================================
+   FONT SIZE ACCESSIBILITY - Increased Font Sizes
+   ============================================ */
+html.font-size-increased {
+    font-size: 18px;
+}
+
+html.font-size-increased body {
+    font-size: 18px;
+}
+
+html.font-size-increased h1 {
+    font-size: 2.25rem;
+}
+
+html.font-size-increased h2 {
+    font-size: 2rem;
+}
+
+html.font-size-increased h3 {
+    font-size: 1.75rem;
+}
+
+html.font-size-increased h4 {
+    font-size: 1.5rem;
+}
+
+html.font-size-increased h5 {
+    font-size: 1.25rem;
+}
+
+html.font-size-increased p,
+html.font-size-increased span,
+html.font-size-increased div,
+html.font-size-increased button,
+html.font-size-increased a,
+html.font-size-increased label {
+    font-size: inherit;
+}
+
+html.font-size-increased .welcome-text h3 {
+    font-size: 2.25rem;
+}
+
+html.font-size-increased .tile-title {
+    font-size: 1.75rem;
+}
+
+html.font-size-increased .tile-subtitle {
+    font-size: 1.25rem;
+}
+
+html.font-size-increased .comfort-message,
+html.font-size-increased .page-title,
+html.font-size-increased .modal-title-row,
+html.font-size-increased .bill-details h4 {
+    font-size: 1.25rem;
+}
+
+html.font-size-increased .modal-header h2 {
+    font-size: 1.5rem;
+}
+
+html.font-size-increased .form-group label {
+    font-size: 1.25rem;
+}
+
+html.font-size-increased input,
+html.font-size-increased textarea,
+html.font-size-increased select {
+    font-size: 18px;
+}
+
+html.font-size-increased button {
+    font-size: 1.05rem;
 }

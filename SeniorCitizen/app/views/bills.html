@@ -7,6 +7,7 @@
     <title>My Bills | Suvidha - Easy View</title>
     <link rel="stylesheet" href="../../css/senior-style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="../app.js"></script>
     <style>
         .sc-content {
             padding: 2rem 2.5rem;
@@ -62,7 +63,7 @@
         }
 
         .bill-card {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.98);
             border: 2px solid var(--gov-gray-100);
             border-radius: var(--radius-xl);
             padding: 1.75rem;
@@ -356,8 +357,8 @@
             </div>
             <div class="header-right">
                 <div class="accessibility-controls">
-                    <button class="font-size-btn">A+</button>
-                    <button class="font-size-btn">A</button>
+                    <button class="font-size-btn" ng-click="increaseFontSize()" ng-class="{active: currentFontSize === 'increased'}">A+</button>
+                    <button class="font-size-btn" ng-click="decreaseFontSize()" ng-class="{active: currentFontSize === 'normal'}">A</button>
                 </div>
                 <div class="lang-dropdown">
                     <button class="lang-toggle-btn">EN ▼</button>
