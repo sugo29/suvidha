@@ -4,7 +4,12 @@ import os
 import secrets
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import db, User, Vendor, Community, CommunityStats, Bill, ServiceReport
+from models import (db, User, Vendor, Community, CommunityStats, Bill, ServiceReport,
+                    GovOfficial, Grievance, MeterReading, RWAProject, AuditLog, 
+                    FieldOperation, WardStats, ParticipationScheme, Redemption)
+
+# Import admin blueprint
+from admin_seed import admin_bp, init_admin_models
 
 # Configure Flask to use different delimiters to avoid conflict with AngularJS
 class CustomFlask(Flask):
@@ -24,6 +29,21 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Initialize database
 db.init_app(app)
 CORS(app)
+
+# Initialize admin models and register blueprint
+init_admin_models(db, {
+    'GovOfficial': GovOfficial,
+    'Grievance': Grievance,
+    'MeterReading': MeterReading,
+    'RWAProject': RWAProject,
+    'AuditLog': AuditLog,
+    'FieldOperation': FieldOperation,
+    'WardStats': WardStats,
+    'ParticipationScheme': ParticipationScheme,
+    'Redemption': Redemption,
+    'Bill': Bill
+})
+app.register_blueprint(admin_bp)
 
 # Create database tables
 with app.app_context():
@@ -1053,4 +1073,3 @@ def api_get_bills():
 
 if __name__ == '__main__':
     app.run(debug=True)
-

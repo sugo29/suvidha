@@ -11,7 +11,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
-<body ng-controller="SettingsController">
+<body ng-controller="SettingsController" ng-click="closeAllDropdowns()">
     <!-- Sidebar -->
     <aside class="gov-sidebar">
         <div class="sidebar-header">
@@ -39,6 +39,8 @@
                     Vault</span></a>
             <a href="field-operations.html" class="nav-item"><span class="nav-icon">👷</span><span
                     class="nav-text">Field Operations</span></a>
+            <a href="waste-management.html" class="nav-item"><span class="nav-icon">♻️</span><span
+                    class="nav-text">Waste Management</span></a>
             <a href="settings.html" class="nav-item active"><span class="nav-icon">⚙️</span><span
                     class="nav-text">Settings</span></a>
         </nav>
@@ -490,6 +492,88 @@
     <script>
         // Initialize Lucide Icons
         lucide.createIcons();
+
+        var app = angular.module('adminApp', []);
+
+        app.controller('SettingsController', ['$scope', function($scope) {
+            $scope.user = { name: 'Rajesh Kumar', initials: 'RK', role: 'Government Official' };
+            $scope.currentDate = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            $scope.notifications = 3;
+            $scope.activeTab = 'profile';
+
+            // Language dropdown
+            $scope.selectedLang = 'EN';
+            $scope.showLangMenu = false;
+            $scope.languages = [
+                { code: 'EN', name: 'English' },
+                { code: 'HI', name: 'हिन्दी' },
+                { code: 'TA', name: 'தமிழ்' },
+                { code: 'TE', name: 'తెలుగు' },
+                { code: 'BN', name: 'বাংলা' },
+                { code: 'MR', name: 'मराठी' }
+            ];
+
+            $scope.toggleLangMenu = function($event) {
+                $event.stopPropagation();
+                $scope.showLangMenu = !$scope.showLangMenu;
+            };
+
+            $scope.selectLang = function(lang, $event) {
+                $event.preventDefault();
+                $scope.selectedLang = lang.code;
+                $scope.showLangMenu = false;
+            };
+
+            $scope.closeAllDropdowns = function() {
+                $scope.showLangMenu = false;
+            };
+
+            // Profile data
+            $scope.profile = {
+                fullName: 'Rajesh Kumar',
+                employeeId: 'GOV-DL-2024-001',
+                email: 'rajesh.kumar@gov.in',
+                phone: '+91 98765 43210',
+                department: 'Urban Development',
+                designation: 'District Collector',
+                bio: 'Senior government official with 15 years of experience in urban administration.'
+            };
+
+            // System info
+            $scope.systemInfo = {
+                lastUpdated: 'Feb 8, 2026'
+            };
+
+            // Success message
+            $scope.successMessage = null;
+
+            $scope.showSuccess = function(text, type) {
+                $scope.successMessage = { text: text, type: type || 'success' };
+                setTimeout(function() {
+                    $scope.$apply(function() {
+                        $scope.successMessage = null;
+                    });
+                }, 3000);
+            };
+
+            $scope.saveProfile = function() {
+                $scope.showSuccess('✓ Profile updated successfully!');
+            };
+
+            $scope.generateReport = function() {
+                $scope.showSuccess('📄 Audit report generation started');
+            };
+
+            $scope.downloadLogs = function() {
+                $scope.showSuccess('📥 System logs downloading...');
+            };
+
+            $scope.logout = function() {
+                if (confirm('Are you sure you want to logout?')) {
+                    alert('Logged out successfully');
+                }
+            };
+        }]);
     </script>
 </body>
 

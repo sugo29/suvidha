@@ -110,6 +110,30 @@ angular.module('suvidhaApp')
                 $scope.setCurrentView('login');
             };
             
+            // Role selection - redirect to appropriate portal
+            $scope.selectRole = function(role) {
+                switch(role) {
+                    case 'citizen':
+                        // Stay on current portal, go to login
+                        $scope.setCurrentView('login');
+                        break;
+                    case 'senior':
+                        // Redirect to senior citizen portal
+                        window.location.href = '/SeniorCitizen/app/views/dashboard.html';
+                        break;
+                    case 'official':
+                        // Redirect to government officials portal
+                        window.location.href = '/GovOfficials-Admin/app/views/dashboard.html';
+                        break;
+                    case 'kiosk':
+                        // Kiosk mode - could be a special simplified view
+                        window.location.href = '/GovOfficial-Worker/app/views/dashboard.html';
+                        break;
+                    default:
+                        $scope.setCurrentView('login');
+                }
+            };
+            
             // Progress calculation
             $scope.getProgressPercent = function() {
                 return (($scope.currentStep - 1) / ($scope.totalSteps - 1)) * 100;

@@ -78,7 +78,7 @@
                     requireAuth: true
                 })
                 .otherwise({
-                    redirectTo: '/auth'
+                    redirectTo: '/landing'
                 });
 
             // Use HTML5 mode (optional - removes # from URLs)

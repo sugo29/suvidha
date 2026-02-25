@@ -673,7 +673,7 @@
         }
     </style>
 </head>
-<body ng-controller="WasteManagementController">
+<body ng-controller="WasteManagementController" ng-click="closeAllDropdowns()">
     <!-- Sidebar -->
     <aside class="gov-sidebar">
         <div class="sidebar-header">
@@ -1438,6 +1438,10 @@
                 event.preventDefault();
                 $scope.selectedLang = lang.name;
                 $scope.currentLang = lang.name;
+                $scope.showLangMenu = false;
+            };
+
+            $scope.closeAllDropdowns = function() {
                 $scope.showLangMenu = false;
             };
             

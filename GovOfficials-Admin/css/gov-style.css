@@ -1165,7 +1165,7 @@ body {
    CHARTS
    ============================================ */
 .chart-card {
-    min-height: 400px;
+    min-height: auto;
 }
 
 .chart-subtitle {
@@ -1176,7 +1176,7 @@ body {
 
 .chart-container {
     position: relative;
-    height: 280px;
+    height: 220px;
 }
 
 .period-toggle {
@@ -1214,7 +1214,7 @@ body {
 }
 
 .mini-map {
-    height: 150px;
+    min-height: 200px;
     background: linear-gradient(135deg, #e8f4f8 0%, #d4e5f7 100%);
     border-radius: var(--radius-md);
     margin-bottom: 1rem;
@@ -1225,8 +1225,18 @@ body {
 .map-placeholder {
     width: 100%;
     height: 100%;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%23e8f4f8" width="100" height="100"/><path d="M0 50 Q25 30 50 50 T100 50" stroke="%23b8d4e8" fill="none" stroke-width="2"/></svg>');
-    background-size: cover;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.state-mini-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 
 .map-markers {
