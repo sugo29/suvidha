@@ -9,14 +9,21 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <style>
         .integrity-grid {
-            display: grid;
-            grid-template-columns: 1fr 320px;
+            display: flex;
+            flex-direction: column;
             gap: 1.5rem;
             margin-top: 1.5rem;
+            max-width: 100%;
+        }
+
+        .integrity-grid > .gov-card {
+            min-width: 0;
+            overflow: hidden;
         }
 
         .table-container {
             overflow-x: auto;
+            max-width: 100%;
         }
 
         .risk-filters {
@@ -64,13 +71,15 @@
         .meter-table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 700px;
         }
 
         .meter-table th,
         .meter-table td {
-            padding: 1rem;
+            padding: 0.75rem 0.5rem;
             text-align: left;
             border-bottom: 1px solid var(--gov-gray-200);
+            white-space: nowrap;
         }
 
         .meter-table th {
@@ -207,9 +216,36 @@
         }
 
         .insights-panel {
-            height: fit-content;
-            max-height: calc(100vh - 350px);
-            overflow-y: auto;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .insights-panel .card-header {
+            border-bottom: 1px solid var(--gov-gray-200);
+        }
+
+        .insights-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        .insights-section {
+            background: var(--gov-gray-50);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+        }
+
+        .insights-section h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gov-gray-700);
+            margin: 0 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .insights-list {
@@ -507,12 +543,9 @@
         }
 
         /* Responsive insights panel */
-        @media (max-width: 1200px) {
-            .integrity-grid {
+        @media (max-width: 768px) {
+            .insights-content {
                 grid-template-columns: 1fr;
-            }
-            .insights-panel {
-                max-height: 300px;
             }
         }
     </style>
@@ -523,7 +556,9 @@
     <aside class="gov-sidebar">
         <div class="sidebar-header">
             <div class="sidebar-brand">
-                <div class="brand-icon">🏛️</div>
+                <div class="brand-icon">
+                    <img src="/static/images/suvidha Logo.jpg" alt="Suvidha" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.innerHTML='🏛️'">
+                </div>
                 <div class="brand-text">
                     <h1>Suvidha</h1><span>CITY CONTROL ROOM</span>
                 </div>
@@ -575,7 +610,7 @@
                 <div class="lang-dropdown" ng-click="$event.stopPropagation()">
                     <button class="lang-toggle-btn" ng-click="toggleLangMenu($event)">🌐 <span>{{selectedLang}}</span>
                         ▼</button>
-                    <div class="lang-dropdown-menu" ng-show="showLangMenu">
+                    <div class="lang-dropdown-menu" ng-show="showLangMenu" style="max-height: 350px; overflow-y: auto; min-width: 200px;">
                         <a href="#" class="lang-option" ng-repeat="lang in languages"
                             ng-class="{active: selectedLang === lang.code}"
                             ng-click="selectLang(lang, $event)">{{lang.name}}</a>
@@ -699,16 +734,62 @@
                 </div>
 
                 <!-- Insights Panel -->
-                <div class="gov-card insights-panel" style="overflow: hidden;">
+                <div class="gov-card insights-panel">
                     <div class="card-header">
                         <h3><span class="icon">🤖</span> AI Insights</h3>
                     </div>
-                    <div class="insights-list" style="max-height: 350px; overflow-y: auto;">
-                        <div class="insight-item" ng-repeat="insight in insights" ng-class="insight.type">
-                            <div class="insight-icon">{{insight.icon}}</div>
-                            <div class="insight-content">
-                                <strong>{{insight.title}}</strong>
-                                <small>{{insight.description}}</small>
+                    <div class="insights-content">
+                        <!-- Detection Accuracy Section -->
+                        <div class="insights-section">
+                            <h4>📊 Detection Accuracy</h4>
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                <div style="font-size: 2.5rem; font-weight: 700; color: var(--gov-primary);">{{stats.accuracy}}%</div>
+                                <div style="flex: 1;">
+                                    <div style="height: 10px; background: var(--gov-gray-200); border-radius: 5px; overflow: hidden;">
+                                        <div style="height: 100%; border-radius: 5px; transition: width 0.5s;" ng-style="{width: stats.accuracy + '%', background: stats.accuracy > 80 ? 'var(--gov-success)' : stats.accuracy > 60 ? 'var(--gov-warning)' : 'var(--gov-danger)'}"></div>
+                                    </div>
+                                    <div style="font-size: 0.75rem; color: var(--gov-gray-500); margin-top: 0.25rem;">AI confidence score</div>
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                                <div style="text-align: center; padding: 1rem; background: rgba(229, 62, 62, 0.1); border-radius: var(--radius-sm);">
+                                    <div style="font-size: 1.75rem; font-weight: 700; color: var(--gov-danger);">{{stats.suspicious}}</div>
+                                    <div style="font-size: 0.8rem; color: var(--gov-gray-600);">Suspicious</div>
+                                </div>
+                                <div style="text-align: center; padding: 1rem; background: rgba(56, 161, 105, 0.1); border-radius: var(--radius-sm);">
+                                    <div style="font-size: 1.75rem; font-weight: 700; color: var(--gov-success);">{{stats.verified}}</div>
+                                    <div style="font-size: 0.8rem; color: var(--gov-gray-600);">Verified</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Alerts Section -->
+                        <div class="insights-section">
+                            <h4>🔔 Recent Alerts</h4>
+                            <div class="insights-list" style="max-height: 200px; overflow-y: auto;">
+                                <div class="insight-item" ng-repeat="insight in insights" ng-class="insight.type" style="margin-bottom: 0.5rem;">
+                                    <div class="insight-icon">{{insight.icon}}</div>
+                                    <div class="insight-content">
+                                        <strong style="font-size: 0.85rem;">{{insight.title}}</strong>
+                                        <small style="display: block; margin-top: 0.25rem;">{{insight.description}}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Actions Section -->
+                        <div class="insights-section">
+                            <h4>⚡ Quick Actions</h4>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <button class="gov-btn gov-btn-outline" style="width: 100%; justify-content: flex-start; gap: 0.5rem;">
+                                    <span>🔍</span> Run Full Scan
+                                </button>
+                                <button class="gov-btn gov-btn-outline" style="width: 100%; justify-content: flex-start; gap: 0.5rem;">
+                                    <span>📊</span> Generate Report
+                                </button>
+                                <button class="gov-btn gov-btn-outline" style="width: 100%; justify-content: flex-start; gap: 0.5rem;">
+                                    <span>📤</span> Export Data
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -718,58 +799,64 @@
 
         <!-- Review Modal -->
         <div class="modal-overlay" ng-show="showReviewModal" ng-click="closeReviewModal()">
-            <div class="modal-content" ng-click="$event.stopPropagation()">
-                <div class="modal-header">
-                    <h2 style="margin: 0; font-size: 1.25rem; font-weight: 600;">Review Meter: {{selectedMeter.id}}</h2>
-                    <button class="modal-close" ng-click="closeReviewModal()">&times;</button>
+            <div class="modal-content" ng-click="$event.stopPropagation()" style="max-width: 620px;">
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--gov-primary) 0%, #1e40af 100%); color: white; border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span style="font-size: 1.5rem;">⚡</span>
+                        <div>
+                            <h2 style="margin: 0; font-size: 1.15rem; font-weight: 600;">Review Meter: {{selectedMeter.id}}</h2>
+                            <span style="font-size: 0.8rem; opacity: 0.9;">{{selectedMeter.location}}</span>
+                        </div>
+                    </div>
+                    <button class="modal-close" ng-click="closeReviewModal()" style="color: white; background: rgba(255,255,255,0.2); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">&times;</button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="padding: 1.5rem;">
                     <!-- Variance Alert -->
-                    <div class="variance-indicator" ng-class="{'high': selectedMeter.variance > 20, 'medium': selectedMeter.variance > 10 && selectedMeter.variance <= 20, 'low': selectedMeter.variance <= 10}">
-                        <div class="variance-icon" ng-if="selectedMeter.variance > 20">🚨</div>
-                        <div class="variance-icon" ng-if="selectedMeter.variance > 10 && selectedMeter.variance <= 20">⚠️</div>
-                        <div class="variance-icon" ng-if="selectedMeter.variance <= 10">✅</div>
+                    <div class="variance-indicator" ng-class="{'high': selectedMeter.variance > 20, 'medium': selectedMeter.variance > 10 && selectedMeter.variance <= 20, 'low': selectedMeter.variance <= 10}" style="border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+                        <div class="variance-icon" ng-if="selectedMeter.variance > 20" style="font-size: 2rem;">🚨</div>
+                        <div class="variance-icon" ng-if="selectedMeter.variance > 10 && selectedMeter.variance <= 20" style="font-size: 2rem;">⚠️</div>
+                        <div class="variance-icon" ng-if="selectedMeter.variance <= 10" style="font-size: 2rem;">✅</div>
                         <div class="variance-text">
-                            <strong>{{selectedMeter.variance}}% Variance</strong>
-                            <small ng-if="selectedMeter.variance > 20">High variance detected - requires investigation</small>
-                            <small ng-if="selectedMeter.variance > 10 && selectedMeter.variance <= 20">Moderate variance - requires review</small>
-                            <small ng-if="selectedMeter.variance <= 10">Normal variance - within acceptable range</small>
+                            <strong style="font-size: 1.35rem;">{{selectedMeter.variance}}% Variance</strong>
+                            <small ng-if="selectedMeter.variance > 20" style="display: block; margin-top: 0.25rem;">High variance detected - requires investigation</small>
+                            <small ng-if="selectedMeter.variance > 10 && selectedMeter.variance <= 20" style="display: block; margin-top: 0.25rem;">Moderate variance - requires review</small>
+                            <small ng-if="selectedMeter.variance <= 10" style="display: block; margin-top: 0.25rem;">Normal variance - within acceptable range</small>
                         </div>
                     </div>
 
                     <!-- Meter Details -->
                     <div class="detail-section">
-                        <h3>Meter Information</h3>
-                        <div class="detail-grid">
-                            <div class="detail-item">
+                        <h3 style="display: flex; align-items: center; gap: 0.5rem; color: var(--gov-gray-700);"><span>📋</span> Meter Information</h3>
+                        <div class="detail-grid" style="gap: 0.75rem;">
+                            <div class="detail-item" style="background: var(--gov-gray-50); padding: 0.75rem; border-radius: var(--radius-sm);">
                                 <span class="detail-label">Meter ID</span>
-                                <span class="detail-value">{{selectedMeter.id}}</span>
+                                <span class="detail-value" style="color: var(--gov-primary); font-weight: 600;">{{selectedMeter.id}}</span>
                             </div>
-                            <div class="detail-item">
+                            <div class="detail-item" style="background: var(--gov-gray-50); padding: 0.75rem; border-radius: var(--radius-sm);">
                                 <span class="detail-label">Account Number</span>
                                 <span class="detail-value">{{selectedMeter.accountNo}}</span>
                             </div>
-                            <div class="detail-item">
+                            <div class="detail-item" style="background: var(--gov-gray-50); padding: 0.75rem; border-radius: var(--radius-sm);">
                                 <span class="detail-label">Consumer Name</span>
                                 <span class="detail-value">{{selectedMeter.consumerName}}</span>
                             </div>
-                            <div class="detail-item">
+                            <div class="detail-item" style="background: var(--gov-gray-50); padding: 0.75rem; border-radius: var(--radius-sm);">
                                 <span class="detail-label">Location</span>
                                 <span class="detail-value">{{selectedMeter.location}}</span>
                             </div>
-                            <div class="detail-item">
+                            <div class="detail-item" style="background: var(--gov-gray-50); padding: 0.75rem; border-radius: var(--radius-sm);">
                                 <span class="detail-label">Current Reading</span>
-                                <span class="detail-value">{{selectedMeter.currentReading}}</span>
+                                <span class="detail-value" style="color: var(--gov-warning); font-weight: 600;">{{selectedMeter.currentReading}}</span>
                             </div>
-                            <div class="detail-item">
+                            <div class="detail-item" style="background: var(--gov-gray-50); padding: 0.75rem; border-radius: var(--radius-sm);">
                                 <span class="detail-label">Expected Reading</span>
                                 <span class="detail-value">{{selectedMeter.expectedReading}}</span>
                             </div>
-                            <div class="detail-item">
+                            <div class="detail-item" style="background: var(--gov-gray-50); padding: 0.75rem; border-radius: var(--radius-sm);">
                                 <span class="detail-label">AI Confidence</span>
                                 <span class="detail-value">{{selectedMeter.confidence}}%</span>
                             </div>
-                            <div class="detail-item">
+                            <div class="detail-item" style="background: var(--gov-gray-50); padding: 0.75rem; border-radius: var(--radius-sm);">
                                 <span class="detail-label">Last Checked</span>
                                 <span class="detail-value">{{selectedMeter.lastChecked}}</span>
                             </div>
@@ -778,35 +865,84 @@
 
                     <!-- Reading History -->
                     <div class="detail-section">
-                        <h3>Recent Reading History</h3>
+                        <h3 style="display: flex; align-items: center; gap: 0.5rem; color: var(--gov-gray-700);"><span>📊</span> Recent Reading History</h3>
                         <div class="history-list">
-                            <div class="history-item" ng-repeat="reading in selectedMeter.history">
-                                <span class="history-date">{{reading.date}}</span>
-                                <span class="history-value">{{reading.value}}</span>
+                            <div class="history-item" ng-repeat="reading in selectedMeter.history" style="display: flex; justify-content: space-between; align-items: center;">
+                                <span class="history-date" style="color: var(--gov-gray-500);">{{reading.date}}</span>
+                                <span class="history-value" style="font-weight: 600;">{{reading.value}}</span>
                                 <span class="badge" ng-class="reading.badgeClass">{{reading.status}}</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Review Notes -->
-                    <div class="detail-section">
-                        <h3>Review Notes</h3>
+                    <div class="detail-section" style="margin-bottom: 0;">
+                        <h3 style="display: flex; align-items: center; gap: 0.5rem; color: var(--gov-gray-700);"><span>📝</span> Review Notes</h3>
                         <textarea class="notes-textarea" ng-model="reviewNotes" placeholder="Enter your review notes here..."></textarea>
                     </div>
 
                     <!-- Action Buttons -->
-                    <div class="action-buttons-row">
-                        <button class="gov-btn gov-btn-success" ng-click="verifyMeter()">
+                    <div class="action-buttons-row" style="margin-top: 1.25rem; display: flex; gap: 0.75rem;">
+                        <button class="gov-btn gov-btn-success" ng-click="verifyMeter()" style="flex: 1; padding: 0.75rem;">
                             ✅ Mark as Verified
                         </button>
-                        <button class="gov-btn gov-btn-danger" ng-click="flagFromReview()">
+                        <button class="gov-btn gov-btn-danger" ng-click="flagFromReview()" style="flex: 1; padding: 0.75rem;">
                             🚩 Flag for Investigation
                         </button>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" style="background: var(--gov-gray-50); border-radius: 0 0 var(--radius-lg) var(--radius-lg);">
                     <button class="gov-btn gov-btn-outline" ng-click="closeReviewModal()">Cancel</button>
                     <button class="gov-btn gov-btn-primary" ng-click="submitReview()">Submit Review</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flag Meter Modal -->
+        <div class="modal-overlay" ng-show="showFlagModal" ng-click="closeFlagModal()" style="z-index: 1100;">
+            <div class="modal-content" ng-click="$event.stopPropagation()" style="max-width: 480px; text-align: center;">
+                <div class="modal-header" style="background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%); color: white; border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
+                    <h3 style="margin: 0; font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                        🚩 Flag for Investigation
+                    </h3>
+                    <button class="modal-close" ng-click="closeFlagModal()" style="color: white; background: rgba(255,255,255,0.2); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">&times;</button>
+                </div>
+                <div class="modal-body" style="padding: 2rem;">
+                    <div style="width: 80px; height: 80px; background: rgba(229, 62, 62, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2.5rem;">
+                        🚩
+                    </div>
+                    <h2 style="margin: 0 0 0.5rem; font-size: 1.5rem; font-weight: 700; color: var(--gov-gray-800);">Flag Meter {{flagTarget.id}}</h2>
+                    <p style="color: var(--gov-gray-600); font-size: 0.95rem; margin-bottom: 1.5rem;">This meter will be flagged for investigation due to suspicious readings.</p>
+                    
+                    <div style="background: rgba(229, 62, 62, 0.08); border: 1px solid rgba(229, 62, 62, 0.2); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.5rem; text-align: left;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                            <div>
+                                <span style="font-size: 0.7rem; color: var(--gov-gray-500); text-transform: uppercase;">Location</span>
+                                <div style="font-weight: 500; font-size: 0.9rem;">{{flagTarget.location}}</div>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.7rem; color: var(--gov-gray-500); text-transform: uppercase;">Variance</span>
+                                <div style="font-weight: 600; font-size: 0.9rem; color: var(--gov-danger);">{{flagTarget.variance}}%</div>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.7rem; color: var(--gov-gray-500); text-transform: uppercase;">Consumer</span>
+                                <div style="font-weight: 500; font-size: 0.9rem;">{{flagTarget.consumerName}}</div>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.7rem; color: var(--gov-gray-500); text-transform: uppercase;">Confidence</span>
+                                <div style="font-weight: 500; font-size: 0.9rem;">{{flagTarget.confidence}}%</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: left; margin-bottom: 1rem;">
+                        <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.5rem;">Reason for Flagging (Optional)</label>
+                        <textarea class="notes-textarea" ng-model="flagReason" placeholder="Enter reason for flagging this meter..." style="min-height: 70px;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer" style="justify-content: center; gap: 1rem; padding: 1.25rem;">
+                    <button class="gov-btn gov-btn-outline" ng-click="closeFlagModal()" style="min-width: 120px;">Cancel</button>
+                    <button class="gov-btn gov-btn-danger" ng-click="confirmFlag()" style="min-width: 160px;">🚩 Confirm Flag</button>
                 </div>
             </div>
         </div>
@@ -820,7 +956,31 @@
             $scope.currentDate = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
             $scope.selectedLang = 'EN';
             $scope.showLangMenu = false;
-            $scope.languages = [{ code: 'EN', name: 'English' }, { code: 'HI', name: 'हिन्दी' }, { code: 'TA', name: 'தமிழ்' }, { code: 'TE', name: 'తెలుగు' }, { code: 'BN', name: 'বাংলা' }, { code: 'MR', name: 'मराठी' }];
+            $scope.languages = [
+                { code: 'EN', name: 'English' },
+                { code: 'HI', name: 'हिंदी (Hindi)' },
+                { code: 'BN', name: 'বাংলা (Bengali)' },
+                { code: 'TE', name: 'తెలుగు (Telugu)' },
+                { code: 'MR', name: 'मराठी (Marathi)' },
+                { code: 'TA', name: 'தமிழ் (Tamil)' },
+                { code: 'GU', name: 'ગુજરાતી (Gujarati)' },
+                { code: 'KN', name: 'ಕನ್ನಡ (Kannada)' },
+                { code: 'ML', name: 'മലയാളം (Malayalam)' },
+                { code: 'PA', name: 'ਪੰਜਾਬੀ (Punjabi)' },
+                { code: 'OR', name: 'ଓଡ଼ିଆ (Odia)' },
+                { code: 'AS', name: 'অসমীয়া (Assamese)' },
+                { code: 'UR', name: 'اردو (Urdu)' },
+                { code: 'SA', name: 'संस्कृत (Sanskrit)' },
+                { code: 'KS', name: 'कॉशुर (Kashmiri)' },
+                { code: 'SD', name: 'سنڌي (Sindhi)' },
+                { code: 'NE', name: 'नेपाली (Nepali)' },
+                { code: 'KO', name: 'कोंकणी (Konkani)' },
+                { code: 'MN', name: 'মণিপুরী (Manipuri)' },
+                { code: 'BH', name: 'भोजपुरी (Bhojpuri)' },
+                { code: 'DO', name: 'डोगरी (Dogri)' },
+                { code: 'MA', name: 'मैथिली (Maithili)' },
+                { code: 'ST', name: 'संथाली (Santali)' }
+            ];
             $scope.notifications = 5;
             $scope.riskFilter = 'all';
             $scope.currentPage = 1;
@@ -944,37 +1104,48 @@
                 $scope.reviewNotes = '';
             };
 
+            // Flag modal states
+            $scope.showFlagModal = false;
+            $scope.flagTarget = {};
+            $scope.flagReason = '';
+
             $scope.flagMeter = function(meter) {
-                if (confirm('Flag meter ' + meter.id + ' for investigation?')) {
-                    meter.status = 'Flagged';
-                    meter.statusClass = 'suspicious';
-                    meter.badgeClass = 'danger';
+                $scope.flagTarget = meter;
+                $scope.flagReason = '';
+                $scope.showFlagModal = true;
+            };
+
+            $scope.closeFlagModal = function() {
+                $scope.showFlagModal = false;
+                $scope.flagReason = '';
+            };
+
+            $scope.confirmFlag = function() {
+                if ($scope.flagTarget) {
+                    var oldStatus = $scope.flagTarget.status;
+                    $scope.flagTarget.status = 'Flagged';
+                    $scope.flagTarget.statusClass = 'suspicious';
+                    $scope.flagTarget.badgeClass = 'danger';
                     // Update stats
                     $scope.stats.suspicious++;
-                    if (meter.status === 'Review') $scope.stats.review--;
-                    else if (meter.status === 'Verified') $scope.stats.verified--;
+                    if (oldStatus === 'Review') $scope.stats.review--;
+                    else if (oldStatus === 'Verified') $scope.stats.verified--;
                     // Add to insights
                     $scope.insights.unshift({
                         type: 'critical',
                         icon: '🚩',
-                        title: 'Meter ' + meter.id + ' flagged',
-                        description: 'Flagged for investigation - ' + meter.variance + '% variance'
+                        title: 'Meter ' + $scope.flagTarget.id + ' flagged',
+                        description: $scope.flagReason || ('Flagged for investigation - ' + $scope.flagTarget.variance + '% variance')
                     });
+                    $scope.closeFlagModal();
                 }
             };
 
             $scope.flagFromReview = function() {
                 if ($scope.selectedMeter) {
-                    $scope.selectedMeter.status = 'Flagged';
-                    $scope.selectedMeter.statusClass = 'suspicious';
-                    $scope.selectedMeter.badgeClass = 'danger';
-                    $scope.insights.unshift({
-                        type: 'critical',
-                        icon: '🚩',
-                        title: 'Meter ' + $scope.selectedMeter.id + ' flagged',
-                        description: 'Flagged from review - ' + ($scope.reviewNotes || 'No notes provided')
-                    });
+                    $scope.flagTarget = $scope.selectedMeter;
                     $scope.closeReviewModal();
+                    $scope.showFlagModal = true;
                 }
             };
 

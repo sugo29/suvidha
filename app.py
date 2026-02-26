@@ -6,7 +6,9 @@ from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import (db, User, Vendor, Community, CommunityStats, Bill, ServiceReport,
                     GovOfficial, Grievance, MeterReading, RWAProject, AuditLog, 
-                    FieldOperation, WardStats, ParticipationScheme, Redemption)
+                    FieldOperation, WardStats, ParticipationScheme, Redemption,
+                    FieldAgent, TaskAssignment, AgentLocationHistory, AgentPerformance,
+                    Household, MeterSubmission)
 
 # Import admin blueprint
 from admin_seed import admin_bp, init_admin_models
@@ -41,7 +43,13 @@ init_admin_models(db, {
     'WardStats': WardStats,
     'ParticipationScheme': ParticipationScheme,
     'Redemption': Redemption,
-    'Bill': Bill
+    'Bill': Bill,
+    'FieldAgent': FieldAgent,
+    'TaskAssignment': TaskAssignment,
+    'AgentLocationHistory': AgentLocationHistory,
+    'AgentPerformance': AgentPerformance,
+    'Household': Household,
+    'MeterSubmission': MeterSubmission
 })
 app.register_blueprint(admin_bp)
 
@@ -1069,6 +1077,1050 @@ def api_get_bills():
             return jsonify({'success': False, 'message': str(e)}), 500
     
     return jsonify({'success': False, 'message': 'No user found'}), 400
+
+
+# ============================================
+# FIELD AGENT ENDPOINTS (Government Official Worker)
+# ============================================
+
+@app.route('/api/field-agents', methods=['GET'])
+def api_get_field_agents():
+    """Get all field agents with optional filters"""
+    try:
+        category = request.args.get('category')
+        status = request.args.get('status')
+        ward = request.args.get('ward')
+        supervisor_id = request.args.get('supervisor_id')
+        
+        query = FieldAgent.query
+        
+        if category:
+            query = query.filter_by(category=category)
+        if status:
+            query = query.filter_by(status=status)
+        if ward:
+            query = query.filter_by(assigned_ward=ward)
+        if supervisor_id:
+            query = query.filter_by(supervisor_id=supervisor_id)
+        
+        agents = query.filter_by(is_active=True).order_by(FieldAgent.full_name).all()
+        
+        return jsonify({
+            'success': True,
+            'agents': [agent.to_dict() for agent in agents],
+            'count': len(agents)
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/field-agents/<agent_id>', methods=['GET'])
+def api_get_field_agent(agent_id):
+    """Get specific field agent by ID"""
+    try:
+        agent = FieldAgent.query.get(agent_id)
+        if not agent:
+            return jsonify({'success': False, 'message': 'Agent not found'}), 404
+        
+        # Also get recent tasks and performance
+        recent_tasks = TaskAssignment.query.filter_by(agent_id=agent_id)\
+            .order_by(TaskAssignment.assigned_at.desc()).limit(10).all()
+        
+        current_month = datetime.now().month
+        current_year = datetime.now().year
+        performance = AgentPerformance.query.filter_by(
+            agent_id=agent_id, month=current_month, year=current_year
+        ).first()
+        
+        return jsonify({
+            'success': True,
+            'agent': agent.to_dict(),
+            'recent_tasks': [t.to_dict() for t in recent_tasks],
+            'current_performance': performance.to_dict() if performance else None
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/field-agents', methods=['POST'])
+def api_create_field_agent():
+    """Create a new field agent"""
+    try:
+        data = request.get_json()
+        
+        # Generate employee ID
+        count = FieldAgent.query.count() + 1
+        employee_id = f"FA-{datetime.now().year}-{count:05d}"
+        
+        agent = FieldAgent(
+            employee_id=employee_id,
+            full_name=data['full_name'],
+            email=data['email'],
+            phone=data['phone'],
+            password=generate_password_hash(data.get('password', 'temp123')),
+            category=data['category'],
+            supervisor_id=data.get('supervisor_id'),
+            assigned_state=data.get('assigned_state', 'Delhi'),
+            assigned_district=data.get('assigned_district', 'South Delhi'),
+            assigned_ward=data.get('assigned_ward'),
+            status='offline',
+            gps_enabled=data.get('gps_enabled', False),
+            performance_score=50.0
+        )
+        
+        db.session.add(agent)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Field agent created successfully',
+            'agent': agent.to_dict()
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/field-agents/<agent_id>', methods=['PUT'])
+def api_update_field_agent(agent_id):
+    """Update field agent details"""
+    try:
+        agent = FieldAgent.query.get(agent_id)
+        if not agent:
+            return jsonify({'success': False, 'message': 'Agent not found'}), 404
+        
+        data = request.get_json()
+        
+        # Update allowed fields
+        if 'full_name' in data:
+            agent.full_name = data['full_name']
+        if 'phone' in data:
+            agent.phone = data['phone']
+        if 'category' in data:
+            agent.category = data['category']
+        if 'supervisor_id' in data:
+            agent.supervisor_id = data['supervisor_id']
+        if 'assigned_ward' in data:
+            agent.assigned_ward = data['assigned_ward']
+        if 'assigned_district' in data:
+            agent.assigned_district = data['assigned_district']
+        if 'status' in data:
+            agent.status = data['status']
+        if 'gps_enabled' in data:
+            agent.gps_enabled = data['gps_enabled']
+        if 'is_active' in data:
+            agent.is_active = data['is_active']
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Agent updated successfully',
+            'agent': agent.to_dict()
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/field-agents/<agent_id>/location', methods=['POST'])
+def api_update_agent_location(agent_id):
+    """Update agent location (GPS tracking)"""
+    try:
+        agent = FieldAgent.query.get(agent_id)
+        if not agent:
+            return jsonify({'success': False, 'message': 'Agent not found'}), 404
+        
+        data = request.get_json()
+        
+        # Update current location on agent
+        agent.current_latitude = data['latitude']
+        agent.current_longitude = data['longitude']
+        agent.current_address = data.get('address')
+        agent.location_updated_at = datetime.utcnow()
+        
+        # Log to history
+        location_log = AgentLocationHistory(
+            agent_id=agent_id,
+            latitude=data['latitude'],
+            longitude=data['longitude'],
+            address=data.get('address'),
+            accuracy=data.get('accuracy'),
+            activity=data.get('activity', 'traveling'),
+            task_id=data.get('task_id')
+        )
+        
+        db.session.add(location_log)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Location updated'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/field-agents/<agent_id>/status', methods=['PUT'])
+def api_update_agent_status(agent_id):
+    """Update agent status (online, on_task, offline, break)"""
+    try:
+        agent = FieldAgent.query.get(agent_id)
+        if not agent:
+            return jsonify({'success': False, 'message': 'Agent not found'}), 404
+        
+        data = request.get_json()
+        agent.status = data['status']
+        
+        if data['status'] == 'online':
+            agent.last_login = datetime.utcnow()
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Status updated',
+            'agent': agent.to_dict()
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# ============================================
+# TASK ASSIGNMENT ENDPOINTS
+# ============================================
+
+@app.route('/api/tasks', methods=['GET'])
+def api_get_tasks():
+    """Get tasks with optional filters"""
+    try:
+        agent_id = request.args.get('agent_id')
+        status = request.args.get('status')
+        task_type = request.args.get('task_type')
+        ward = request.args.get('ward')
+        date = request.args.get('date')  # YYYY-MM-DD format
+        
+        query = TaskAssignment.query
+        
+        if agent_id:
+            query = query.filter_by(agent_id=agent_id)
+        if status:
+            query = query.filter_by(status=status)
+        if task_type:
+            query = query.filter_by(task_type=task_type)
+        if ward:
+            query = query.filter_by(ward=ward)
+        if date:
+            date_obj = datetime.strptime(date, '%Y-%m-%d')
+            query = query.filter(
+                TaskAssignment.assigned_at >= date_obj,
+                TaskAssignment.assigned_at < date_obj + timedelta(days=1)
+            )
+        
+        tasks = query.order_by(TaskAssignment.assigned_at.desc()).all()
+        
+        return jsonify({
+            'success': True,
+            'tasks': [task.to_dict() for task in tasks],
+            'count': len(tasks)
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/tasks/<task_id>', methods=['GET'])
+def api_get_task(task_id):
+    """Get specific task details"""
+    try:
+        task = TaskAssignment.query.filter(
+            (TaskAssignment.id == task_id) | (TaskAssignment.task_id == task_id)
+        ).first()
+        
+        if not task:
+            return jsonify({'success': False, 'message': 'Task not found'}), 404
+        
+        # Include agent details
+        agent = FieldAgent.query.get(task.agent_id)
+        
+        return jsonify({
+            'success': True,
+            'task': task.to_dict(),
+            'agent': agent.to_dict() if agent else None
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/tasks', methods=['POST'])
+def api_create_task():
+    """Create a new task assignment"""
+    try:
+        data = request.get_json()
+        
+        # Generate task ID
+        today = datetime.now().strftime('%Y%m%d')
+        count = TaskAssignment.query.filter(
+            TaskAssignment.task_id.like(f'TASK-{today}%')
+        ).count() + 1
+        task_id = f"TASK-{today}-{count:05d}"
+        
+        task = TaskAssignment(
+            task_id=task_id,
+            agent_id=data['agent_id'],
+            assigned_by=data['assigned_by'],
+            task_type=data['task_type'],
+            house_number=data['house_number'],
+            ward=data['ward'],
+            city=data.get('city', 'Delhi'),
+            full_address=data.get('full_address'),
+            latitude=data.get('latitude'),
+            longitude=data.get('longitude'),
+            description=data.get('description'),
+            priority=data.get('priority', 'normal'),
+            meter_id=data.get('meter_id')
+        )
+        
+        db.session.add(task)
+        
+        # Update agent status
+        agent = FieldAgent.query.get(data['agent_id'])
+        if agent:
+            agent.status = 'on_task'
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Task assigned successfully',
+            'task': task.to_dict()
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/tasks/<task_id>/status', methods=['PUT'])
+def api_update_task_status(task_id):
+    """Update task status"""
+    try:
+        task = TaskAssignment.query.filter(
+            (TaskAssignment.id == task_id) | (TaskAssignment.task_id == task_id)
+        ).first()
+        
+        if not task:
+            return jsonify({'success': False, 'message': 'Task not found'}), 404
+        
+        data = request.get_json()
+        old_status = task.status
+        task.status = data['status']
+        
+        # Update timestamps based on status
+        if data['status'] == 'in_progress' and not task.started_at:
+            task.started_at = datetime.utcnow()
+        elif data['status'] == 'completed':
+            task.completed_at = datetime.utcnow()
+            if task.started_at:
+                task.completion_time_minutes = int((task.completed_at - task.started_at).total_seconds() / 60)
+            
+            # Update agent metrics
+            agent = FieldAgent.query.get(task.agent_id)
+            if agent:
+                agent.tasks_completed_today += 1
+                agent.total_tasks_completed += 1
+                agent.status = 'online'
+        
+        # Handle additional data
+        if 'meter_reading' in data:
+            task.meter_reading = data['meter_reading']
+        if 'photo_url' in data:
+            task.photo_url = data['photo_url']
+            task.photos_added = True
+        if 'problem_raised' in data:
+            task.problem_raised = data['problem_raised']
+            task.problem_type = data.get('problem_type')
+            task.problem_description = data.get('problem_description')
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Task status updated',
+            'task': task.to_dict()
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/tasks/bulk-assign', methods=['POST'])
+def api_bulk_assign_tasks():
+    """Bulk assign tasks to an agent"""
+    try:
+        data = request.get_json()
+        agent_id = data['agent_id']
+        assigned_by = data['assigned_by']
+        households = data['households']  # List of house details
+        
+        today = datetime.now().strftime('%Y%m%d')
+        tasks_created = []
+        
+        for i, house in enumerate(households):
+            count = TaskAssignment.query.filter(
+                TaskAssignment.task_id.like(f'TASK-{today}%')
+            ).count() + 1
+            task_id = f"TASK-{today}-{count:05d}"
+            
+            task = TaskAssignment(
+                task_id=task_id,
+                agent_id=agent_id,
+                assigned_by=assigned_by,
+                task_type=data.get('task_type', 'electric_meter'),
+                house_number=house['house_number'],
+                ward=house.get('ward', data.get('ward')),
+                city=house.get('city', 'Delhi'),
+                full_address=house.get('full_address'),
+                priority=house.get('priority', 'normal')
+            )
+            db.session.add(task)
+            tasks_created.append(task)
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': f'{len(tasks_created)} tasks assigned successfully',
+            'tasks': [t.to_dict() for t in tasks_created]
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# ============================================
+# AGENT PERFORMANCE ENDPOINTS
+# ============================================
+
+@app.route('/api/field-agents/<agent_id>/performance', methods=['GET'])
+def api_get_agent_performance(agent_id):
+    """Get agent performance history"""
+    try:
+        year = request.args.get('year', datetime.now().year)
+        
+        performance = AgentPerformance.query.filter_by(
+            agent_id=agent_id, year=int(year)
+        ).order_by(AgentPerformance.month.desc()).all()
+        
+        return jsonify({
+            'success': True,
+            'performance': [p.to_dict() for p in performance]
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/field-agents/<agent_id>/performance', methods=['POST'])
+def api_calculate_agent_performance(agent_id):
+    """Calculate/update agent performance for current month"""
+    try:
+        agent = FieldAgent.query.get(agent_id)
+        if not agent:
+            return jsonify({'success': False, 'message': 'Agent not found'}), 404
+        
+        current_month = datetime.now().month
+        current_year = datetime.now().year
+        
+        # Calculate metrics from tasks
+        month_start = datetime(current_year, current_month, 1)
+        month_tasks = TaskAssignment.query.filter(
+            TaskAssignment.agent_id == agent_id,
+            TaskAssignment.assigned_at >= month_start
+        ).all()
+        
+        tasks_assigned = len(month_tasks)
+        tasks_completed = len([t for t in month_tasks if t.status == 'completed'])
+        tasks_failed = len([t for t in month_tasks if t.status == 'failed'])
+        completion_rate = (tasks_completed / tasks_assigned * 100) if tasks_assigned > 0 else 0
+        
+        completed_tasks = [t for t in month_tasks if t.completion_time_minutes]
+        avg_completion_time = sum(t.completion_time_minutes for t in completed_tasks) / len(completed_tasks) if completed_tasks else 0
+        
+        problems_flagged = len([t for t in month_tasks if t.problem_raised])
+        photos_uploaded = len([t for t in month_tasks if t.photos_added])
+        photo_compliance_rate = (photos_uploaded / tasks_completed * 100) if tasks_completed > 0 else 0
+        
+        # Calculate AI score (simple formula for now)
+        score = min(100, max(0, 
+            completion_rate * 0.4 +
+            (100 - min(100, avg_completion_time / 30 * 100)) * 0.2 +  # Faster is better
+            photo_compliance_rate * 0.2 +
+            (100 - problems_flagged / max(1, tasks_completed) * 100) * 0.2
+        ))
+        
+        # Determine rating
+        if score >= 90:
+            rating = 'excellent'
+        elif score >= 70:
+            rating = 'good'
+        elif score >= 50:
+            rating = 'average'
+        else:
+            rating = 'poor'
+        
+        # Get or create performance record
+        performance = AgentPerformance.query.filter_by(
+            agent_id=agent_id, month=current_month, year=current_year
+        ).first()
+        
+        if not performance:
+            # Get previous month score for change calculation
+            prev_month = current_month - 1 if current_month > 1 else 12
+            prev_year = current_year if current_month > 1 else current_year - 1
+            prev_performance = AgentPerformance.query.filter_by(
+                agent_id=agent_id, month=prev_month, year=prev_year
+            ).first()
+            score_change = score - (prev_performance.score if prev_performance else 50)
+            
+            performance = AgentPerformance(
+                agent_id=agent_id,
+                month=current_month,
+                year=current_year
+            )
+            db.session.add(performance)
+        else:
+            score_change = score - performance.score
+        
+        # Update performance record
+        performance.tasks_assigned = tasks_assigned
+        performance.tasks_completed = tasks_completed
+        performance.tasks_failed = tasks_failed
+        performance.completion_rate = completion_rate
+        performance.avg_completion_time = avg_completion_time
+        performance.problems_flagged = problems_flagged
+        performance.photos_uploaded = photos_uploaded
+        performance.photo_compliance_rate = photo_compliance_rate
+        performance.score = score
+        performance.rating = rating
+        performance.score_change = score_change
+        performance.calculated_at = datetime.utcnow()
+        
+        # Update agent's current score
+        agent.performance_score = score
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'performance': performance.to_dict()
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# ============================================
+# DASHBOARD STATISTICS ENDPOINTS
+# ============================================
+
+@app.route('/api/admin/field-stats', methods=['GET'])
+def api_get_field_stats():
+    """Get field operations statistics for admin dashboard"""
+    try:
+        # Agent counts by status
+        online_agents = FieldAgent.query.filter_by(status='online', is_active=True).count()
+        on_task_agents = FieldAgent.query.filter_by(status='on_task', is_active=True).count()
+        offline_agents = FieldAgent.query.filter_by(status='offline', is_active=True).count()
+        total_agents = FieldAgent.query.filter_by(is_active=True).count()
+        
+        # Agent counts by category
+        category_counts = {}
+        for category in ['electric_meter', 'water_meter', 'gas_cylinder', 'rwa_work']:
+            category_counts[category] = FieldAgent.query.filter_by(category=category, is_active=True).count()
+        
+        # Today's task stats
+        today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_tasks = TaskAssignment.query.filter(TaskAssignment.assigned_at >= today_start).all()
+        
+        tasks_pending = len([t for t in today_tasks if t.status == 'pending'])
+        tasks_in_progress = len([t for t in today_tasks if t.status == 'in_progress'])
+        tasks_completed = len([t for t in today_tasks if t.status == 'completed'])
+        problems_raised = len([t for t in today_tasks if t.problem_raised])
+        
+        # Top performing agents
+        top_agents = FieldAgent.query.filter_by(is_active=True)\
+            .order_by(FieldAgent.performance_score.desc()).limit(5).all()
+        
+        return jsonify({
+            'success': True,
+            'stats': {
+                'agents': {
+                    'total': total_agents,
+                    'online': online_agents,
+                    'on_task': on_task_agents,
+                    'offline': offline_agents,
+                    'by_category': category_counts
+                },
+                'tasks_today': {
+                    'total': len(today_tasks),
+                    'pending': tasks_pending,
+                    'in_progress': tasks_in_progress,
+                    'completed': tasks_completed,
+                    'problems_raised': problems_raised,
+                    'completion_rate': (tasks_completed / len(today_tasks) * 100) if today_tasks else 0
+                },
+                'top_agents': [a.to_dict() for a in top_agents]
+            }
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/worker/dashboard', methods=['GET'])
+def api_get_worker_dashboard():
+    """Get dashboard data for field worker"""
+    try:
+        agent_id = request.args.get('agent_id')
+        
+        if not agent_id:
+            return jsonify({'success': False, 'message': 'Agent ID required'}), 400
+        
+        agent = FieldAgent.query.get(agent_id)
+        if not agent:
+            return jsonify({'success': False, 'message': 'Agent not found'}), 404
+        
+        # Today's stats
+        today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_tasks = TaskAssignment.query.filter(
+            TaskAssignment.agent_id == agent_id,
+            TaskAssignment.assigned_at >= today_start
+        ).all()
+        
+        pending = [t for t in today_tasks if t.status == 'pending']
+        in_progress = [t for t in today_tasks if t.status == 'in_progress']
+        completed = [t for t in today_tasks if t.status == 'completed']
+        
+        # Current performance
+        current_month = datetime.now().month
+        current_year = datetime.now().year
+        performance = AgentPerformance.query.filter_by(
+            agent_id=agent_id, month=current_month, year=current_year
+        ).first()
+        
+        return jsonify({
+            'success': True,
+            'agent': agent.to_dict(),
+            'today': {
+                'total_tasks': len(today_tasks),
+                'pending': len(pending),
+                'in_progress': len(in_progress),
+                'completed': len(completed),
+                'pending_tasks': [t.to_dict() for t in pending],
+                'current_task': in_progress[0].to_dict() if in_progress else None
+            },
+            'performance': performance.to_dict() if performance else {
+                'score': agent.performance_score,
+                'rating': 'average'
+            }
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# ============================================
+# WORKER AUTHENTICATION
+# ============================================
+
+@app.route('/api/worker/login', methods=['POST'])
+def api_worker_login():
+    """Field agent login"""
+    try:
+        data = request.get_json()
+        
+        agent = FieldAgent.query.filter_by(email=data['email']).first()
+        
+        if not agent or not check_password_hash(agent.password, data['password']):
+            return jsonify({'success': False, 'message': 'Invalid credentials'}), 401
+        
+        if not agent.is_active:
+            return jsonify({'success': False, 'message': 'Account is deactivated'}), 403
+        
+        # Update login time and status
+        agent.last_login = datetime.utcnow()
+        agent.status = 'online'
+        db.session.commit()
+        
+        session['agent_id'] = agent.id
+        
+        return jsonify({
+            'success': True,
+            'message': 'Login successful',
+            'agent': agent.to_dict()
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/worker/logout', methods=['POST'])
+def api_worker_logout():
+    """Field agent logout"""
+    try:
+        agent_id = session.get('agent_id')
+        if agent_id:
+            agent = FieldAgent.query.get(agent_id)
+            if agent:
+                agent.status = 'offline'
+                db.session.commit()
+        
+        session.pop('agent_id', None)
+        
+        return jsonify({'success': True, 'message': 'Logged out successfully'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# ============================================
+# HOUSEHOLD API ENDPOINTS
+# ============================================
+@app.route('/api/households', methods=['GET'])
+def api_get_households():
+    """Get households with optional filtering by area"""
+    try:
+        ward = request.args.get('ward')
+        district = request.args.get('district')
+        state = request.args.get('state')
+        meter_type = request.args.get('meter_type')
+        
+        query = Household.query
+        
+        if ward:
+            query = query.filter(Household.ward.ilike(f'%{ward}%'))
+        if district:
+            query = query.filter(Household.district.ilike(f'%{district}%'))
+        if state:
+            query = query.filter(Household.state.ilike(f'%{state}%'))
+        if meter_type:
+            query = query.filter(Household.meter_type == meter_type)
+        
+        households = query.order_by(Household.house_number).all()
+        
+        return jsonify({
+            'success': True,
+            'households': [h.to_dict() for h in households],
+            'total': len(households)
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/households', methods=['POST'])
+def api_create_household():
+    """Create a new household"""
+    try:
+        data = request.get_json()
+        
+        household = Household(
+            house_number=data['house_number'],
+            ward=data['ward'],
+            district=data['district'],
+            state=data['state'],
+            locality=data.get('locality'),
+            full_address=data['full_address'],
+            block=data.get('block'),
+            sector=data.get('sector'),
+            latitude=data.get('latitude'),
+            longitude=data.get('longitude'),
+            resident_name=data['resident_name'],
+            contact_phone=data.get('contact_phone'),
+            num_residents=data.get('num_residents', 1),
+            resident_category=data.get('resident_category', 'general'),
+            meter_id=data.get('meter_id'),
+            meter_type=data.get('meter_type', 'electric')
+        )
+        
+        db.session.add(household)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Household created successfully',
+            'household': household.to_dict()
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/households/<household_id>', methods=['GET'])
+def api_get_household(household_id):
+    """Get a specific household"""
+    try:
+        household = Household.query.get(household_id)
+        if not household:
+            return jsonify({'success': False, 'message': 'Household not found'}), 404
+        
+        # Get recent submissions for this household
+        submissions = MeterSubmission.query.filter_by(household_id=household_id)\
+            .order_by(MeterSubmission.submitted_at.desc()).limit(5).all()
+        
+        return jsonify({
+            'success': True,
+            'household': household.to_dict(),
+            'recent_submissions': [s.to_dict() for s in submissions]
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+# ============================================
+# METER SUBMISSION API ENDPOINTS
+# ============================================
+@app.route('/api/submissions', methods=['GET'])
+def api_get_submissions():
+    """Get submissions with optional filtering"""
+    try:
+        agent_id = request.args.get('agent_id')
+        task_id = request.args.get('task_id')
+        date = request.args.get('date')
+        status = request.args.get('status')
+        
+        query = MeterSubmission.query
+        
+        if agent_id:
+            query = query.filter(MeterSubmission.agent_id == agent_id)
+        if task_id:
+            query = query.filter(MeterSubmission.task_id == task_id)
+        if status:
+            query = query.filter(MeterSubmission.status == status)
+        if date:
+            date_obj = datetime.strptime(date, '%Y-%m-%d')
+            query = query.filter(db.func.date(MeterSubmission.submitted_at) == date_obj.date())
+        
+        submissions = query.order_by(MeterSubmission.submitted_at.desc()).all()
+        
+        return jsonify({
+            'success': True,
+            'submissions': [s.to_dict() for s in submissions],
+            'total': len(submissions)
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/submissions', methods=['POST'])
+def api_create_submission():
+    """Create a meter reading submission with photo"""
+    try:
+        data = request.get_json()
+        
+        # Generate submission ID
+        submission_id = f"SUB-{datetime.utcnow().strftime('%Y%m%d')}-{secrets.token_hex(4).upper()}"
+        
+        submission = MeterSubmission(
+            submission_id=submission_id,
+            task_id=data.get('task_id'),
+            agent_id=data['agent_id'],
+            household_id=data.get('household_id'),
+            meter_reading=data.get('meter_reading'),
+            meter_type=data.get('meter_type', 'electric'),
+            reading_unit=data.get('reading_unit', 'kWh'),
+            photo_data=data.get('photo_data'),  # Base64 encoded image
+            photo_filename=data.get('photo_filename'),
+            photo_captured_at=datetime.utcnow() if data.get('photo_data') else None,
+            latitude=data.get('latitude'),
+            longitude=data.get('longitude'),
+            address=data.get('address'),
+            status='submitted',
+            submission_type=data.get('submission_type', 'reading'),
+            skip_reason=data.get('skip_reason')
+        )
+        
+        db.session.add(submission)
+        
+        # Update task status if task_id provided
+        if data.get('task_id'):
+            task = TaskAssignment.query.filter(
+                (TaskAssignment.id == data['task_id']) | (TaskAssignment.task_id == data['task_id'])
+            ).first()
+            if task:
+                if data.get('submission_type') == 'skip':
+                    task.status = 'skipped'
+                    task.problem_raised = True
+                    task.problem_description = data.get('skip_reason')
+                else:
+                    task.status = 'completed'
+                    task.completed_at = datetime.utcnow()
+                    task.meter_reading = data.get('meter_reading')
+                    task.photo_url = f"submission:{submission_id}"
+                    task.photos_added = True
+                    
+                    if task.started_at:
+                        task.completion_time_minutes = int((datetime.utcnow() - task.started_at).total_seconds() / 60)
+                
+                # Update agent metrics
+                agent = FieldAgent.query.get(data['agent_id'])
+                if agent and data.get('submission_type') != 'skip':
+                    agent.tasks_completed_today += 1
+                    agent.total_tasks_completed += 1
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Submission recorded successfully',
+            'submission': submission.to_dict()
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/submissions/<submission_id>', methods=['GET'])
+def api_get_submission(submission_id):
+    """Get a specific submission with full details"""
+    try:
+        submission = MeterSubmission.query.filter(
+            (MeterSubmission.id == submission_id) | (MeterSubmission.submission_id == submission_id)
+        ).first()
+        
+        if not submission:
+            return jsonify({'success': False, 'message': 'Submission not found'}), 404
+        
+        result = submission.to_dict()
+        
+        # Include task and household info
+        if submission.task:
+            result['task'] = submission.task.to_dict()
+        if submission.household:
+            result['household'] = submission.household.to_dict()
+        if submission.agent:
+            result['agent'] = {
+                'id': submission.agent.id,
+                'full_name': submission.agent.full_name,
+                'employee_id': submission.agent.employee_id
+            }
+        
+        return jsonify({
+            'success': True,
+            'submission': result
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/agent/<agent_id>/performance', methods=['GET'])
+def api_get_agent_performance_detailed(agent_id):
+    """Get detailed performance metrics with improvement tips"""
+    try:
+        agent = FieldAgent.query.get(agent_id)
+        if not agent:
+            return jsonify({'success': False, 'message': 'Agent not found'}), 404
+        
+        # Get current month performance
+        current_month = datetime.utcnow().month
+        current_year = datetime.utcnow().year
+        
+        perf = AgentPerformance.query.filter_by(
+            agent_id=agent_id,
+            month=current_month,
+            year=current_year
+        ).first()
+        
+        # Calculate improvement areas
+        improvement_tips = []
+        lagging_areas = []
+        
+        if perf:
+            if perf.completion_rate < 90:
+                lagging_areas.append({'area': 'Completion Rate', 'current': f'{perf.completion_rate:.1f}%', 'target': '90%'})
+                improvement_tips.append('Complete more assigned tasks to improve your completion rate')
+            if perf.on_time_rate < 85:
+                lagging_areas.append({'area': 'On-Time Delivery', 'current': f'{perf.on_time_rate:.1f}%', 'target': '85%'})
+                improvement_tips.append('Finish readings faster - use optimized routes')
+            if perf.photo_compliance_rate < 95:
+                lagging_areas.append({'area': 'Photo Upload Rate', 'current': f'{perf.photo_compliance_rate:.1f}%', 'target': '95%'})
+                improvement_tips.append('Always upload clear photos of meter readings')
+            if perf.avg_rating < 4.0:
+                lagging_areas.append({'area': 'Customer Rating', 'current': f'{perf.avg_rating:.1f}/5', 'target': '4.0/5'})
+                improvement_tips.append('Be courteous with residents for better ratings')
+        else:
+            # Default tips for new agents
+            improvement_tips = [
+                'Complete all assigned tasks daily',
+                'Upload clear photos of every meter reading',
+                'Follow the optimized route suggestions',
+                'Report issues accurately when houses are inaccessible'
+            ]
+        
+        return jsonify({
+            'success': True,
+            'agent': {
+                'id': agent.id,
+                'full_name': agent.full_name,
+                'performance_score': agent.performance_score,
+                'tasks_completed_today': agent.tasks_completed_today,
+                'total_tasks_completed': agent.total_tasks_completed,
+                'category': agent.category
+            },
+            'performance': perf.to_dict() if perf else None,
+            'improvement_tips': improvement_tips,
+            'lagging_areas': lagging_areas,
+            'score_breakdown': {
+                'completion_rate': perf.completion_rate if perf else 0,
+                'on_time_rate': perf.on_time_rate if perf else 0,
+                'photo_compliance': perf.photo_compliance_rate if perf else 0,
+                'customer_rating': perf.avg_rating if perf else 0
+            }
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/agent/<agent_id>/tasks/today', methods=['GET'])
+def api_get_agent_tasks_today(agent_id):
+    """Get today's tasks for an agent with submission status"""
+    try:
+        today = datetime.utcnow().date()
+        
+        tasks = TaskAssignment.query.filter(
+            TaskAssignment.agent_id == agent_id,
+            db.func.date(TaskAssignment.assigned_at) == today
+        ).order_by(TaskAssignment.assigned_at).all()
+        
+        # Get submissions for these tasks
+        task_ids = [t.id for t in tasks]
+        submissions = MeterSubmission.query.filter(
+            MeterSubmission.task_id.in_(task_ids)
+        ).all()
+        
+        submission_map = {s.task_id: s.to_dict() for s in submissions}
+        
+        result = []
+        for task in tasks:
+            task_dict = task.to_dict()
+            task_dict['submission'] = submission_map.get(task.id)
+            result.append(task_dict)
+        
+        # Calculate stats
+        completed = len([t for t in tasks if t.status == 'completed'])
+        pending = len([t for t in tasks if t.status == 'pending'])
+        skipped = len([t for t in tasks if t.status == 'skipped' or t.status == 'failed'])
+        
+        return jsonify({
+            'success': True,
+            'tasks': result,
+            'stats': {
+                'assigned': len(tasks),
+                'completed': completed,
+                'pending': pending,
+                'skipped': skipped,
+                'completedPercent': round(completed / len(tasks) * 100) if tasks else 0,
+                'pendingPercent': round(pending / len(tasks) * 100) if tasks else 0,
+                'skippedPercent': round(skipped / len(tasks) * 100) if tasks else 0
+            }
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 
 if __name__ == '__main__':

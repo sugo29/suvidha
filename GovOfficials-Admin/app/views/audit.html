@@ -199,7 +199,9 @@
     <aside class="gov-sidebar">
         <div class="sidebar-header">
             <div class="sidebar-brand">
-                <div class="brand-icon">🏛️</div>
+                <div class="brand-icon">
+                    <img src="/static/images/suvidha Logo.jpg" alt="Suvidha" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.innerHTML='🏛️'">
+                </div>
                 <div class="brand-text">
                     <h1>Suvidha</h1><span>CITY CONTROL ROOM</span>
                 </div>
@@ -380,6 +382,53 @@
         </div>
     </main>
 
+    <!-- Audit Detail Modal -->
+    <div class="modal-overlay" ng-if="showDetailModal" ng-click="closeDetailModal()" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+        <div class="modal-content" ng-click="$event.stopPropagation()" style="background: white; border-radius: 16px; padding: 2rem; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.25);">
+            <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--gov-gray-200);">
+                <h3 style="font-size: 1.25rem; color: var(--gov-gray-800); display: flex; align-items: center; gap: 0.75rem;"><span>📋</span> Audit Log Details</h3>
+                <button ng-click="closeDetailModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gov-gray-400);">×</button>
+            </div>
+            <div ng-if="selectedLog" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div style="background: var(--gov-gray-50); padding: 1rem; border-radius: 10px;">
+                        <div style="font-size: 0.75rem; color: var(--gov-gray-500); text-transform: uppercase; margin-bottom: 0.25rem;">Timestamp</div>
+                        <div style="font-weight: 600; color: var(--gov-gray-800);">{{selectedLog.timestamp}}</div>
+                    </div>
+                    <div style="background: var(--gov-gray-50); padding: 1rem; border-radius: 10px;">
+                        <div style="font-size: 0.75rem; color: var(--gov-gray-500); text-transform: uppercase; margin-bottom: 0.25rem;">User</div>
+                        <div style="font-weight: 600; color: var(--gov-gray-800);">{{selectedLog.user}}</div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div style="background: var(--gov-gray-50); padding: 1rem; border-radius: 10px;">
+                        <div style="font-size: 0.75rem; color: var(--gov-gray-500); text-transform: uppercase; margin-bottom: 0.25rem;">Action</div>
+                        <div style="font-weight: 600; color: var(--gov-gray-800);">{{selectedLog.action}}</div>
+                    </div>
+                    <div style="background: var(--gov-gray-50); padding: 1rem; border-radius: 10px;">
+                        <div style="font-size: 0.75rem; color: var(--gov-gray-500); text-transform: uppercase; margin-bottom: 0.25rem;">Severity</div>
+                        <span class="badge" ng-class="selectedLog.severityClass">{{selectedLog.severity}}</span>
+                    </div>
+                </div>
+                <div style="background: var(--gov-gray-50); padding: 1rem; border-radius: 10px;">
+                    <div style="font-size: 0.75rem; color: var(--gov-gray-500); text-transform: uppercase; margin-bottom: 0.25rem;">Resource</div>
+                    <div style="font-weight: 600; color: var(--gov-gray-800);">{{selectedLog.resource}}</div>
+                </div>
+                <div style="background: var(--gov-gray-50); padding: 1rem; border-radius: 10px;">
+                    <div style="font-size: 0.75rem; color: var(--gov-gray-500); text-transform: uppercase; margin-bottom: 0.25rem;">IP Address</div>
+                    <div style="font-weight: 600; color: var(--gov-gray-800);">{{selectedLog.ipAddress || '192.168.1.45'}}</div>
+                </div>
+                <div style="background: var(--gov-gray-50); padding: 1rem; border-radius: 10px;">
+                    <div style="font-size: 0.75rem; color: var(--gov-gray-500); text-transform: uppercase; margin-bottom: 0.25rem;">Session ID</div>
+                    <div style="font-weight: 600; color: var(--gov-gray-800); font-family: monospace;">{{selectedLog.sessionId || 'SES-' + $index + '-2026-FEB'}}</div>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--gov-gray-200);">
+                <button ng-click="closeDetailModal()" style="padding: 0.75rem 1.5rem; background: var(--gov-primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         var app = angular.module('adminApp', []);
 
@@ -390,13 +439,18 @@
 
             $scope.stats = { totalLogs: 45678, flagged: 12, compliance: 99.8, activeUsers: 156 };
             $scope.filters = { action: 'all', severity: 'all', date: null };
+            $scope.showDetailModal = false;
+            $scope.selectedLog = null;
 
             $scope.auditLogs = [
-                { timestamp: '08 Feb 2026, 02:45 PM', user: 'Rajesh Kumar', action: 'View', resource: 'Grievance Report', severity: 'Info', severityClass: 'info' },
-                { timestamp: '08 Feb 2026, 02:30 PM', user: 'Priya Sharma', action: 'Export', resource: 'Meter Data', severity: 'Warning', severityClass: 'warning' },
-                { timestamp: '08 Feb 2026, 02:15 PM', user: 'Amit Patel', action: 'Update', resource: 'Case GRV-2024-003', severity: 'Info', severityClass: 'info' },
-                { timestamp: '08 Feb 2026, 01:45 PM', user: 'System', action: 'Login', resource: 'Admin Portal', severity: 'Info', severityClass: 'info' },
-                { timestamp: '08 Feb 2026, 01:30 PM', user: 'Sunita Devi', action: 'Update', resource: 'RWA Settings', severity: 'Critical', severityClass: 'danger' }
+                { timestamp: '26 Feb 2026, 02:45 PM', user: 'Rajesh Kumar', action: 'View', resource: 'Grievance Report', severity: 'Info', severityClass: 'info', ipAddress: '192.168.1.45', sessionId: 'SES-001-2026-FEB' },
+                { timestamp: '26 Feb 2026, 02:30 PM', user: 'Priya Sharma', action: 'Export', resource: 'Meter Data', severity: 'Warning', severityClass: 'warning', ipAddress: '192.168.1.67', sessionId: 'SES-002-2026-FEB' },
+                { timestamp: '26 Feb 2026, 02:15 PM', user: 'Amit Patel', action: 'Update', resource: 'Case GRV-2024-003', severity: 'Info', severityClass: 'info', ipAddress: '192.168.1.32', sessionId: 'SES-003-2026-FEB' },
+                { timestamp: '26 Feb 2026, 01:45 PM', user: 'System', action: 'Login', resource: 'Admin Portal', severity: 'Info', severityClass: 'info', ipAddress: '127.0.0.1', sessionId: 'SES-SYS-2026-FEB' },
+                { timestamp: '26 Feb 2026, 01:30 PM', user: 'Sunita Devi', action: 'Update', resource: 'RWA Settings', severity: 'Critical', severityClass: 'danger', ipAddress: '192.168.1.89', sessionId: 'SES-004-2026-FEB' },
+                { timestamp: '26 Feb 2026, 01:15 PM', user: 'Vikram Singh', action: 'View', resource: 'Meter Readings', severity: 'Info', severityClass: 'info', ipAddress: '192.168.2.12', sessionId: 'SES-005-2026-FEB' },
+                { timestamp: '26 Feb 2026, 12:45 PM', user: 'Kiran Mehta', action: 'Update', resource: 'Policy Document', severity: 'Warning', severityClass: 'warning', ipAddress: '192.168.1.56', sessionId: 'SES-006-2026-FEB' },
+                { timestamp: '26 Feb 2026, 12:30 PM', user: 'Rajesh Kumar', action: 'Export', resource: 'Performance Report', severity: 'Info', severityClass: 'info', ipAddress: '192.168.1.45', sessionId: 'SES-007-2026-FEB' }
             ];
 
             $scope.filteredLogs = function () {
@@ -407,8 +461,17 @@
                 });
             };
 
-            $scope.viewDetails = function (log) { alert('Viewing audit details for: ' + log.resource); };
-            $scope.logout = function () { if (confirm('Are you sure you want to logout?')) alert('Logged out successfully'); };
+            $scope.viewDetails = function (log) {
+                $scope.selectedLog = log;
+                $scope.showDetailModal = true;
+            };
+            
+            $scope.closeDetailModal = function () {
+                $scope.showDetailModal = false;
+                $scope.selectedLog = null;
+            };
+            
+            $scope.logout = function () { if (confirm('Are you sure you want to logout?')) window.location.href = '/static/app/views/landing.html'; };
         }]);
     </script>
 </body>

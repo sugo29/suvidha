@@ -1,7 +1,6 @@
 /* ============================================
    FIELD AGENT DASHBOARD
-   Suvidha Worker Portal
-   Matching Admin Dashboard Style
+   Suvidha Worker Portal - Professional Modern Design
    ============================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
@@ -10,68 +9,74 @@
    CSS VARIABLES
    ============================================ */
 :root {
+    /* Field Agent Color Palette - Distinct from Admin */
+    --agent-primary: #2563eb;
+    --agent-primary-light: #3b82f6;
+    --agent-primary-dark: #1d4ed8;
+    --agent-accent: #0891b2;
+
     /* Government Color Palette - Same as Admin */
     --gov-primary: #1a365d;
     --gov-primary-light: #2c5282;
     --gov-primary-dark: #0f2744;
 
     /* Semantic Colors */
-    --gov-success: #38a169;
-    --gov-success-light: rgba(56, 161, 105, 0.15);
-    --gov-warning: #dd6b20;
-    --gov-warning-light: rgba(221, 107, 32, 0.15);
-    --gov-danger: #e53e3e;
-    --gov-danger-light: rgba(229, 62, 62, 0.15);
-    --gov-info: #3182ce;
-    --gov-info-light: rgba(49, 130, 206, 0.15);
+    --gov-success: #10b981;
+    --gov-success-light: rgba(16, 185, 129, 0.15);
+    --gov-warning: #f59e0b;
+    --gov-warning-light: rgba(245, 158, 11, 0.15);
+    --gov-danger: #ef4444;
+    --gov-danger-light: rgba(239, 68, 68, 0.15);
+    --gov-info: #3b82f6;
+    --gov-info-light: rgba(59, 130, 246, 0.15);
     --gov-pending: #f59e0b;
     --gov-pending-light: rgba(245, 158, 11, 0.15);
 
-    /* Neutral Grays */
-    --gov-gray-50: #f7fafc;
-    --gov-gray-100: #edf2f7;
+    /* Neutral Grays - Modern */
+    --gov-gray-50: #f8fafc;
+    --gov-gray-100: #f1f5f9;
     --gov-gray-200: #e2e8f0;
-    --gov-gray-300: #cbd5e0;
-    --gov-gray-400: #a0aec0;
-    --gov-gray-500: #718096;
-    --gov-gray-600: #4a5568;
-    --gov-gray-700: #2d3748;
-    --gov-gray-800: #1a202c;
-    --gov-gray-900: #171923;
+    --gov-gray-300: #cbd5e1;
+    --gov-gray-400: #94a3b8;
+    --gov-gray-500: #64748b;
+    --gov-gray-600: #475569;
+    --gov-gray-700: #334155;
+    --gov-gray-800: #1e293b;
+    --gov-gray-900: #0f172a;
 
-    /* Worker specific - keeping for compatibility */
-    --worker-primary: #1a365d;
-    --worker-primary-light: rgba(26, 54, 93, 0.1);
-    --worker-primary-dark: #0f2744;
-    --worker-accent: #3182ce;
-    --worker-success: #38a169;
-    --worker-success-light: rgba(56, 161, 105, 0.15);
-    --worker-warning: #dd6b20;
-    --worker-warning-light: rgba(221, 107, 32, 0.15);
-    --worker-danger: #e53e3e;
-    --worker-danger-light: rgba(229, 62, 62, 0.15);
-    --worker-info: #3182ce;
-    --worker-info-light: rgba(49, 130, 206, 0.15);
+    /* Worker specific */
+    --worker-primary: #2563eb;
+    --worker-primary-light: rgba(37, 99, 235, 0.1);
+    --worker-primary-dark: #1d4ed8;
+    --worker-accent: #0891b2;
+    --worker-success: #10b981;
+    --worker-success-light: rgba(16, 185, 129, 0.15);
+    --worker-warning: #f59e0b;
+    --worker-warning-light: rgba(245, 158, 11, 0.15);
+    --worker-danger: #ef4444;
+    --worker-danger-light: rgba(239, 68, 68, 0.15);
+    --worker-info: #3b82f6;
+    --worker-info-light: rgba(59, 130, 246, 0.15);
     --worker-pending: #f59e0b;
     --worker-pending-light: rgba(245, 158, 11, 0.15);
-    --worker-gray-50: #f7fafc;
-    --worker-gray-100: #edf2f7;
+    --worker-gray-50: #f8fafc;
+    --worker-gray-100: #f1f5f9;
     --worker-gray-200: #e2e8f0;
-    --worker-gray-300: #cbd5e0;
-    --worker-gray-400: #a0aec0;
-    --worker-gray-500: #718096;
-    --worker-gray-600: #4a5568;
-    --worker-gray-700: #2d3748;
-    --worker-gray-800: #1a202c;
+    --worker-gray-300: #cbd5e1;
+    --worker-gray-400: #94a3b8;
+    --worker-gray-500: #64748b;
+    --worker-gray-600: #475569;
+    --worker-gray-700: #334155;
+    --worker-gray-800: #1e293b;
 
-    /* Glass Effect - Same as Admin */
-    --glass-bg: rgba(255, 255, 255, 0.88);
-    --glass-border: rgba(255, 255, 255, 0.5);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+    /* Glass Effect */
+    --glass-bg: rgba(255, 255, 255, 0.92);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 
     /* Layout */
     --sidebar-width: 260px;
-    --topbar-height: 72px;
+    --topbar-height: 70px;
 
     /* Transitions */
     --transition-fast: 0.15s ease;
@@ -258,6 +263,178 @@ body {
 
 .nav-text {
     flex: 1;
+}
+
+/* Nav Section Grouping */
+.nav-section {
+    margin-bottom: 0.5rem;
+    padding: 0 0.75rem;
+}
+
+.nav-section-title {
+    display: block;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(0, 0, 0, 0.5);
+    padding: 0.75rem 0.75rem 0.5rem;
+    font-weight: 600;
+}
+
+/* Nav Icon Wrapper */
+.nav-icon-wrapper {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.nav-item:hover .nav-icon-wrapper,
+.nav-item.active .nav-icon-wrapper {
+    background: rgba(37, 99, 235, 0.15);
+}
+
+/* Nav Badges */
+.nav-badge {
+    background: var(--gov-danger);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.nav-badge.warning {
+    background: var(--gov-warning);
+}
+
+.nav-badge.success {
+    background: var(--gov-success);
+}
+
+/* Nav Score */
+.nav-score {
+    background: linear-gradient(135deg, var(--gov-success), #059669);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 8px;
+}
+
+/* Agent Status Card */
+.agent-status-card {
+    margin: 0.75rem 1rem;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--gov-gray-400);
+    box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.3);
+}
+
+.status-indicator.online .status-dot {
+    background: var(--gov-success);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+    animation: pulse 2s infinite;
+}
+
+.status-indicator.busy .status-dot {
+    background: var(--gov-warning);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.3);
+}
+
+.status-indicator.offline .status-dot {
+    background: var(--gov-gray-400);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+.status-text {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #000;
+}
+
+.gps-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.7rem;
+    color: rgba(0, 0, 0, 0.5);
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.gps-indicator.active {
+    color: var(--gov-success);
+}
+
+.gps-icon {
+    font-size: 0.8rem;
+}
+
+/* Brand Logo Styles */
+.brand-logo {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--agent-primary), var(--agent-primary-dark));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.brand-icon-wrapper {
+    font-size: 1.25rem;
+    color: white;
+}
+
+.brand-text h1 {
+    color: #000;
+}
+
+.brand-subtitle {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(0, 0, 0, 0.5);
+    font-weight: 600;
+}
+
+/* User Category & Ward */
+.user-category {
+    font-size: 0.7rem;
+    color: var(--agent-primary);
+    font-weight: 600;
+}
+
+.user-ward {
+    font-size: 0.65rem;
+    color: rgba(0, 0, 0, 0.5);
 }
 
 /* Sidebar Footer */

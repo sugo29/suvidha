@@ -323,6 +323,7 @@ class FieldOperation(db.Model):
     # Assignment
     assigned_team = db.Column(db.String(100), nullable=True)
     assigned_official_id = db.Column(db.String(36), db.ForeignKey('gov_officials.id'), nullable=True)
+    field_agent_id = db.Column(db.String(36), db.ForeignKey('field_agents.id'), nullable=True)  # Link to field worker
     
     # Status
     status = db.Column(db.String(50), default='scheduled')  # scheduled, in_progress, completed, cancelled
@@ -336,6 +337,7 @@ class FieldOperation(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     assigned_official = db.relationship('GovOfficial', backref='field_operations')
+    field_agent = db.relationship('FieldAgent', backref='field_operations')
     
     def to_dict(self):
         return {
@@ -769,4 +771,429 @@ class ServiceReport(db.Model):
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat(),
             'resolved_at': self.resolved_at.isoformat() if self.resolved_at else None
+        }
+
+
+# ============================================
+# FIELD AGENTS TABLE (Workers - Meter Reading, Water, Gas, RWA)
+# ============================================
+class FieldAgent(db.Model):
+    __tablename__ = 'field_agents'
+    
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    employee_id = db.Column(db.String(50), unique=True, nullable=False, index=True)  # FA-XXXX format
+    
+    # Personal Info
+    full_name = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(255), unique=True, nullable=False, index=True)
+    phone = db.Column(db.String(20), nullable=False)
+    password = db.Column(db.String(255), nullable=False)
+    
+    # Category of Work
+    category = db.Column(db.String(50), nullable=False)  # electric_meter, water_meter, gas_cylinder, rwa_work
+    
+    # Supervisor (Government Official Admin)
+    supervisor_id = db.Column(db.String(36), db.ForeignKey('gov_officials.id'), nullable=True)
+    
+    # Assignment Area
+    assigned_state = db.Column(db.String(100), nullable=True)
+    assigned_district = db.Column(db.String(100), nullable=True)
+    assigned_ward = db.Column(db.String(100), nullable=True)
+    
+    # Status
+    status = db.Column(db.String(20), default='offline')  # online, on_task, offline, break
+    is_active = db.Column(db.Boolean, default=True)
+    is_verified = db.Column(db.Boolean, default=True)
+    
+    # GPS Tracking
+    gps_enabled = db.Column(db.Boolean, default=False)
+    current_latitude = db.Column(db.Float, nullable=True)
+    current_longitude = db.Column(db.Float, nullable=True)
+    current_address = db.Column(db.String(500), nullable=True)
+    location_updated_at = db.Column(db.DateTime, nullable=True)
+    
+    # Performance (current snapshot)
+    performance_score = db.Column(db.Float, default=50.0)  # 0-100, AI-calculated like credit score
+    tasks_completed_today = db.Column(db.Integer, default=0)
+    total_tasks_completed = db.Column(db.Integer, default=0)
+    avg_task_time = db.Column(db.Float, default=0.0)  # in minutes
+    
+    # Timestamps
+    last_login = db.Column(db.DateTime, nullable=True)
+    account_created = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationship
+    supervisor = db.relationship('GovOfficial', backref='field_agents')
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'employee_id': self.employee_id,
+            'full_name': self.full_name,
+            'email': self.email,
+            'phone': self.phone,
+            'category': self.category,
+            'supervisor_id': self.supervisor_id,
+            'assigned_state': self.assigned_state,
+            'assigned_district': self.assigned_district,
+            'assigned_ward': self.assigned_ward,
+            'status': self.status,
+            'is_active': self.is_active,
+            'is_verified': self.is_verified,
+            'gps_enabled': self.gps_enabled,
+            'current_latitude': self.current_latitude,
+            'current_longitude': self.current_longitude,
+            'current_address': self.current_address,
+            'location_updated_at': self.location_updated_at.isoformat() if self.location_updated_at else None,
+            'performance_score': self.performance_score,
+            'tasks_completed_today': self.tasks_completed_today,
+            'total_tasks_completed': self.total_tasks_completed,
+            'avg_task_time': self.avg_task_time,
+            'last_login': self.last_login.isoformat() if self.last_login else None,
+            'account_created': self.account_created.isoformat() if self.account_created else None
+        }
+
+
+# ============================================
+# TASK ASSIGNMENTS TABLE (Tasks assigned to Field Agents)
+# ============================================
+class TaskAssignment(db.Model):
+    __tablename__ = 'task_assignments'
+    
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    task_id = db.Column(db.String(50), unique=True, nullable=False, index=True)  # TASK-YYYYMMDD-XXXXX
+    
+    # Assignment
+    agent_id = db.Column(db.String(36), db.ForeignKey('field_agents.id'), nullable=False)
+    assigned_by = db.Column(db.String(36), db.ForeignKey('gov_officials.id'), nullable=False)
+    
+    # Task Type
+    task_type = db.Column(db.String(50), nullable=False)  # electric_meter, water_meter, gas_cylinder, rwa_work, grievance, inspection
+    
+    # Location Details
+    house_number = db.Column(db.String(100), nullable=False)
+    ward = db.Column(db.String(100), nullable=False, index=True)
+    city = db.Column(db.String(100), nullable=False)
+    full_address = db.Column(db.String(500), nullable=True)
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
+    
+    # Task Details
+    description = db.Column(db.Text, nullable=True)
+    priority = db.Column(db.String(20), default='normal')  # low, normal, high, urgent
+    
+    # Status
+    status = db.Column(db.String(20), default='pending')  # pending, in_progress, completed, cancelled, failed
+    
+    # Work Evidence
+    photo_url = db.Column(db.String(500), nullable=True)
+    photos_added = db.Column(db.Boolean, default=False)
+    
+    # Problem Reporting
+    problem_raised = db.Column(db.Boolean, default=False)
+    problem_type = db.Column(db.String(100), nullable=True)  # meter_tampering, leakage, damaged, inaccessible, etc.
+    problem_description = db.Column(db.Text, nullable=True)
+    
+    # Meter Reading (if applicable)
+    meter_reading = db.Column(db.Float, nullable=True)
+    meter_id = db.Column(db.String(50), nullable=True)
+    
+    # Timestamps
+    assigned_at = db.Column(db.DateTime, default=datetime.utcnow)
+    started_at = db.Column(db.DateTime, nullable=True)
+    arrived_at = db.Column(db.DateTime, nullable=True)
+    completed_at = db.Column(db.DateTime, nullable=True)
+    
+    # Time tracking
+    completion_time_minutes = db.Column(db.Integer, nullable=True)
+    
+    # Relationships
+    agent = db.relationship('FieldAgent', backref='task_assignments')
+    assigner = db.relationship('GovOfficial', backref='assigned_tasks')
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'task_id': self.task_id,
+            'agent_id': self.agent_id,
+            'assigned_by': self.assigned_by,
+            'task_type': self.task_type,
+            'house_number': self.house_number,
+            'ward': self.ward,
+            'city': self.city,
+            'full_address': self.full_address,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'description': self.description,
+            'priority': self.priority,
+            'status': self.status,
+            'photo_url': self.photo_url,
+            'photos_added': self.photos_added,
+            'problem_raised': self.problem_raised,
+            'problem_type': self.problem_type,
+            'problem_description': self.problem_description,
+            'meter_reading': self.meter_reading,
+            'meter_id': self.meter_id,
+            'assigned_at': self.assigned_at.isoformat() if self.assigned_at else None,
+            'started_at': self.started_at.isoformat() if self.started_at else None,
+            'arrived_at': self.arrived_at.isoformat() if self.arrived_at else None,
+            'completed_at': self.completed_at.isoformat() if self.completed_at else None,
+            'completion_time_minutes': self.completion_time_minutes
+        }
+
+
+# ============================================
+# AGENT LOCATION HISTORY TABLE (GPS Tracking)
+# ============================================
+class AgentLocationHistory(db.Model):
+    __tablename__ = 'agent_location_history'
+    
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    agent_id = db.Column(db.String(36), db.ForeignKey('field_agents.id'), nullable=False)
+    
+    # Location
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+    address = db.Column(db.String(500), nullable=True)
+    accuracy = db.Column(db.Float, nullable=True)  # GPS accuracy in meters
+    
+    # Context
+    activity = db.Column(db.String(50), nullable=True)  # traveling, arrived, working, idle
+    task_id = db.Column(db.String(36), db.ForeignKey('task_assignments.id'), nullable=True)
+    
+    # Timestamp
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    
+    # Relationship
+    agent = db.relationship('FieldAgent', backref='location_history')
+    task = db.relationship('TaskAssignment', backref='location_logs')
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'agent_id': self.agent_id,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'address': self.address,
+            'accuracy': self.accuracy,
+            'activity': self.activity,
+            'task_id': self.task_id,
+            'timestamp': self.timestamp.isoformat() if self.timestamp else None
+        }
+
+
+# ============================================
+# AGENT PERFORMANCE TABLE (Monthly AI-based Scoring History)
+# ============================================
+class AgentPerformance(db.Model):
+    __tablename__ = 'agent_performance'
+    
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    agent_id = db.Column(db.String(36), db.ForeignKey('field_agents.id'), nullable=False)
+    
+    # Period
+    month = db.Column(db.Integer, nullable=False)  # 1-12
+    year = db.Column(db.Integer, nullable=False)
+    
+    # Task Metrics
+    tasks_assigned = db.Column(db.Integer, default=0)
+    tasks_completed = db.Column(db.Integer, default=0)
+    tasks_failed = db.Column(db.Integer, default=0)
+    completion_rate = db.Column(db.Float, default=0.0)  # percentage
+    
+    # Time Metrics
+    avg_completion_time = db.Column(db.Float, default=0.0)  # minutes
+    on_time_rate = db.Column(db.Float, default=0.0)  # percentage of tasks completed within target time
+    
+    # Quality Metrics
+    problems_flagged = db.Column(db.Integer, default=0)
+    photos_uploaded = db.Column(db.Integer, default=0)
+    photo_compliance_rate = db.Column(db.Float, default=0.0)  # percentage
+    
+    # Customer Feedback
+    feedback_count = db.Column(db.Integer, default=0)
+    avg_rating = db.Column(db.Float, default=0.0)  # 1-5 stars
+    
+    # AI Score (like Credit Score)
+    score = db.Column(db.Float, default=50.0)  # 0-100
+    rating = db.Column(db.String(20), default='average')  # excellent (90+), good (70-89), average (50-69), poor (<50)
+    score_change = db.Column(db.Float, default=0.0)  # change from previous month
+    
+    # Factors affecting score (AI reasoning)
+    score_factors = db.Column(db.Text, nullable=True)  # JSON string of factors
+    
+    # Timestamp
+    calculated_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationship
+    agent = db.relationship('FieldAgent', backref='performance_history')
+    
+    # Unique constraint for agent + month + year
+    __table_args__ = (
+        db.UniqueConstraint('agent_id', 'month', 'year', name='unique_agent_month_year'),
+    )
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'agent_id': self.agent_id,
+            'month': self.month,
+            'year': self.year,
+            'tasks_assigned': self.tasks_assigned,
+            'tasks_completed': self.tasks_completed,
+            'tasks_failed': self.tasks_failed,
+            'completion_rate': self.completion_rate,
+            'avg_completion_time': self.avg_completion_time,
+            'on_time_rate': self.on_time_rate,
+            'problems_flagged': self.problems_flagged,
+            'photos_uploaded': self.photos_uploaded,
+            'photo_compliance_rate': self.photo_compliance_rate,
+            'feedback_count': self.feedback_count,
+            'avg_rating': self.avg_rating,
+            'score': self.score,
+            'rating': self.rating,
+            'score_change': self.score_change,
+            'score_factors': self.score_factors,
+            'calculated_at': self.calculated_at.isoformat() if self.calculated_at else None
+        }
+
+
+# ============================================
+# HOUSEHOLD TABLE (Residents in assigned areas)
+# ============================================
+class Household(db.Model):
+    __tablename__ = 'households'
+    
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    house_number = db.Column(db.String(50), nullable=False, index=True)
+    
+    # Location
+    ward = db.Column(db.String(100), nullable=False, index=True)
+    district = db.Column(db.String(100), nullable=False, index=True)
+    state = db.Column(db.String(100), nullable=False, index=True)
+    locality = db.Column(db.String(255), nullable=True)
+    full_address = db.Column(db.String(500), nullable=False)
+    block = db.Column(db.String(100), nullable=True)
+    sector = db.Column(db.String(100), nullable=True)
+    
+    # GPS coordinates
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
+    
+    # Resident Info
+    resident_name = db.Column(db.String(255), nullable=False)
+    contact_phone = db.Column(db.String(20), nullable=True)
+    num_residents = db.Column(db.Integer, default=1)
+    resident_category = db.Column(db.String(50), default='general')  # general, senior_citizen, disabled, bpl
+    
+    # Meter Information
+    meter_id = db.Column(db.String(50), nullable=True, index=True)
+    meter_type = db.Column(db.String(50), default='electric')  # electric, water, gas
+    
+    # Status
+    is_active = db.Column(db.Boolean, default=True)
+    connection_status = db.Column(db.String(50), default='active')  # active, disconnected, pending
+    
+    # Timestamps
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'house_number': self.house_number,
+            'ward': self.ward,
+            'district': self.district,
+            'state': self.state,
+            'locality': self.locality,
+            'full_address': self.full_address,
+            'block': self.block,
+            'sector': self.sector,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'resident_name': self.resident_name,
+            'contact_phone': self.contact_phone,
+            'num_residents': self.num_residents,
+            'resident_category': self.resident_category,
+            'meter_id': self.meter_id,
+            'meter_type': self.meter_type,
+            'is_active': self.is_active,
+            'connection_status': self.connection_status,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None
+        }
+
+
+# ============================================
+# METER SUBMISSION TABLE (Readings with photos)
+# ============================================
+class MeterSubmission(db.Model):
+    __tablename__ = 'meter_submissions'
+    
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    submission_id = db.Column(db.String(50), unique=True, nullable=False, index=True)  # SUB-YYYYMMDD-XXXXX
+    
+    # Task/Assignment Reference
+    task_id = db.Column(db.String(36), db.ForeignKey('task_assignments.id'), nullable=True)
+    agent_id = db.Column(db.String(36), db.ForeignKey('field_agents.id'), nullable=False)
+    household_id = db.Column(db.String(36), db.ForeignKey('households.id'), nullable=True)
+    
+    # Reading Details
+    meter_reading = db.Column(db.Float, nullable=True)
+    meter_type = db.Column(db.String(50), default='electric')  # electric, water, gas
+    reading_unit = db.Column(db.String(20), default='kWh')  # kWh, kL, SCM
+    
+    # Photo Evidence
+    photo_data = db.Column(db.Text, nullable=True)  # Base64 encoded image
+    photo_filename = db.Column(db.String(255), nullable=True)
+    photo_captured_at = db.Column(db.DateTime, nullable=True)
+    
+    # Location at submission
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
+    address = db.Column(db.String(500), nullable=True)
+    
+    # Status
+    status = db.Column(db.String(50), default='submitted')  # submitted, verified, rejected, flagged
+    submission_type = db.Column(db.String(20), default='reading')  # reading, skip
+    skip_reason = db.Column(db.String(255), nullable=True)
+    
+    # Verification
+    verified_by = db.Column(db.String(36), db.ForeignKey('gov_officials.id'), nullable=True)
+    verified_at = db.Column(db.DateTime, nullable=True)
+    ai_confidence = db.Column(db.Float, default=100.0)  # 0-100%
+    
+    # Timestamps
+    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    task = db.relationship('TaskAssignment', backref='submissions')
+    agent = db.relationship('FieldAgent', backref='meter_submissions')
+    household = db.relationship('Household', backref='meter_submissions')
+    verifier = db.relationship('GovOfficial', backref='verified_submissions')
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'submission_id': self.submission_id,
+            'task_id': self.task_id,
+            'agent_id': self.agent_id,
+            'household_id': self.household_id,
+            'meter_reading': self.meter_reading,
+            'meter_type': self.meter_type,
+            'reading_unit': self.reading_unit,
+            'photo_data': self.photo_data,
+            'photo_filename': self.photo_filename,
+            'photo_captured_at': self.photo_captured_at.isoformat() if self.photo_captured_at else None,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'address': self.address,
+            'status': self.status,
+            'submission_type': self.submission_type,
+            'skip_reason': self.skip_reason,
+            'verified_by': self.verified_by,
+            'verified_at': self.verified_at.isoformat() if self.verified_at else None,
+            'ai_confidence': self.ai_confidence,
+            'submitted_at': self.submitted_at.isoformat() if self.submitted_at else None
         }

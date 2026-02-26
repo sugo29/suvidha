@@ -484,6 +484,59 @@
             margin-bottom: 1rem;
         }
 
+        .points-selection {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+
+        .points-box {
+            width: 70px;
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--gov-gray-300);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .points-box:hover {
+            border-color: var(--gov-success);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.15);
+        }
+
+        .points-box.selected {
+            border-color: var(--gov-success);
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+        }
+
+        .points-box .points-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gov-success);
+        }
+
+        .points-box .points-label {
+            font-size: 0.7rem;
+            color: var(--gov-gray-500);
+            text-transform: uppercase;
+        }
+
+        .selected-points-display {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--gov-success);
+            margin: 0.5rem 0;
+        }
+
         .gov-btn {
             padding: 0.6rem 1.25rem;
             border-radius: var(--radius-sm);
@@ -561,7 +614,9 @@
     <aside class="gov-sidebar">
         <div class="sidebar-header">
             <div class="sidebar-brand">
-                <div class="brand-icon">🏛️</div>
+                <div class="brand-icon">
+                    <img src="/static/images/suvidha Logo.jpg" alt="Suvidha" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.innerHTML='🏛️'">
+                </div>
                 <div class="brand-text">
                     <h1>Suvidha</h1><span>CITY CONTROL ROOM</span>
                 </div>
@@ -811,7 +866,7 @@
                 </div>
                 <div class="modal-footer">
                     <button class="gov-btn gov-btn-outline" ng-click="closeParticipantModal()">Close</button>
-                    <button class="gov-btn gov-btn-success" ng-click="openAwardFromDetails()">🎁 Award 100 Points</button>
+                    <button class="gov-btn gov-btn-success" ng-click="openAwardFromDetails()">🎁 Award Points</button>
                 </div>
             </div>
         </div>
@@ -833,8 +888,26 @@
                     </div>
 
                     <div class="award-section">
-                        <div class="award-title">🎁 Award Bonus Points</div>
-                        <div class="award-points-display">+100</div>
+                        <div class="award-title">🎁 Select Points to Award</div>
+                        <div class="points-selection">
+                            <div class="points-box" ng-class="{'selected': selectedAwardPoints === 10}" ng-click="selectedAwardPoints = 10">
+                                <span class="points-value">10</span>
+                                <span class="points-label">Points</span>
+                            </div>
+                            <div class="points-box" ng-class="{'selected': selectedAwardPoints === 20}" ng-click="selectedAwardPoints = 20">
+                                <span class="points-value">20</span>
+                                <span class="points-label">Points</span>
+                            </div>
+                            <div class="points-box" ng-class="{'selected': selectedAwardPoints === 50}" ng-click="selectedAwardPoints = 50">
+                                <span class="points-value">50</span>
+                                <span class="points-label">Points</span>
+                            </div>
+                            <div class="points-box" ng-class="{'selected': selectedAwardPoints === 100}" ng-click="selectedAwardPoints = 100">
+                                <span class="points-value">100</span>
+                                <span class="points-label">Points</span>
+                            </div>
+                        </div>
+                        <div class="selected-points-display">+{{selectedAwardPoints}}</div>
                         <div class="award-note">Reward this participant for their excellent contribution to community programs.</div>
                     </div>
 
@@ -1038,9 +1111,12 @@
                 $scope.showAwardModal = true;
             };
 
+            $scope.selectedAwardPoints = 50; // Default selection
+
             $scope.closeAwardModal = function() {
                 $scope.showAwardModal = false;
                 $scope.awardReason = '';
+                $scope.selectedAwardPoints = 50; // Reset to default
             };
 
             $scope.openAwardFromDetails = function() {
@@ -1050,12 +1126,13 @@
             };
 
             $scope.confirmAward = function() {
-                if ($scope.awardTarget) {
-                    $scope.awardTarget.weeklyPoints += 100;
-                    $scope.awardTarget.monthlyPoints += 100;
-                    $scope.awardTarget.totalPoints += 100;
+                if ($scope.awardTarget && $scope.selectedAwardPoints) {
+                    var points = $scope.selectedAwardPoints;
+                    $scope.awardTarget.weeklyPoints += points;
+                    $scope.awardTarget.monthlyPoints += points;
+                    $scope.awardTarget.totalPoints += points;
                     $scope.stats.rewardsDistributed++;
-                    alert('Successfully awarded 100 points to ' + $scope.awardTarget.name + '!');
+                    alert('Successfully awarded ' + points + ' points to ' + $scope.awardTarget.name + '!');
                     $scope.closeAwardModal();
                 }
             };

@@ -678,7 +678,9 @@
     <aside class="gov-sidebar">
         <div class="sidebar-header">
             <div class="sidebar-brand">
-                <div class="brand-icon">🏛️</div>
+                <div class="brand-icon">
+                    <img src="/static/images/suvidha Logo.jpg" alt="Suvidha" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.innerHTML='🏛️'">
+                </div>
                 <div class="brand-text">
                     <h1>Suvidha</h1>
                     <span>CITY CONTROL ROOM</span>
@@ -1055,12 +1057,17 @@
 
             <!-- Citizen Participation - Collapsible -->
             <div class="citizen-section">
-                <div class="citizen-section-header" ng-click="citizenSectionOpen = !citizenSectionOpen">
-                    <div>
+                <div class="citizen-section-header">
+                    <div ng-click="citizenSectionOpen = !citizenSectionOpen" style="cursor: pointer; flex: 1;">
                         <h3 style="margin: 0;">👥 Citizen Participation</h3>
                         <span style="font-size: 13px; color: #64748b;">{{citizenStats.totalParticipants}} active participants this week</span>
                     </div>
-                    <span class="expand-icon">{{citizenSectionOpen ? '▼' : '▶'}}</span>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <a href="participation.html" class="view-full-btn" style="padding: 6px 12px; background: var(--gov-primary); color: white; border-radius: 6px; font-size: 12px; text-decoration: none; font-weight: 500;">
+                            View Full Page →
+                        </a>
+                        <span class="expand-icon" ng-click="citizenSectionOpen = !citizenSectionOpen" style="cursor: pointer;">{{citizenSectionOpen ? '▼' : '▶'}}</span>
+                    </div>
                 </div>
                 <div class="citizen-section-body" ng-show="citizenSectionOpen">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
@@ -1857,9 +1864,15 @@
                 } else if (filter === 'completed') {
                     $scope.filteredRecords = $scope.records.filter(function(r) { return r.status === 'Completed'; });
                 } else if (filter === 'pending') {
-                    $scope.filteredRecords = $scope.records.filter(function(r) { return r.status === 'In Progress'; });
+                    // Show In Progress and Delayed records
+                    $scope.filteredRecords = $scope.records.filter(function(r) { 
+                        return r.status === 'In Progress' || r.status === 'Delayed'; 
+                    });
                 } else if (filter === 'issues') {
-                    $scope.filteredRecords = $scope.records.filter(function(r) { return r.issues && r.issues.length > 0; });
+                    // Show records with issues or With Issues status
+                    $scope.filteredRecords = $scope.records.filter(function(r) { 
+                        return (r.issues && r.issues.length > 0) || r.status === 'With Issues' || r.status === 'Delayed'; 
+                    });
                 }
             };
             

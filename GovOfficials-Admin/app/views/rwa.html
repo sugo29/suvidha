@@ -421,7 +421,9 @@
     <aside class="gov-sidebar">
         <div class="sidebar-header">
             <div class="sidebar-brand">
-                <div class="brand-icon">🏛️</div>
+                <div class="brand-icon">
+                    <img src="/static/images/suvidha Logo.jpg" alt="Suvidha" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.innerHTML='🏛️'">
+                </div>
                 <div class="brand-text">
                     <h1>Suvidha</h1><span>CITY CONTROL ROOM</span>
                 </div>
@@ -590,148 +592,175 @@
 
         <!-- View Details Modal -->
         <div class="modal-overlay" ng-show="showDetails" ng-click="closeModal()">
-            <div class="modal-content" ng-click="$event.stopPropagation()">
-                <div class="modal-header">
-                    <h2 style="margin: 0; font-size: 1.25rem; font-weight: 600;">{{selectedRwa.name}}</h2>
-                    <button class="modal-close" ng-click="closeModal()">&times;</button>
+            <div class="modal-content" ng-click="$event.stopPropagation()" style="max-width: 680px;">
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--gov-primary) 0%, #1e40af 100%); color: white; border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
+                    <div>
+                        <h2 style="margin: 0; font-size: 1.15rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                            <span>🏢</span> {{selectedRwa.name}}
+                        </h2>
+                        <span style="font-size: 0.8rem; opacity: 0.9;">{{selectedRwa.location}} • {{selectedRwa.id}}</span>
+                    </div>
+                    <button class="modal-close" ng-click="closeModal()" style="color: white; background: rgba(255,255,255,0.2); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">&times;</button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="padding: 1.5rem;">
+                    <!-- Status Badge and Stats Row -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                        <span class="status-badge" ng-class="selectedRwa.statusClass" style="padding: 0.5rem 1rem; font-size: 0.85rem;">{{selectedRwa.status}}</span>
+                        <div style="display: flex; gap: 1.5rem;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--gov-primary);">{{selectedRwa.households}}</div>
+                                <div style="font-size: 0.7rem; color: var(--gov-gray-500); text-transform: uppercase;">Households</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--gov-success);">{{selectedRwa.collectionRate}}%</div>
+                                <div style="font-size: 0.7rem; color: var(--gov-gray-500); text-transform: uppercase;">Collection</div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- RWA Information -->
                     <div class="detail-section">
-                        <h3>RWA Information</h3>
-                        <div class="detail-grid">
-                            <div class="detail-item">
-                                <span class="detail-label">RWA ID</span>
-                                <span class="detail-value">{{selectedRwa.id}}</span>
+                        <h4 style="font-size: 0.95rem; color: var(--gov-gray-700); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <span>📋</span> RWA Information
+                        </h4>
+                        <div class="detail-grid" style="gap: 0.75rem;">
+                            <div class="detail-item" style="background: var(--gov-gray-50); padding: 0.75rem; border-radius: var(--radius-sm);">
+                                <label>RWA ID</label>
+                                <span style="color: var(--gov-primary); font-weight: 600;">{{selectedRwa.id}}</span>
                             </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Location</span>
-                                <span class="detail-value">{{selectedRwa.location}}</span>
+                            <div class="detail-item" style="background: var(--gov-gray-50); padding: 0.75rem; border-radius: var(--radius-sm);">
+                                <label>Location</label>
+                                <span>{{selectedRwa.location}}</span>
                             </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Status</span>
-                                <span class="status-badge" ng-class="selectedRwa.statusClass">{{selectedRwa.status}}</span>
+                            <div class="detail-item" style="background: var(--gov-gray-50); padding: 0.75rem; border-radius: var(--radius-sm);">
+                                <label>Established</label>
+                                <span>{{selectedRwa.established}}</span>
                             </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Established</span>
-                                <span class="detail-value">{{selectedRwa.established}}</span>
+                            <div class="detail-item" style="background: var(--gov-gray-50); padding: 0.75rem; border-radius: var(--radius-sm);">
+                                <label>Last Inspection</label>
+                                <span>{{selectedRwa.lastInspection}}</span>
                             </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Households</span>
-                                <span class="detail-value">{{selectedRwa.households}}</span>
+                            <div class="detail-item" style="background: var(--gov-gray-50); padding: 0.75rem; border-radius: var(--radius-sm); grid-column: span 2;">
+                                <label>President</label>
+                                <span style="font-weight: 600;">{{selectedRwa.president}}</span>
                             </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Collection Rate</span>
-                                <span class="detail-value">{{selectedRwa.collectionRate}}%</span>
+                        </div>
+                    </div>
+
+                    <!-- Complaint Statistics -->
+                    <div class="detail-section">
+                        <h4 style="font-size: 0.95rem; color: var(--gov-gray-700); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <span>📊</span> Complaint Statistics
+                        </h4>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+                            <div style="text-align: center; padding: 1rem; background: rgba(49, 130, 206, 0.1); border-radius: var(--radius-md);">
+                                <div style="font-size: 1.75rem; font-weight: 700; color: var(--gov-primary);">{{selectedRwa.complaints}}</div>
+                                <div style="font-size: 0.75rem; color: var(--gov-gray-600);">Total Complaints</div>
                             </div>
-                            <div class="detail-item">
-                                <span class="detail-label">Last Inspection</span>
-                                <span class="detail-value">{{selectedRwa.lastInspection}}</span>
+                            <div style="text-align: center; padding: 1rem; background: rgba(56, 161, 105, 0.1); border-radius: var(--radius-md);">
+                                <div style="font-size: 1.75rem; font-weight: 700; color: var(--gov-success);">{{selectedRwa.resolved}}</div>
+                                <div style="font-size: 0.75rem; color: var(--gov-gray-600);">Resolved</div>
                             </div>
-                            <div class="detail-item">
-                                <span class="detail-label">President</span>
-                                <span class="detail-value">{{selectedRwa.president}}</span>
+                            <div style="text-align: center; padding: 1rem; background: rgba(221, 107, 32, 0.1); border-radius: var(--radius-md);">
+                                <div style="font-size: 1.75rem; font-weight: 700; color: var(--gov-warning);">{{selectedRwa.complaints - selectedRwa.resolved}}</div>
+                                <div style="font-size: 0.75rem; color: var(--gov-gray-600);">Pending</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Complaints from RWA -->
-                    <div class="detail-section" ng-if="selectedRwa.complaintsList && selectedRwa.complaintsList.length > 0">
-                        <h3>Complaints from this RWA</h3>
-                        <p style="color: var(--gov-gray-500); font-size: 0.9rem; margin-bottom: 1rem;">For resolving these complaints, the following amounts were allocated:</p>
-                        <div class="complaint-list">
-                            <div class="complaint-item" ng-repeat="complaint in selectedRwa.complaintsList">
-                                <div class="complaint-header">
-                                    <span class="complaint-id">{{complaint.id}}</span>
-                                    <span class="complaint-status" ng-class="complaint.statusClass">{{complaint.status}}</span>
+                    <div class="detail-section" ng-if="selectedRwa.complaintsList && selectedRwa.complaintsList.length > 0" style="margin-bottom: 0;">
+                        <h4 style="font-size: 0.95rem; color: var(--gov-gray-700); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <span>📝</span> Recent Complaints & Allocations
+                        </h4>
+                        <div class="complaint-list" style="max-height: 180px; overflow-y: auto; border: 1px solid var(--gov-gray-200); border-radius: var(--radius-md);">
+                            <div ng-repeat="complaint in selectedRwa.complaintsList" style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; border-bottom: 1px solid var(--gov-gray-100);" ng-style="{'border-bottom': $last ? 'none' : '1px solid var(--gov-gray-100)'}">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 500; font-size: 0.85rem;">{{complaint.subject}}</div>
+                                    <div style="font-size: 0.75rem; color: var(--gov-gray-500);">{{complaint.id}} • {{complaint.date}}</div>
                                 </div>
-                                <div class="complaint-subject">{{complaint.subject}}</div>
-                                <div class="complaint-details">
-                                    <span><i class="fas fa-calendar"></i> {{complaint.date}}</span>
-                                    <span class="complaint-amount"><i class="fas fa-rupee-sign"></i> ₹{{complaint.amountGiven | number}}</span>
+                                <div style="text-align: right;">
+                                    <span ng-if="complaint.amountGiven > 0" style="font-weight: 600; color: var(--gov-success);">+₹{{complaint.amountGiven | number}}</span>
+                                    <span ng-if="complaint.amountGiven === 0" style="color: var(--gov-gray-400);">-</span>
                                 </div>
+                                <span style="padding: 0.2rem 0.5rem; font-size: 0.7rem; border-radius: 12px; margin-left: 0.75rem;" ng-class="{'background: var(--gov-success-light); color: var(--gov-success);': complaint.status === 'Resolved', 'background: var(--gov-warning-light); color: var(--gov-warning);': complaint.status !== 'Resolved'}" ng-style="{background: complaint.status === 'Resolved' ? 'rgba(56, 161, 105, 0.15)' : 'rgba(221, 107, 32, 0.15)', color: complaint.status === 'Resolved' ? 'var(--gov-success)' : 'var(--gov-warning)'}">{{complaint.status}}</span>
                             </div>
                         </div>
-                        <div class="total-amount-section">
-                            <span>Total Amount Allocated:</span>
-                            <span class="total-amount">₹{{getTotalAmountGiven() | number}}</span>
-                        </div>
-                    </div>
-
-                    <!-- Resolution Summary -->
-                    <div class="detail-section">
-                        <h3>Complaint Statistics</h3>
-                        <div class="stat-row">
-                            <div class="stat-box">
-                                <div class="stat-number" style="color: var(--gov-primary);">{{selectedRwa.complaints}}</div>
-                                <div class="stat-label">Total Complaints</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-number" style="color: var(--gov-success);">{{selectedRwa.resolved}}</div>
-                                <div class="stat-label">Resolved</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-number" style="color: var(--gov-warning);">{{selectedRwa.complaints - selectedRwa.resolved}}</div>
-                                <div class="stat-label">Pending</div>
-                            </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; background: rgba(56, 161, 105, 0.1); border-radius: var(--radius-md); margin-top: 0.75rem;">
+                            <span style="font-weight: 600; font-size: 0.9rem;">Total Amount Allocated</span>
+                            <span style="font-size: 1.25rem; font-weight: 700; color: var(--gov-success);">₹{{getTotalAmountGiven() | number}}</span>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" style="background: var(--gov-gray-50); border-radius: 0 0 var(--radius-lg) var(--radius-lg);">
                     <button class="gov-btn gov-btn-outline" ng-click="closeModal()">Close</button>
-                    <button class="gov-btn gov-btn-primary" ng-click="contactFromDetails()">Contact RWA</button>
+                    <button class="gov-btn gov-btn-primary" ng-click="contactFromDetails()" style="display: flex; align-items: center; gap: 0.5rem;">📞 Contact RWA</button>
                 </div>
             </div>
         </div>
 
         <!-- Contact Modal -->
         <div class="modal-overlay" ng-show="showContact" ng-click="closeContactModal()">
-            <div class="modal-content" ng-click="$event.stopPropagation()" style="max-width: 420px;">
-                <div class="modal-header">
-                    <h2 style="margin: 0; font-size: 1.25rem; font-weight: 600;">Contact Information</h2>
-                    <button class="modal-close" ng-click="closeContactModal()">&times;</button>
+            <div class="modal-content" ng-click="$event.stopPropagation()" style="max-width: 440px;">
+                <div class="modal-header" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
+                    <h2 style="margin: 0; font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>📞</span> Contact Information
+                    </h2>
+                    <button class="modal-close" ng-click="closeContactModal()" style="color: white; background: rgba(255,255,255,0.2); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">&times;</button>
                 </div>
-                <div class="modal-body">
-                    <div class="contact-card">
-                        <div class="contact-avatar">{{getInitials(selectedRwa.president)}}</div>
-                        <div class="contact-name">{{selectedRwa.president}}</div>
-                        <div class="contact-role">RWA President</div>
-                        <div class="contact-rwa">{{selectedRwa.name}}</div>
+                <div class="modal-body" style="padding: 1.5rem;">
+                    <!-- Contact Card -->
+                    <div style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+                        <div style="width: 72px; height: 72px; border-radius: 50%; background: var(--gov-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; font-weight: 700; margin: 0 auto 1rem;">{{getInitials(selectedRwa.president)}}</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.25rem;">{{selectedRwa.president}}</div>
+                        <div style="font-size: 0.85rem; color: var(--gov-gray-600); margin-bottom: 0.25rem;">RWA President</div>
+                        <div style="font-size: 0.8rem; color: var(--gov-primary); font-weight: 500;">{{selectedRwa.name}}</div>
                     </div>
-                    <div class="contact-details">
-                        <div class="contact-info-item">
-                            <div class="contact-icon"><i class="fas fa-phone"></i></div>
-                            <div class="contact-info-content">
-                                <span class="contact-info-label">Phone Number</span>
-                                <span class="contact-info-value">{{selectedRwa.phone}}</span>
+
+                    <!-- Contact Details - Clickable Items -->
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <!-- Phone -->
+                        <a href="tel:{{selectedRwa.phone}}" style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--gov-gray-50); border-radius: var(--radius-md); text-decoration: none; color: inherit; transition: all 0.2s; border: 1px solid transparent;" onmouseover="this.style.background='rgba(49, 130, 206, 0.08)'; this.style.borderColor='var(--gov-primary)'" onmouseout="this.style.background='var(--gov-gray-50)'; this.style.borderColor='transparent'">
+                            <span style="font-size: 1.5rem;">📞</span>
+                            <div style="flex: 1;">
+                                <div style="font-size: 0.7rem; color: var(--gov-gray-500); text-transform: uppercase; margin-bottom: 0.25rem;">Phone Number</div>
+                                <div style="font-weight: 600; font-size: 0.95rem; color: var(--gov-primary);">{{selectedRwa.phone}}</div>
+                            </div>
+                            <span style="color: var(--gov-gray-400);">→</span>
+                        </a>
+                        
+                        <!-- Email -->
+                        <a href="mailto:{{selectedRwa.email}}" style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--gov-gray-50); border-radius: var(--radius-md); text-decoration: none; color: inherit; transition: all 0.2s; border: 1px solid transparent;" onmouseover="this.style.background='rgba(49, 130, 206, 0.08)'; this.style.borderColor='var(--gov-primary)'" onmouseout="this.style.background='var(--gov-gray-50)'; this.style.borderColor='transparent'">
+                            <span style="font-size: 1.5rem;">📧</span>
+                            <div style="flex: 1;">
+                                <div style="font-size: 0.7rem; color: var(--gov-gray-500); text-transform: uppercase; margin-bottom: 0.25rem;">Email Address</div>
+                                <div style="font-weight: 600; font-size: 0.95rem; color: var(--gov-primary);">{{selectedRwa.email}}</div>
+                            </div>
+                            <span style="color: var(--gov-gray-400);">→</span>
+                        </a>
+                        
+                        <!-- Aadhaar -->
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--gov-gray-50); border-radius: var(--radius-md);">
+                            <span style="font-size: 1.5rem;">🏢</span>
+                            <div style="flex: 1;">
+                                <div style="font-size: 0.7rem; color: var(--gov-gray-500); text-transform: uppercase; margin-bottom: 0.25rem;">Aadhaar Number</div>
+                                <div style="font-weight: 600; font-size: 0.95rem;">{{selectedRwa.aadhaar}}</div>
                             </div>
                         </div>
-                        <div class="contact-info-item">
-                            <div class="contact-icon"><i class="fas fa-envelope"></i></div>
-                            <div class="contact-info-content">
-                                <span class="contact-info-label">Email Address</span>
-                                <span class="contact-info-value">{{selectedRwa.email}}</span>
-                            </div>
-                        </div>
-                        <div class="contact-info-item">
-                            <div class="contact-icon"><i class="fas fa-id-card"></i></div>
-                            <div class="contact-info-content">
-                                <span class="contact-info-label">Aadhaar Number</span>
-                                <span class="contact-info-value">{{selectedRwa.aadhaar}}</span>
-                            </div>
-                        </div>
-                        <div class="contact-info-item">
-                            <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
-                            <div class="contact-info-content">
-                                <span class="contact-info-label">Address</span>
-                                <span class="contact-info-value">{{selectedRwa.location}}</span>
+                        
+                        <!-- Address -->
+                        <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: var(--gov-gray-50); border-radius: var(--radius-md);">
+                            <span style="font-size: 1.5rem;">📍</span>
+                            <div style="flex: 1;">
+                                <div style="font-size: 0.7rem; color: var(--gov-gray-500); text-transform: uppercase; margin-bottom: 0.25rem;">Address</div>
+                                <div style="font-weight: 500; font-size: 0.9rem;">{{selectedRwa.location}}</div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" style="background: var(--gov-gray-50); border-radius: 0 0 var(--radius-lg) var(--radius-lg); justify-content: center; gap: 1rem;">
                     <button class="gov-btn gov-btn-outline" ng-click="closeContactModal()">Close</button>
-                    <button class="gov-btn gov-btn-primary" ng-click="callRWA()"><i class="fas fa-phone"></i> Call Now</button>
+                    <button class="gov-btn" style="background: var(--gov-success); color: white;" ng-click="callRWA()">📞 Call Now</button>
                 </div>
             </div>
         </div>

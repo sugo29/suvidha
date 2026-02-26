@@ -914,6 +914,36 @@ body {
     min-width: 120px;
 }
 
+/* Direct select styling when .filter-select is applied to select element */
+select.filter-select {
+    padding: 0.6rem 2rem 0.6rem 1rem;
+    border: 1px solid var(--gov-gray-300);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background: white;
+    cursor: pointer;
+    min-width: 140px;
+    color: var(--gov-gray-700);
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+select.filter-select:hover {
+    border-color: var(--gov-primary);
+    box-shadow: 0 2px 6px rgba(244, 119, 56, 0.1);
+}
+
+select.filter-select:focus {
+    outline: none;
+    border-color: var(--gov-primary);
+    box-shadow: 0 0 0 3px rgba(244, 119, 56, 0.15);
+}
+
 .geo-filter-bar .filter-select select:hover {
     border-color: var(--gov-primary);
 }
@@ -1013,26 +1043,30 @@ body {
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1.25rem;
-    margin-bottom: 1.5rem;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 .stat-card {
-    background: var(--glass-bg);
-    border: 1px solid var(--gov-gray-200);
-    border-radius: var(--radius-lg);
-    padding: 1.25rem;
+    background: white;
+    border: 1px solid var(--gov-gray-150);
+    border-radius: 12px;
+    padding: 1.5rem;
     display: flex;
-    align-items: flex-start;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 0.75rem;
     position: relative;
     overflow: hidden;
-    transition: all var(--transition-base);
+    transition: all 0.25s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    min-height: 180px;
+    justify-content: space-between;
 }
 
 .stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    border-color: var(--gov-primary);
 }
 
 .stat-card::before {
@@ -1061,13 +1095,13 @@ body {
 }
 
 .stat-icon-box {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius-md);
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     flex-shrink: 0;
 }
 
@@ -1089,41 +1123,72 @@ body {
 
 .stat-content {
     flex: 1;
-}
-
-.stat-value {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--gov-gray-800);
-    line-height: 1;
-    margin-bottom: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
 }
 
 .stat-label {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--gov-gray-500);
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--gov-gray-900);
+    line-height: 1.1;
+    margin-top: 0.25rem;
 }
 
 .stat-trend {
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
-    font-size: 0.7rem;
+    gap: 0.35rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    padding: 0.2rem 0.5rem;
-    border-radius: 20px;
-    margin-top: 0.5rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    margin-top: 0.25rem;
+    width: fit-content;
 }
 
 .stat-trend.up {
-    background: var(--gov-success-light);
-    color: var(--gov-success);
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
 }
 
 .stat-trend.down {
-    background: var(--gov-danger-light);
-    color: var(--gov-danger);
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.stat-subtext {
+    font-size: 0.75rem;
+    color: var(--gov-gray-600);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+}
+
+.stat-action {
+    border-top: 1px solid var(--gov-gray-100);
+    padding-top: 0.75rem;
+    margin-top: auto;
+}
+
+.action-hint {
+    font-size: 0.8rem;
+    color: var(--gov-primary);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: pointer;
 }
 
 /* ============================================
@@ -1495,30 +1560,50 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.3rem 0.65rem;
-    border-radius: 20px;
-    font-size: 0.7rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
     font-weight: 600;
 }
 
 .badge.success {
-    background: var(--gov-success-light);
-    color: var(--gov-success);
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
 }
 
 .badge.warning {
-    background: var(--gov-warning-light);
-    color: var(--gov-warning);
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
 }
 
 .badge.danger {
-    background: var(--gov-danger-light);
-    color: var(--gov-danger);
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
 }
 
 .badge.info {
-    background: var(--gov-info-light);
-    color: var(--gov-info);
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 0.3rem;
+}
+
+.status-dot.active {
+    background: #10b981;
+}
+
+.status-dot.delayed {
+    background: #f59e0b;
+}
+
+.status-dot.offline {
+    background: #9ca3af;
 }
 
 /* ============================================
@@ -2174,8 +2259,10 @@ body {
 
 .filter-group {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.75rem;
     margin-right: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .ledger-container {

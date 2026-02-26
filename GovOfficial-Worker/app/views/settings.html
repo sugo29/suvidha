@@ -677,40 +677,67 @@
     <aside class="worker-sidebar">
         <div class="sidebar-header">
             <div class="sidebar-brand">
-                <div class="brand-icon">🏛️</div>
+                <div class="brand-logo">
+                    <img src="/static/images/suvidha Logo.jpg" alt="Suvidha" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.innerHTML='⚡'">
+                </div>
                 <div class="brand-text">
                     <h1>Suvidha</h1>
-                    <span>FIELD AGENT</span>
+                    <span class="brand-subtitle">FIELD AGENT</span>
                 </div>
             </div>
         </div>
+
+        <!-- Agent Status Indicator -->
+        <div class="agent-status-card">
+            <div class="status-indicator" ng-class="{'online': agentStatus === 'online', 'busy': agentStatus === 'on_task', 'offline': agentStatus === 'offline'}">
+                <span class="status-dot"></span>
+                <span class="status-text">{{agentStatus === 'online' ? 'Available' : agentStatus === 'on_task' ? 'On Task' : 'Offline'}}</span>
+            </div>
+        </div>
+
         <nav class="sidebar-nav">
+            <!-- Flat menu - no section titles -->
             <a href="dashboard.html" class="nav-item">
-                <span class="nav-icon">🏠</span>
+                <span class="nav-icon-wrapper"><span class="nav-icon">📊</span></span>
                 <span class="nav-text">Dashboard</span>
             </a>
             <a href="search.html" class="nav-item">
-                <span class="nav-icon">🔍</span>
-                <span class="nav-text">Search Households</span>
+                <span class="nav-icon-wrapper"><span class="nav-icon">🏠</span></span>
+                <span class="nav-text">Households</span>
             </a>
             <a href="report.html" class="nav-item">
-                <span class="nav-icon">📝</span>
+                <span class="nav-icon-wrapper"><span class="nav-icon">⚠️</span></span>
                 <span class="nav-text">Report Issue</span>
             </a>
             <a href="settings.html" class="nav-item active">
-                <span class="nav-icon">⚙️</span>
+                <span class="nav-icon-wrapper"><span class="nav-icon">⚙️</span></span>
                 <span class="nav-text">Settings</span>
             </a>
         </nav>
+
         <div class="sidebar-footer">
             <div class="user-profile">
                 <div class="user-avatar">{{user.initials}}</div>
                 <div class="user-info">
                     <h4>{{user.name}}</h4>
-                    <p>Field Agent</p>
+                    <p class="user-category">{{user.category || 'Field Agent'}}</p>
                 </div>
             </div>
-            <button class="logout-btn" ng-click="showLogoutConfirm()">
+            
+            <!-- GPS/Offline indicator at bottom -->
+            <div class="gps-offline-indicator" style="display: flex; justify-content: center; gap: 1rem; padding: 0.75rem; margin: 0.75rem 0; background: var(--gov-gray-50); border-radius: 8px;">
+                <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem;">
+                    <span>📍</span>
+                    <span style="font-weight: 500;">GPS {{gpsEnabled ? 'Active' : 'Off'}}</span>
+                </div>
+                <div style="width: 1px; background: var(--gov-gray-300);"></div>
+                <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; color: var(--gov-gray-600);">
+                    <span>📶</span>
+                    <span style="font-weight: 500;">Online</span>
+                </div>
+            </div>
+            
+            <button class="logout-btn" ng-click="logout()">
                 <span>🚪</span>
                 <span>Logout</span>
             </button>
@@ -722,22 +749,34 @@
         <header class="worker-header">
             <div class="header-left">
                 <h2>Settings</h2>
-                <p>{{currentDate}}</p>
+                <p>Manage your profile, preferences, and device settings</p>
             </div>
             <div class="header-right">
-                <button class="topbar-btn" title="Accessibility">♿</button>
-                <div class="lang-dropdown">
-                    <button class="lang-toggle-btn" ng-click="toggleLangMenu($event)">
-                        🌐 <span>{{selectedLang}}</span> ▼
+                <button class="topbar-btn sync-btn" ng-click="syncNow()" title="Refresh Data">
+                    🔄
+                </button>
+                
+                <!-- Improved Language Dropdown -->
+                <div class="lang-dropdown" style="position: relative;">
+                    <button class="lang-toggle-btn" ng-click="toggleLangMenu($event)" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(255,255,255,0.9); border: 1px solid var(--gov-gray-200); border-radius: 8px; cursor: pointer; font-weight: 500;">
+                        🌐 <span>{{selectedLang}}</span> 
+                        <span style="font-size: 0.7rem; transition: transform 0.2s;" ng-style="{'transform': showLangMenu ? 'rotate(180deg)' : 'rotate(0deg)'}">▼</span>
                     </button>
-                    <div class="lang-dropdown-menu" ng-show="showLangMenu">
+                    <div class="lang-dropdown-menu" ng-show="showLangMenu" ng-click="$event.stopPropagation()" style="position: absolute; top: 100%; right: 0; margin-top: 0.5rem; background: white; border: 1px solid var(--gov-gray-200); border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); min-width: 180px; max-height: 300px; overflow-y: auto; z-index: 1000;">
+                        <div style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--gov-gray-100); font-size: 0.75rem; font-weight: 600; color: var(--gov-gray-500); text-transform: uppercase;">Select Language</div>
                         <a href="#" class="lang-option" ng-repeat="lang in languages"
                             ng-class="{active: selectedLang === lang.code}"
-                            ng-click="selectLang(lang, $event)">{{lang.name}}</a>
+                            ng-click="selectLang(lang, $event)"
+                            style="display: flex; align-items: center; padding: 0.75rem 1rem; text-decoration: none; color: var(--gov-gray-700); transition: all 0.15s; border-bottom: 1px solid var(--gov-gray-50);"
+                            ng-style="{'background': selectedLang === lang.code ? 'var(--gov-info-light)' : 'transparent', 'font-weight': selectedLang === lang.code ? '600' : '400'}">
+                            <span style="margin-right: 0.5rem;" ng-if="selectedLang === lang.code">✓</span>
+                            {{lang.name}}
+                        </a>
                     </div>
                 </div>
-                <button class="topbar-btn notification-btn" title="Notifications">
-                    🔔<span class="notification-badge">{{notifications}}</span>
+                
+                <button class="topbar-btn notification-btn" title="Notifications" ng-click="toggleNotifications()" style="position: relative; padding: 0.5rem; background: rgba(255,255,255,0.9); border: 1px solid var(--gov-gray-200); border-radius: 8px; cursor: pointer; font-size: 1.25rem;">
+                    🔔<span class="notification-badge" ng-if="notifications > 0" style="position: absolute; top: -5px; right: -5px; background: var(--gov-danger); color: white; font-size: 0.7rem; font-weight: 700; min-width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">{{notifications}}</span>
                 </button>
             </div>
         </header>
@@ -776,13 +815,66 @@
                             <div class="profile-info">
                                 <div class="profile-name">{{user.name}}</div>
                                 <div class="profile-email">{{user.email}}</div>
-                                <span class="profile-badge">✓ Verified Field Agent</span>
                             </div>
                         </div>
+                        
+                        <!-- Role & Work Type Display -->
+                        <div style="margin-bottom: 1.25rem; padding: 1.25rem; background: linear-gradient(135deg, rgba(56, 161, 105, 0.12) 0%, rgba(56, 161, 105, 0.04) 100%); border: 2px solid rgba(56, 161, 105, 0.3); border-radius: 12px;">
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                <div style="width: 56px; height: 56px; background: var(--gov-success); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; color: white;">🏛️</div>
+                                <div>
+                                    <div style="font-size: 0.7rem; text-transform: uppercase; color: var(--gov-gray-500); font-weight: 600; letter-spacing: 0.5px;">Your Role</div>
+                                    <div style="font-size: 1.35rem; font-weight: 700; color: var(--gov-success);">Field Agent</div>
+                                    <div style="font-size: 0.85rem; color: var(--gov-gray-600); margin-top: 0.15rem;">Suvidha Government Services</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                                <span style="padding: 0.4rem 0.85rem; background: white; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: var(--gov-gray-700); display: flex; align-items: center; gap: 0.35rem; box-shadow: 0 2px 6px rgba(0,0,0,0.06);">
+                                    <span>📋</span> Meter Reading
+                                </span>
+                                <span style="padding: 0.4rem 0.85rem; background: white; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: var(--gov-gray-700); display: flex; align-items: center; gap: 0.35rem; box-shadow: 0 2px 6px rgba(0,0,0,0.06);">
+                                    <span>📍</span> Door-to-Door
+                                </span>
+                                <span style="padding: 0.4rem 0.85rem; background: white; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: var(--gov-gray-700); display: flex; align-items: center; gap: 0.35rem; box-shadow: 0 2px 6px rgba(0,0,0,0.06);">
+                                    <span>📷</span> Photo Verification
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Meter Reading Type Selection -->
+                        <div style="margin-bottom: 1.25rem; padding: 1rem; background: linear-gradient(135deg, rgba(49, 130, 206, 0.08) 0%, rgba(49, 130, 206, 0.03) 100%); border: 1px solid rgba(49, 130, 206, 0.2); border-radius: 10px;">
+                            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--gov-gray-500); font-weight: 600; margin-bottom: 0.75rem;">📊 Assigned Meter Reading Type</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+                                <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background: white; border: 2px solid; border-radius: 10px; cursor: pointer; transition: all 0.2s;" ng-style="{'border-color': meterType === 'electric' ? 'var(--gov-warning)' : 'var(--gov-gray-200)', 'background': meterType === 'electric' ? 'var(--gov-warning-light)' : 'white'}">
+                                    <input type="radio" ng-model="meterType" value="electric" style="display: none;">
+                                    <span style="font-size: 1.25rem;">⚡</span>
+                                    <span style="font-weight: 600; color: var(--gov-gray-700);">Electric Meter</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background: white; border: 2px solid; border-radius: 10px; cursor: pointer; transition: all 0.2s;" ng-style="{'border-color': meterType === 'water' ? 'var(--gov-info)' : 'var(--gov-gray-200)', 'background': meterType === 'water' ? 'var(--gov-info-light)' : 'white'}">
+                                    <input type="radio" ng-model="meterType" value="water" style="display: none;">
+                                    <span style="font-size: 1.25rem;">💧</span>
+                                    <span style="font-weight: 600; color: var(--gov-gray-700);">Water Meter</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background: white; border: 2px solid; border-radius: 10px; cursor: pointer; transition: all 0.2s;" ng-style="{'border-color': meterType === 'gas' ? 'var(--gov-danger)' : 'var(--gov-gray-200)', 'background': meterType === 'gas' ? 'var(--gov-danger-light)' : 'white'}">
+                                    <input type="radio" ng-model="meterType" value="gas" style="display: none;">
+                                    <span style="font-size: 1.25rem;">🔥</span>
+                                    <span style="font-weight: 600; color: var(--gov-gray-700);">Gas Cylinder</span>
+                                </label>
+                            </div>
+                        </div>
+                        
                         <div class="profile-details-grid">
                             <div class="profile-detail-item">
                                 <div class="profile-detail-label">Agent ID</div>
                                 <div class="profile-detail-value">{{user.agentId}}</div>
+                            </div>
+                            <div class="profile-detail-item">
+                                <div class="profile-detail-label">Role</div>
+                                <div class="profile-detail-value" style="color: var(--gov-success); font-weight: 600;">Field Agent</div>
+                            </div>
+                            <div class="profile-detail-item">
+                                <div class="profile-detail-label">Work Type</div>
+                                <div class="profile-detail-value">{{meterTypeLabel || 'Electric Meter'}}</div>
                             </div>
                             <div class="profile-detail-item">
                                 <div class="profile-detail-label">Phone Number</div>
@@ -797,6 +889,13 @@
                                 <div class="profile-detail-value">{{user.joinDate}}</div>
                             </div>
                         </div>
+                        
+                        <!-- Verified Village moved down -->
+                        <div style="margin-top: 1rem; padding: 0.75rem 1rem; background: var(--gov-success-light); border-radius: 8px; display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-size: 1.1rem;">✅</span>
+                            <span style="font-weight: 600; color: var(--gov-success);">Verified Village Agent</span>
+                        </div>
+                        
                         <div class="profile-notice">
                             <span class="profile-notice-icon">ℹ️</span>
                             <span>To update profile information, contact your supervisor.</span>
@@ -999,8 +1098,36 @@
                 agentId: 'FA-2026-00147',
                 phone: '+91 98765 43210',
                 district: 'South Delhi',
-                joinDate: '15 January 2024'
+                joinDate: '15 January 2024',
+                category: 'Electric Meter Reader'
             };
+
+            // Meter Type Selection
+            $scope.meterType = 'electric';
+            $scope.meterTypeLabel = 'Electric Meter';
+            
+            // Update label when meter type changes
+            $scope.$watch('meterType', function(newVal) {
+                var labels = {
+                    'electric': 'Electric Meter',
+                    'water': 'Water Meter',
+                    'gas': 'Gas Cylinder'
+                };
+                $scope.meterTypeLabel = labels[newVal] || 'Electric Meter';
+                // Save to localStorage
+                localStorage.setItem('workerMeterType', newVal);
+            });
+            
+            // Load saved meter type from localStorage
+            var savedMeterType = localStorage.getItem('workerMeterType');
+            if (savedMeterType) {
+                $scope.meterType = savedMeterType;
+            }
+
+            // Agent Status
+            $scope.agentStatus = 'on_task';
+            $scope.gpsEnabled = true;
+            $scope.performanceScore = 92;
 
             // Date & Language
             $scope.currentDate = new Date().toLocaleDateString('en-IN', {
@@ -1013,7 +1140,11 @@
             $scope.showLangMenu = false;
             $scope.languages = [
                 { code: 'EN', name: 'English' },
-                { code: 'HI', name: 'हिन्दी' }
+                { code: 'HI', name: 'हिन्दी' },
+                { code: 'TA', name: 'தமிழ்' },
+                { code: 'TE', name: 'తెలుగు' },
+                { code: 'BN', name: 'বাংলা' },
+                { code: 'MR', name: 'मराठी' }
             ];
             $scope.notifications = 2;
 
@@ -1082,10 +1213,7 @@
             };
 
             $scope.confirmLogout = function () {
-                alert('Logged out successfully.\n\n• Session ended: ' + new Date().toLocaleTimeString('en-IN') +
-                    '\n• Location: Saket, Delhi' +
-                    '\n• All data synced');
-                $scope.showLogoutModal = false;
+                window.location.href = '/static/app/views/landing.html';
             };
 
             // Calculate readiness score based on device status
