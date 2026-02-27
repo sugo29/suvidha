@@ -25,11 +25,11 @@
 
             // Specific API methods
             self.getDashboardData = function() {
-                return self.get('/dashboard');
+                return self.get('/citizen/dashboard');
             };
 
             self.getUtilitiesData = function() {
-                return self.get('/utilities');
+                return self.get('/citizen/bills');
             };
 
             self.getInsightsData = function() {
@@ -37,19 +37,19 @@
             };
 
             self.getRecordsData = function() {
-                return self.get('/records');
+                return self.get('/citizen/bills');
             };
 
             self.getCommunityData = function() {
-                return self.get('/community');
+                return self.get('/citizen/community/stats');
             };
 
             self.getProfileData = function() {
-                return self.get('/profile');
+                return self.get('/citizen/profile');
             };
 
             self.submitServiceRequest = function(data) {
-                return self.post('/services/submit', data);
+                return self.post('/citizen/complaints', data);
             };
 
             self.getWasteData = function() {

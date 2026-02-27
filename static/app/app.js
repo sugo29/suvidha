@@ -92,11 +92,11 @@
             $rootScope.logout = function() {
                 AuthService.logout()
                     .then(function() {
-                        $location.path('/auth');
+                        $location.path('/landing');
                     })
                     .catch(function() {
-                        // Even if logout fails on server, redirect to auth
-                        $location.path('/auth');
+                        // Even if logout fails on server, redirect to landing
+                        $location.path('/landing');
                     });
             };
 
@@ -104,11 +104,11 @@
             $rootScope.$on('$routeChangeStart', function(event, next) {
                 // Check if route requires authentication
                 if (next.requireAuth && !AuthService.isAuthenticated()) {
-                    // Redirect to login page
+                    // Redirect to landing page
                     event.preventDefault();
-                    $location.path('/auth');
-                } else if (next.$$route && next.$$route.originalPath === '/auth' && AuthService.isAuthenticated()) {
-                    // If already authenticated and trying to access auth page, redirect to dashboard
+                    $location.path('/landing');
+                } else if (next.$$route && (next.$$route.originalPath === '/auth' || next.$$route.originalPath === '/landing') && AuthService.isAuthenticated()) {
+                    // If already authenticated and trying to access auth/landing page, redirect to dashboard
                     event.preventDefault();
                     $location.path('/dashboard');
                 }

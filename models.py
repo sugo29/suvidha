@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, date
 import uuid
 
 db = SQLAlchemy()
@@ -512,10 +512,14 @@ class User(db.Model):
     phone = db.Column(db.String(20), unique=True, nullable=False, index=True)
     password = db.Column(db.String(255), nullable=False)
     
+    # User Type
+    user_type = db.Column(db.String(20), default='general')  # general, senior_citizen
+    
     # Personal Details
     preferred_language = db.Column(db.String(10), default='en')  # en, hi, ta, te, bn
     aadhaar = db.Column(db.String(14), nullable=True, unique=True)
     aadhaar_consent = db.Column(db.Boolean, default=False)
+    date_of_birth = db.Column(db.Date, nullable=True)
     
     # Location Details
     state = db.Column(db.String(100), nullable=False)
@@ -546,6 +550,8 @@ class User(db.Model):
             'full_name': self.full_name,
             'email': self.email,
             'phone': self.phone,
+            'user_type': self.user_type,
+            'date_of_birth': self.date_of_birth.isoformat() if self.date_of_birth else None,
             'preferred_language': self.preferred_language,
             'state': self.state,
             'city': self.city,

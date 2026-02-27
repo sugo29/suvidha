@@ -9,14 +9,20 @@ angular.module('suvidhaApp')
          * @returns {Promise}
          */
         this.login = function(credentials) {
-            return $http.post('/api/auth/login', credentials)
+            return $http.post('/api/citizen/login', credentials)
                 .then(function(response) {
                     // Store user data
                     currentUser = response.data.user;
                     
-                    // Store token in localStorage
+                    // Store token and user info in localStorage
                     if (response.data.token) {
                         localStorage.setItem('authToken', response.data.token);
+                    }
+                    if (response.data.user_id) {
+                        localStorage.setItem('user_id', response.data.user_id);
+                    }
+                    if (response.data.user_type) {
+                        localStorage.setItem('user_type', response.data.user_type);
                     }
                     
                     return response.data;
@@ -33,13 +39,20 @@ angular.module('suvidhaApp')
          * @returns {Promise}
          */
         this.signup = function(userData) {
-            return $http.post('/api/auth/signup', userData)
+            return $http.post('/api/citizen/signup', userData)
                 .then(function(response) {
                     // Optionally auto-login after signup
                     currentUser = response.data.user;
                     
+                    // Store token and user info in localStorage
                     if (response.data.token) {
                         localStorage.setItem('authToken', response.data.token);
+                    }
+                    if (response.data.user_id) {
+                        localStorage.setItem('user_id', response.data.user_id);
+                    }
+                    if (response.data.user_type) {
+                        localStorage.setItem('user_type', response.data.user_type);
                     }
                     
                     return response.data;
@@ -55,12 +68,13 @@ angular.module('suvidhaApp')
          * @returns {Promise}
          */
         this.logout = function() {
-            return $http.post('/api/auth/logout')
+            return $http.post('/api/citizen/logout')
                 .then(function(response) {
                     currentUser = null;
                     localStorage.removeItem('authToken');
                     localStorage.removeItem('suvidhaUser');
                     localStorage.removeItem('user_id');
+                    localStorage.removeItem('user_type');
                     return response.data;
                 })
                 .catch(function(error) {
@@ -69,6 +83,7 @@ angular.module('suvidhaApp')
                     localStorage.removeItem('authToken');
                     localStorage.removeItem('suvidhaUser');
                     localStorage.removeItem('user_id');
+                    localStorage.removeItem('user_type');
                     return $q.resolve({ message: 'Logged out' });
                 });
         };

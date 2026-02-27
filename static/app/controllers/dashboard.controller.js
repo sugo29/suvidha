@@ -37,12 +37,31 @@
         function loadDashboardData() {
             ApiService.getDashboardData()
                 .then(function(response) {
-                    vm.userData = response.data;
+                    // Handle response from main.py API
+                    if (response.data.success && response.data.dashboard) {
+                        vm.userData = response.data.dashboard;
+                        vm.user = response.data.dashboard.user;
+                        vm.billsSummary = response.data.dashboard.bills_summary;
+                        vm.complaintsSummary = response.data.dashboard.complaints_summary;
+                        vm.community = response.data.dashboard.community;
+                        vm.recentBills = response.data.dashboard.recent_bills;
+                        vm.recentComplaints = response.data.dashboard.recent_complaints;
+                    } else {
+                        vm.userData = response.data;
+                    }
                     vm.loading = false;
                 })
                 .catch(function(error) {
                     console.error('Error loading dashboard data:', error);
                     vm.loading = false;
+                    // Set some default data to prevent errors
+                    vm.userData = {
+                        consumption: {
+                            electricity: { current_bill: 0 },
+                            water: { current_bill: 0 },
+                            gas: { current_bill: 0 }
+                        }
+                    };
                 });
         }
 
