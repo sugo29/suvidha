@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="landingApp">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Suvidha - Smart City Services</title>
-    
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- AngularJS -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-    
+
     <style>
         /* CSS Variables */
         :root {
@@ -36,7 +39,9 @@
         }
 
         /* Reset */
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -59,7 +64,9 @@
             min-height: 100vh;
         }
 
-        [ng-cloak] { display: none !important; }
+        [ng-cloak] {
+            display: none !important;
+        }
 
         /* Landing Page Styles */
         .landing-page {
@@ -81,7 +88,9 @@
         }
 
         /* Logo Section */
-        .landing-header { margin-bottom: 1rem; }
+        .landing-header {
+            margin-bottom: 1rem;
+        }
 
         .landing-logo {
             display: flex;
@@ -118,7 +127,9 @@
         }
 
         /* Welcome Section */
-        .landing-welcome { margin-bottom: 1.5rem; }
+        .landing-welcome {
+            margin-bottom: 1.5rem;
+        }
 
         .welcome-title {
             font-family: var(--font-heading);
@@ -228,19 +239,41 @@
             border-radius: 12px;
         }
 
-        .utility-icon i { font-size: 2rem; }
+        .utility-icon i {
+            font-size: 2rem;
+        }
 
-        .utility-icon.waste { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); }
-        .utility-icon.waste i { color: #43a047; }
+        .utility-icon.waste {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+        }
 
-        .utility-icon.water { background: linear-gradient(135deg, #e3f2fd, #bbdefb); }
-        .utility-icon.water i { color: #1e88e5; }
+        .utility-icon.waste i {
+            color: #43a047;
+        }
 
-        .utility-icon.electricity { background: linear-gradient(135deg, #fffde7, #fff9c4); }
-        .utility-icon.electricity i { color: #fbc02d; }
+        .utility-icon.water {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        }
 
-        .utility-icon.gas { background: linear-gradient(135deg, #fff3e0, #ffe0b2); }
-        .utility-icon.gas i { color: #fb8c00; }
+        .utility-icon.water i {
+            color: #1e88e5;
+        }
+
+        .utility-icon.electricity {
+            background: linear-gradient(135deg, #fffde7, #fff9c4);
+        }
+
+        .utility-icon.electricity i {
+            color: #fbc02d;
+        }
+
+        .utility-icon.gas {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+        }
+
+        .utility-icon.gas i {
+            color: #fb8c00;
+        }
 
         .utility-label {
             font-size: 0.9rem;
@@ -266,14 +299,18 @@
             font-size: 1rem;
         }
 
-        .trust-badge i { font-size: 1.25rem; }
+        .trust-badge i {
+            font-size: 1.25rem;
+        }
 
         .trust-text {
             font-size: 0.9rem;
             color: var(--gray-600);
         }
 
-        .trust-text strong { color: var(--gray-800); }
+        .trust-text strong {
+            color: var(--gray-800);
+        }
 
         /* Role Cards */
         .role-cards {
@@ -332,19 +369,41 @@
             border-radius: 12px;
         }
 
-        .role-image i { font-size: 2.5rem; }
+        .role-image i {
+            font-size: 2.5rem;
+        }
 
-        .role-image.citizens { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); }
-        .role-image.citizens i { color: #43a047; }
+        .role-image.citizens {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+        }
 
-        .role-image.seniors { background: linear-gradient(135deg, #fce4ec, #f8bbd9); }
-        .role-image.seniors i { color: #e91e63; }
+        .role-image.citizens i {
+            color: #43a047;
+        }
 
-        .role-image.officials { background: linear-gradient(135deg, #e3f2fd, #bbdefb); }
-        .role-image.officials i { color: #1e88e5; }
+        .role-image.seniors {
+            background: linear-gradient(135deg, #fce4ec, #f8bbd9);
+        }
 
-        .role-image.kiosk { background: linear-gradient(135deg, #fff3e0, #ffe0b2); }
-        .role-image.kiosk i { color: #ff9800; }
+        .role-image.seniors i {
+            color: #e91e63;
+        }
+
+        .role-image.officials {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        }
+
+        .role-image.officials i {
+            color: #1e88e5;
+        }
+
+        .role-image.kiosk {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+        }
+
+        .role-image.kiosk i {
+            color: #ff9800;
+        }
 
         .role-title {
             font-size: 0.85rem;
@@ -383,7 +442,9 @@
             transition: color 0.2s ease;
         }
 
-        .footer-link:hover { color: var(--primary-blue); }
+        .footer-link:hover {
+            color: var(--primary-blue);
+        }
 
         .footer-divider {
             color: var(--gray-400);
@@ -427,23 +488,62 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            .welcome-title { font-size: 1.75rem; }
-            .welcome-tagline { font-size: 1.1rem; }
-            .role-cards { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
-            .role-image { width: 65px; height: 65px; }
-            .utility-card { width: 90px; padding: 0.75rem; }
-            .utility-icon { width: 55px; height: 55px; }
+            .welcome-title {
+                font-size: 1.75rem;
+            }
+
+            .welcome-tagline {
+                font-size: 1.1rem;
+            }
+
+            .role-cards {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+
+            .role-image {
+                width: 65px;
+                height: 65px;
+            }
+
+            .utility-card {
+                width: 90px;
+                padding: 0.75rem;
+            }
+
+            .utility-icon {
+                width: 55px;
+                height: 55px;
+            }
         }
 
         @media (max-width: 480px) {
-            .landing-logo .logo-text { font-size: 1.5rem; }
-            .welcome-title { font-size: 1.5rem; }
-            .utility-card { width: 75px; padding: 0.5rem; }
-            .utility-icon { width: 45px; height: 45px; }
-            .role-image { width: 55px; height: 55px; }
+            .landing-logo .logo-text {
+                font-size: 1.5rem;
+            }
+
+            .welcome-title {
+                font-size: 1.5rem;
+            }
+
+            .utility-card {
+                width: 75px;
+                padding: 0.5rem;
+            }
+
+            .utility-icon {
+                width: 45px;
+                height: 45px;
+            }
+
+            .role-image {
+                width: 55px;
+                height: 55px;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="landing-page" ng-controller="LandingController" ng-cloak>
         <!-- Main Content -->
@@ -451,7 +551,7 @@
             <!-- Logo & Title Section -->
             <div class="landing-header">
                 <div class="landing-logo">
-                    <img src="../../images/suvidha logo.jpg" alt="Suvidha" class="logo-img">
+                    <img src="/static/images/suvidha logo.jpg" alt="Suvidha" class="logo-img">
                     <span class="logo-text">Suvidha</span>
                 </div>
             </div>
@@ -480,25 +580,25 @@
             <div class="utility-cards">
                 <div class="utility-card">
                     <div class="utility-icon waste">
-                        <img src="../../images/waste.jpg" alt="Waste">
+                        <img src="/static/images/waste.jpg" alt="Waste">
                     </div>
                     <span class="utility-label">Waste</span>
                 </div>
                 <div class="utility-card">
                     <div class="utility-icon water">
-                        <img src="../../images/waterlanding.jpg" alt="Water">
+                        <img src="/static/images/waterlanding.jpg" alt="Water">
                     </div>
                     <span class="utility-label">Water</span>
                 </div>
                 <div class="utility-card">
                     <div class="utility-icon electricity">
-                        <img src="../../images/electricity.jpg" alt="Electricity">
+                        <img src="/static/images/electricity.jpg" alt="Electricity">
                     </div>
                     <span class="utility-label">Electricity</span>
                 </div>
                 <div class="utility-card">
                     <div class="utility-icon gas">
-                        <img src="../../images/gaslanding.jpg" alt="Gas">
+                        <img src="/static/images/gaslanding.jpg" alt="Gas">
                     </div>
                     <span class="utility-label">Gas</span>
                 </div>
@@ -518,7 +618,7 @@
                 <div class="role-card" ng-click="selectRole('citizen')">
                     <div class="role-header">Citizens</div>
                     <div class="role-image citizens">
-                        <img src="../../images/citizens.jpg" alt="Citizens">
+                        <img src="/static/images/citizens.jpg" alt="Citizens">
                     </div>
                     <div class="role-title">Citizens</div>
                     <div class="role-description">Convenient access<br>to city services</div>
@@ -526,7 +626,7 @@
                 <div class="role-card" ng-click="selectRole('senior')">
                     <div class="role-header">Senior Citizens</div>
                     <div class="role-image seniors">
-                        <img src="../../images/seniorcitizen.jpg" alt="Senior Citizens">
+                        <img src="/static/images/seniorcitizen.jpg" alt="Senior Citizens">
                     </div>
                     <div class="role-title">Senior Citizens</div>
                     <div class="role-description">Simplified, accessible<br>tools for seniors</div>
@@ -534,18 +634,18 @@
                 <div class="role-card" ng-click="selectRole('official')">
                     <div class="role-header">Government Officials</div>
                     <div class="role-image officials">
-                        <img src="../../images/govOfficials.jpg" alt="Government Officials">
+                        <img src="/static/images/govOfficials.jpg" alt="Government Officials">
                     </div>
                     <div class="role-title">Government Officials</div>
                     <div class="role-description">Real-time monitoring<br>for city management</div>
                 </div>
-                <div class="role-card" ng-click="selectRole('kiosk')">
-                    <div class="role-header">Kiosk Mode</div>
+                <div class="role-card" ng-click="selectRole('worker')">
+                    <div class="role-header">Field Workers</div>
                     <div class="role-image kiosk">
-                        <img src="../../images/kioskMode.jpg" alt="Kiosk Mode">
+                        <img src="/static/images/kioskMode.jpg" alt="Field Workers">
                     </div>
-                    <div class="role-title">Kiosk Mode</div>
-                    <div class="role-description">Public kiosks for<br>quick service updates</div>
+                    <div class="role-title">Field Workers</div>
+                    <div class="role-description">Field operations &<br>meter submissions</div>
                 </div>
             </div>
 
@@ -569,48 +669,48 @@
         <!-- Language Selector -->
         <div class="language-selector-floating">
             <button class="lang-btn" ng-class="{active: currentLang === 'en'}" ng-click="setLanguage('en')">EN</button>
-            <button class="lang-btn" ng-class="{active: currentLang === 'hi'}" ng-click="setLanguage('hi')">हिंदी</button>
+            <button class="lang-btn" ng-class="{active: currentLang === 'hi'}"
+                ng-click="setLanguage('hi')">हिंदी</button>
         </div>
     </div>
 
     <script>
         // AngularJS App for Landing Page
         angular.module('landingApp', [])
-            .controller('LandingController', ['$scope', '$window', function($scope, $window) {
+            .controller('LandingController', ['$scope', '$window', function ($scope, $window) {
                 $scope.currentLang = 'en';
 
-                $scope.goToLogin = function() {
-                    // Navigate to auth page with login mode
-                    $window.location.href = '../../../templates/index.html#!/auth?mode=login';
+                $scope.goToLogin = function () {
+                    $window.location.href = '/login';
                 };
 
-                $scope.goToSignup = function() {
-                    // Navigate to auth page with signup mode
-                    $window.location.href = '../../../templates/index.html#!/auth?mode=signup';
+                $scope.goToSignup = function () {
+                    $window.location.href = '/signup';
                 };
 
-                $scope.selectRole = function(role) {
-                    switch(role) {
+                $scope.selectRole = function (role) {
+                    switch (role) {
                         case 'citizen':
-                            $window.location.href = '../../../templates/index.html#!/dashboard';
+                            $window.location.href = '/login';
                             break;
                         case 'senior':
-                            $window.location.href = '../../../SeniorCitizen/app/views/dashboard.html';
+                            $window.location.href = '/login';
                             break;
                         case 'official':
-                            $window.location.href = '../../../GovOfficials-Admin/app/views/dashboard.html';
+                            $window.location.href = '/login';
                             break;
-                        case 'kiosk':
-                            $window.location.href = '../../../templates/index.html#!/dashboard?mode=kiosk';
+                        case 'worker':
+                            $window.location.href = '/login';
                             break;
                     }
                 };
 
-                $scope.setLanguage = function(lang) {
+                $scope.setLanguage = function (lang) {
                     $scope.currentLang = lang;
                     // You can add translation logic here
                 };
             }]);
     </script>
 </body>
+
 </html>

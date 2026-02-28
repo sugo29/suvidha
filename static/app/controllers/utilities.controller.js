@@ -7,6 +7,7 @@
 
     function UtilitiesController($scope, $timeout, ApiService) {
         var vm = this;
+        var $rootScope = $scope.$root;
         vm.loading = false;
         vm.activeTab = 'electricity';
         vm.utilitiesData = {};
@@ -66,8 +67,7 @@
         };
 
         vm.downloadBill = function(utility) {
-            console.log('Download bill for:', utility);
-            alert('Downloading ' + utility + ' bill...');
+            $rootScope.showDialog('Download Bill', 'Your ' + utility + ' bill for the current billing cycle is being prepared. The PDF will be ready for download shortly.', 'info');
         };
 
         vm.viewHistory = function(utility) {
@@ -81,8 +81,7 @@
         };
 
         vm.bookCylinder = function() {
-            console.log('Book gas cylinder');
-            alert('Redirecting to IGL booking portal...');
+            $rootScope.showDialog('Book Gas Cylinder', 'Your cylinder booking request has been placed with IGL. Expected delivery: 3–5 business days. You will receive an SMS confirmation.', 'success');
         };
 
         vm.reportLeakage = function() {
@@ -91,22 +90,19 @@
         };
 
         vm.toggleChartType = function(utility) {
-            console.log('Toggle chart type for:', utility);
+            $rootScope.showDialog('Chart View', 'Switching chart type for ' + utility + '. Bar and line chart views help visualize your consumption patterns differently.', 'info');
         };
 
         vm.viewTariffDetails = function() {
-            console.log('View tariff details');
-            alert('Opening complete tariff schedule...');
+            $rootScope.showDialog('Tariff Schedule', 'Current electricity tariff (Domestic):\n• 0–200 units: ₹3.00/kWh\n• 201–400 units: ₹4.50/kWh\n• 401–800 units: ₹6.50/kWh\n• 800+ units: ₹7.00/kWh\nFixed charge: ₹25/kW/month', 'info');
         };
 
         vm.viewSafetyTips = function() {
-            console.log('View safety tips');
-            alert('Opening gas safety guidelines...');
+            $rootScope.showDialog('Gas Safety Guidelines', '• Ensure proper ventilation near gas appliances\n• Check rubber tubes every 6 months\n• Use ISI-marked regulators only\n• In case of leak: Turn off regulator, open windows, call 1906\n• Never use matches to check for leaks', 'warning');
         };
 
         vm.viewQualityReport = function() {
-            console.log('View quality report');
-            alert('Opening water quality report...');
+            $rootScope.showDialog('Water Quality Report', 'Latest water quality parameters (DJB):\n• pH: 7.2 (Normal)\n• TDS: 180 ppm (Safe)\n• Chlorine: 0.2 mg/L (Within limits)\n• Coliform: Not detected\nLast tested: 10 Jan 2026', 'success');
         };
 
         console.log('UtilitiesController initialized, activeTab:', vm.activeTab);

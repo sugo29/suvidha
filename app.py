@@ -11,7 +11,10 @@ from models import (db, User, Vendor, Community, CommunityStats, Bill, ServiceRe
                     Household, MeterSubmission)
 
 # Import admin blueprint
-from admin_seed import admin_bp, init_admin_models
+from admin_routes import admin_bp, init_admin_models
+
+# Import citizen blueprint
+from citizen_routes import citizen_bp, init_citizen_models
 
 # Configure Flask to use different delimiters to avoid conflict with AngularJS
 class CustomFlask(Flask):
@@ -52,6 +55,17 @@ init_admin_models(db, {
     'MeterSubmission': MeterSubmission
 })
 app.register_blueprint(admin_bp)
+
+# Initialize citizen models and register blueprint
+init_citizen_models(db, {
+    'User': User,
+    'Vendor': Vendor,
+    'Community': Community,
+    'CommunityStats': CommunityStats,
+    'Bill': Bill,
+    'ServiceReport': ServiceReport
+})
+app.register_blueprint(citizen_bp)
 
 # Create database tables
 with app.app_context():
@@ -95,15 +109,35 @@ with app.app_context():
 # SERVE MAIN APP & ROUTING
 # ============================================
 @app.route('/')
-def index():
+def landing():
+    return render_template('landing.html')
+
+@app.route('/app')
+def citizen_app():
     return render_template('index.html')
+
+@app.route('/login')
+def login_page():
+    return render_template('login.html')
+
+@app.route('/signup')
+def signup_page():
+    return render_template('signup.html')
 
 @app.route('/<path:path>')
 def catch_all(path):
-    # Serve Government Dashboard files
+    # Serve Government Officials Admin files
     if path.startswith('GovOfficials-Admin/'):
         file_path = path[len('GovOfficials-Admin/'):]
         return send_from_directory('GovOfficials-Admin', file_path)
+    # Serve Senior Citizen portal files
+    if path.startswith('SeniorCitizen/'):
+        file_path = path[len('SeniorCitizen/'):]
+        return send_from_directory('SeniorCitizen', file_path)
+    # Serve Field Worker portal files
+    if path.startswith('GovOfficial-Worker/'):
+        file_path = path[len('GovOfficial-Worker/'):]
+        return send_from_directory('GovOfficial-Worker', file_path)
     if path.startswith('static/'):
         return app.send_static_file(path[7:])
     elif path.startswith('api/'):
@@ -119,74 +153,182 @@ def add_header(response):
     return response
 
 # ============================================
-# AUTHENTICATION ENDPOINTS
+# AUTHENTICATION ENDPOINTS (Unified - role-aware)
 # ============================================
 @app.route('/api/auth/signup', methods=['POST'])
 def api_signup():
+    """Unified signup endpoint - routes to correct table based on role"""
     try:
         data = request.get_json()
+        role = data.get('role', 'citizen')
         
-        # Validate required fields
-        required_fields = ['fullName', 'email', 'phone', 'password', 'state', 'city', 'ward', 'locality']
-        if not all(field in data for field in required_fields):
-            return jsonify({'success': False, 'message': 'Missing required fields'}), 400
+        # ---------- AGENT SIGNUP ----------
+        if role == 'agent':
+            required_fields = ['fullName', 'email', 'phone', 'password', 'employeeId', 'department']
+            if not all(data.get(f) for f in required_fields):
+                return jsonify({'success': False, 'message': 'Missing required fields for agent signup'}), 400
+            
+            if FieldAgent.query.filter_by(email=data['email']).first():
+                return jsonify({'success': False, 'message': 'Email already registered'}), 400
+            if FieldAgent.query.filter_by(employee_id=data['employeeId']).first():
+                return jsonify({'success': False, 'message': 'Employee ID already registered'}), 400
+            
+            # Determine category from department
+            dept_to_category = {
+                'electricity': 'electric_meter',
+                'water': 'water_meter',
+                'gas': 'gas_cylinder',
+                'rwa': 'rwa_work',
+                'field_ops': 'electric_meter'
+            }
+            category = dept_to_category.get(data['department'], 'electric_meter')
+            
+            agent = FieldAgent(
+                employee_id=data['employeeId'],
+                full_name=data['fullName'],
+                email=data['email'],
+                phone=data['phone'],
+                password=generate_password_hash(data['password']),
+                category=category,
+                assigned_state=data.get('state', 'Delhi'),
+                assigned_district=data.get('city', 'South Delhi'),
+                assigned_ward=data.get('ward', ''),
+                status='offline',
+                performance_score=50.0
+            )
+            
+            db.session.add(agent)
+            db.session.commit()
+            
+            session['agent_id'] = agent.id
+            auth_token = secrets.token_hex(32)
+            session['auth_token'] = auth_token
+            
+            return jsonify({
+                'success': True,
+                'message': 'Field agent account created successfully',
+                'user_id': agent.id,
+                'token': auth_token,
+                'user': agent.to_dict()
+            }), 201
         
-        # Check if user exists
-        if User.query.filter_by(email=data['email']).first():
-            return jsonify({'success': False, 'message': 'Email already registered'}), 400
+        # ---------- OFFICIAL SIGNUP ----------
+        elif role == 'official':
+            required_fields = ['fullName', 'email', 'employeeId', 'password', 'department']
+            if not all(data.get(f) for f in required_fields):
+                return jsonify({'success': False, 'message': 'Missing required fields for official signup'}), 400
+            
+            if GovOfficial.query.filter_by(email=data['email']).first():
+                return jsonify({'success': False, 'message': 'Email already registered'}), 400
+            if GovOfficial.query.filter_by(employee_id=data['employeeId']).first():
+                return jsonify({'success': False, 'message': 'Employee ID already registered'}), 400
+            
+            official = GovOfficial(
+                employee_id=data['employeeId'],
+                full_name=data['fullName'],
+                email=data['email'],
+                phone=data.get('phone', ''),
+                password=generate_password_hash(data['password']),
+                department=data['department'],
+                designation=data.get('designation', 'junior_officer'),
+                role='official',
+                assigned_state=data.get('state', 'Delhi'),
+                assigned_district=data.get('city', 'South Delhi'),
+                assigned_ward=data.get('ward', '')
+            )
+            
+            db.session.add(official)
+            db.session.commit()
+            
+            session['admin_id'] = official.id
+            session['admin_employee_id'] = official.employee_id
+            auth_token = secrets.token_hex(32)
+            session['admin_token'] = auth_token
+            
+            return jsonify({
+                'success': True,
+                'message': 'Government official account created successfully',
+                'user_id': official.id,
+                'token': auth_token,
+                'user': official.to_dict()
+            }), 201
         
-        if User.query.filter_by(phone=data['phone']).first():
-            return jsonify({'success': False, 'message': 'Phone number already registered'}), 400
-        
-        # Create new user
-        user = User(
-            full_name=data['fullName'],
-            email=data['email'],
-            phone=data['phone'],
-            password=generate_password_hash(data['password']),
-            preferred_language=data.get('language', 'en'),
-            aadhaar=data.get('aadhaar', None),
-            aadhaar_consent=data.get('consent', False),
-            state=data['state'],
-            city=data['city'],
-            ward=data['ward'],
-            locality=data['locality'],
-            electricity_provider_id=data.get('electricityProvider', None),
-            water_provider_id=data.get('waterProvider', None),
-            gas_provider_id=data.get('gasProvider', None),
-            alerts_enabled=data.get('alertsEnabled', True)
-        )
-        
-        db.session.add(user)
-        db.session.flush()
-        
-        # Create community membership
-        community = Community(
-            user_id=user.id,
-            state=data['state'],
-            city=data['city'],
-            ward=data['ward'],
-            locality=data.get('locality', '')
-        )
-        db.session.add(community)
-        
-        db.session.commit()
-        
-        # Store in session
-        session['user_id'] = user.id
-        session['user_email'] = user.email
-        
-        # Generate a simple auth token
-        auth_token = secrets.token_hex(32)
-        session['auth_token'] = auth_token
-        
-        return jsonify({
-            'success': True,
-            'message': 'Account created successfully',
-            'user_id': user.id,
-            'token': auth_token,
-            'user': user.to_dict()
-        }), 201
+        # ---------- CITIZEN / SENIOR CITIZEN SIGNUP ----------
+        else:
+            required_fields = ['fullName', 'email', 'phone', 'password', 'state', 'city', 'ward', 'locality']
+            if not all(data.get(f) for f in required_fields):
+                return jsonify({'success': False, 'message': 'Missing required fields'}), 400
+            
+            if User.query.filter_by(email=data['email']).first():
+                return jsonify({'success': False, 'message': 'Email already registered'}), 400
+            
+            if User.query.filter_by(phone=data['phone']).first():
+                return jsonify({'success': False, 'message': 'Phone number already registered'}), 400
+            
+            # Determine user type
+            user_type = 'senior_citizen' if role == 'senior' else 'general'
+            date_of_birth = None
+            if data.get('dob'):
+                try:
+                    from datetime import date as dt_date
+                    date_of_birth = datetime.strptime(data['dob'], '%Y-%m-%d').date()
+                    today = dt_date.today()
+                    age = today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
+                    if age >= 60:
+                        user_type = 'senior_citizen'
+                except ValueError:
+                    pass
+            
+            user = User(
+                full_name=data['fullName'],
+                email=data['email'],
+                phone=data['phone'],
+                password=generate_password_hash(data['password']),
+                user_type=user_type,
+                date_of_birth=date_of_birth,
+                preferred_language=data.get('language', 'en'),
+                aadhaar=data.get('aadhaar', None) or None,
+                aadhaar_consent=data.get('consent', False),
+                state=data['state'],
+                city=data['city'],
+                ward=data['ward'],
+                locality=data['locality'],
+                electricity_provider_id=data.get('electricityProvider', None) or None,
+                water_provider_id=data.get('waterProvider', None) or None,
+                gas_provider_id=data.get('gasProvider', None) or None,
+                alerts_enabled=data.get('alertsEnabled', True)
+            )
+            
+            db.session.add(user)
+            db.session.flush()
+            
+            # Create community membership
+            community = Community(
+                user_id=user.id,
+                state=data['state'],
+                city=data['city'],
+                ward=data['ward'],
+                locality=data.get('locality', '')
+            )
+            db.session.add(community)
+            
+            db.session.commit()
+            
+            session['user_id'] = user.id
+            session['user_email'] = user.email
+            session['user_type'] = user_type
+            
+            auth_token = secrets.token_hex(32)
+            session['auth_token'] = auth_token
+            
+            return jsonify({
+                'success': True,
+                'message': 'Account created successfully',
+                'user_id': user.id,
+                'user_type': user_type,
+                'token': auth_token,
+                'user': user.to_dict()
+            }), 201
         
     except Exception as e:
         db.session.rollback()
@@ -194,39 +336,256 @@ def api_signup():
 
 @app.route('/api/auth/login', methods=['POST'])
 def api_login():
+    """Unified login endpoint - routes to correct table based on role"""
     try:
         data = request.get_json()
+        role = data.get('role', 'citizen')
+        identifier = data.get('identifier', '')
+        password = data.get('password', '')
         
-        # Find user by email or phone
-        user = User.query.filter(
-            (User.email == data.get('identifier')) | (User.phone == data.get('identifier'))
-        ).first()
+        # ---------- AGENT LOGIN ----------
+        if role == 'agent':
+            agent = FieldAgent.query.filter(
+                (FieldAgent.email == identifier) | (FieldAgent.employee_id == identifier)
+            ).first()
+            
+            if not agent or not check_password_hash(agent.password, password):
+                return jsonify({'success': False, 'message': 'Invalid credentials'}), 401
+            
+            if not agent.is_active:
+                return jsonify({'success': False, 'message': 'Account is deactivated'}), 403
+            
+            agent.last_login = datetime.utcnow()
+            agent.status = 'online'
+            db.session.commit()
+            
+            session['agent_id'] = agent.id
+            auth_token = secrets.token_hex(32)
+            session['auth_token'] = auth_token
+            
+            return jsonify({
+                'success': True,
+                'message': 'Login successful',
+                'user_id': agent.id,
+                'token': auth_token,
+                'user': agent.to_dict()
+            }), 200
         
-        if not user or not check_password_hash(user.password, data.get('password')):
-            return jsonify({'success': False, 'message': 'Invalid credentials'}), 401
+        # ---------- OFFICIAL LOGIN ----------
+        elif role == 'official':
+            official = GovOfficial.query.filter(
+                (GovOfficial.email == identifier) | (GovOfficial.employee_id == identifier)
+            ).first()
+            
+            if not official or not check_password_hash(official.password, password):
+                return jsonify({'success': False, 'message': 'Invalid credentials'}), 401
+            
+            if not official.is_active:
+                return jsonify({'success': False, 'message': 'Account is deactivated'}), 403
+            
+            official.last_login = datetime.utcnow()
+            db.session.commit()
+            
+            session['admin_id'] = official.id
+            session['admin_employee_id'] = official.employee_id
+            auth_token = secrets.token_hex(32)
+            session['admin_token'] = auth_token
+            
+            return jsonify({
+                'success': True,
+                'message': 'Login successful',
+                'user_id': official.id,
+                'token': auth_token,
+                'user': official.to_dict()
+            }), 200
         
-        session['user_id'] = user.id
-        session['user_email'] = user.email
-        
-        # Generate a simple auth token
-        auth_token = secrets.token_hex(32)
-        session['auth_token'] = auth_token
-        
-        return jsonify({
-            'success': True,
-            'message': 'Login successful',
-            'user_id': user.id,
-            'token': auth_token,
-            'user': user.to_dict()
-        }), 200
+        # ---------- CITIZEN / SENIOR CITIZEN LOGIN ----------
+        else:
+            user = User.query.filter(
+                (User.email == identifier) | (User.phone == identifier)
+            ).first()
+            
+            if not user or not check_password_hash(user.password, password):
+                return jsonify({'success': False, 'message': 'Invalid credentials'}), 401
+            
+            user.last_login = datetime.utcnow()
+            db.session.commit()
+            
+            session['user_id'] = user.id
+            session['user_email'] = user.email
+            session['user_type'] = user.user_type
+            
+            auth_token = secrets.token_hex(32)
+            session['auth_token'] = auth_token
+            
+            return jsonify({
+                'success': True,
+                'message': 'Login successful',
+                'user_id': user.id,
+                'user_type': user.user_type,
+                'token': auth_token,
+                'user': user.to_dict()
+            }), 200
         
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 
 @app.route('/api/auth/logout', methods=['POST'])
 def api_logout():
+    """Unified logout endpoint"""
+    # If agent is logged in, set them offline
+    agent_id = session.get('agent_id')
+    if agent_id:
+        agent = FieldAgent.query.get(agent_id)
+        if agent:
+            agent.status = 'offline'
+            db.session.commit()
     session.clear()
     return jsonify({'success': True, 'message': 'Logged out successfully'}), 200
+
+# ============================================
+# PASSWORD RESET & OTP VERIFICATION ENDPOINTS
+# ============================================
+@app.route('/api/auth/forgot-password', methods=['POST'])
+def api_forgot_password():
+    """Request password reset - sends reset token (simulated)"""
+    try:
+        data = request.get_json()
+        email = data.get('email', '')
+        
+        if not email:
+            return jsonify({'success': False, 'message': 'Email is required'}), 400
+        
+        # Check all user tables for the email
+        user = User.query.filter_by(email=email).first()
+        agent = FieldAgent.query.filter_by(email=email).first()
+        official = GovOfficial.query.filter_by(email=email).first()
+        
+        if not user and not agent and not official:
+            # Don't reveal whether email exists (security best practice)
+            return jsonify({
+                'success': True,
+                'message': 'If an account with this email exists, a password reset link has been sent.'
+            }), 200
+        
+        # Generate reset token
+        reset_token = secrets.token_hex(32)
+        
+        # Store token in session (in production, store in DB with expiry + send via email)
+        session['reset_token'] = reset_token
+        session['reset_email'] = email
+        session['reset_expires'] = (datetime.utcnow() + timedelta(hours=1)).isoformat()
+        
+        # In production, send email with reset link containing the token
+        # For now, return the token for testing
+        return jsonify({
+            'success': True,
+            'message': 'If an account with this email exists, a password reset link has been sent.',
+            'token': reset_token  # Remove in production - only for testing
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/auth/reset-password', methods=['POST'])
+def api_reset_password():
+    """Reset password using reset token"""
+    try:
+        data = request.get_json()
+        token = data.get('token', '')
+        new_password = data.get('password', '')
+        
+        if not token or not new_password:
+            return jsonify({'success': False, 'message': 'Token and new password are required'}), 400
+        
+        if len(new_password) < 6:
+            return jsonify({'success': False, 'message': 'Password must be at least 6 characters'}), 400
+        
+        # Validate token
+        stored_token = session.get('reset_token')
+        reset_email = session.get('reset_email')
+        reset_expires = session.get('reset_expires')
+        
+        if not stored_token or stored_token != token:
+            return jsonify({'success': False, 'message': 'Invalid or expired reset token'}), 400
+        
+        if reset_expires and datetime.fromisoformat(reset_expires) < datetime.utcnow():
+            session.pop('reset_token', None)
+            session.pop('reset_email', None)
+            session.pop('reset_expires', None)
+            return jsonify({'success': False, 'message': 'Reset token has expired'}), 400
+        
+        # Find user across all tables and update password
+        hashed_password = generate_password_hash(new_password)
+        updated = False
+        
+        user = User.query.filter_by(email=reset_email).first()
+        if user:
+            user.password = hashed_password
+            updated = True
+        
+        agent = FieldAgent.query.filter_by(email=reset_email).first()
+        if agent:
+            agent.password = hashed_password
+            updated = True
+        
+        official = GovOfficial.query.filter_by(email=reset_email).first()
+        if official:
+            official.password = hashed_password
+            updated = True
+        
+        if updated:
+            db.session.commit()
+            # Clear reset session data
+            session.pop('reset_token', None)
+            session.pop('reset_email', None)
+            session.pop('reset_expires', None)
+            return jsonify({'success': True, 'message': 'Password reset successfully'}), 200
+        else:
+            return jsonify({'success': False, 'message': 'Account not found'}), 404
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+
+@app.route('/api/auth/verify-otp', methods=['POST'])
+def api_verify_otp():
+    """Verify OTP for email/phone verification (simulated)"""
+    try:
+        data = request.get_json()
+        otp_type = data.get('type', 'email')  # 'email' or 'phone'
+        value = data.get('value', '')  # email address or phone number
+        otp = data.get('otp', '')
+        
+        if not value or not otp:
+            return jsonify({'success': False, 'message': 'Value and OTP are required'}), 400
+        
+        # In production, validate OTP against stored value from SMS/email service
+        # For demo/development, accept any 6-digit OTP or "123456"
+        if len(otp) == 6 and otp.isdigit():
+            # Mark user as verified
+            user = None
+            if otp_type == 'email':
+                user = User.query.filter_by(email=value).first()
+            elif otp_type == 'phone':
+                user = User.query.filter_by(phone=value).first()
+            
+            if user:
+                user.is_verified = True
+                db.session.commit()
+            
+            return jsonify({
+                'success': True,
+                'message': f'{otp_type.capitalize()} verified successfully',
+                'verified': True
+            }), 200
+        else:
+            return jsonify({'success': False, 'message': 'Invalid OTP'}), 400
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 # ============================================
 # VENDORS ENDPOINTS

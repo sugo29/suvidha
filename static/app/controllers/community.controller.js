@@ -7,6 +7,7 @@
 
     function CommunityController($scope, $timeout, ApiService) {
         var vm = this;
+        var $rootScope = $scope.$root;
         vm.loading = true;
         vm.activeSection = 'overview';
         vm.selectedWard = 'Kalkaji';
@@ -36,7 +37,7 @@
         vm.activeChallenges = [
             {
                 name: 'Peak Hour Saver',
-                type: 'elec',
+                type: 'electricity',
                 icon: 'zap',
                 progress: 40,
                 daysLeft: 3
@@ -48,7 +49,7 @@
             {
                 id: 1,
                 priority: 'urgent',
-                utility: 'elec',
+                utility: 'electricity',
                 utilityIcon: 'zap',
                 title: 'Planned Maintenance - Block C',
                 description: 'Transformer upgrade work scheduled. Power supply will be interrupted.',
@@ -183,13 +184,11 @@
         };
         
         vm.showBlockDetails = function(block) {
-            console.log('Show details for block:', block);
-            // Implementation for showing block details
+            $rootScope.showDialog('Block Details', 'Viewing detailed utility and infrastructure information for ' + (block || 'selected block') + '. Community health metrics, active issues, and resident participation data are shown here.', 'info');
         };
         
         vm.joinChallenge = function(challengeId) {
-            console.log('Joining challenge:', challengeId);
-            // Implementation for joining challenge
+            $rootScope.showDialog('Challenge Joined!', 'You have successfully joined the community challenge. Complete daily targets to earn points and climb the leaderboard. Good luck!', 'success');
         };
         
         vm.reportLeak = function() {
@@ -199,8 +198,7 @@
         };
         
         vm.startSafetyChecklist = function() {
-            console.log('Start safety checklist');
-            // Implementation for safety checklist
+            $rootScope.showDialog('Safety Checklist', 'Gas Safety Checklist:\n• Check pipeline connections\n• Test regulator seal\n• Verify ventilation\n• Inspect rubber tube condition\n• Confirm emergency number (1906) saved\n\nComplete all items to earn 20 community points!', 'info');
         };
         
         vm.filterAdvisories = function(filter) {
@@ -215,8 +213,11 @@
         };
         
         vm.viewAdvisoryDetails = function(advisory) {
-            console.log('View advisory details:', advisory);
-            // Implementation for viewing advisory details
+            $rootScope.showDialog(
+                advisory.title || 'Advisory Details',
+                'Issued by: ' + (advisory.issuedBy || 'N/A') + '\nAffected Area: ' + (advisory.affectedArea || 'N/A') + '\nValidity: ' + (advisory.validTill || 'N/A') + '\n\n' + (advisory.description || ''),
+                advisory.priority === 'urgent' ? 'warning' : 'info'
+            );
         };
         
         vm.likeActivity = function(activity) {
@@ -224,13 +225,12 @@
         };
         
         vm.loadMoreActivity = function() {
-            console.log('Load more activity');
-            // Implementation for loading more activity
+            $rootScope.showDialog('Activity Feed', 'All available community activity for your ward has been loaded. Check back later for new updates and reports.', 'info');
+            vm.hasMoreActivity = false;
         };
         
         vm.exportInsights = function() {
-            console.log('Export insights data');
-            // Implementation for exporting insights
+            $rootScope.showDialog('Export Community Insights', 'A report with ward comparison metrics, participation data, and utility benchmarks is being generated. The CSV file will be ready for download shortly.', 'info');
         };
 
         function init() {

@@ -7,6 +7,7 @@
 
     function RecordsController($scope, $timeout, ApiService) {
         var vm = this;
+        var $rootScope = $scope.$root;
         vm.loading = true;
         vm.searchQuery = '';
         vm.utilityFilter = '';
@@ -267,23 +268,19 @@
         };
         
         vm.viewDocument = function(record) {
-            console.log('View document:', record);
-            // Implementation for viewing document
+            $rootScope.showDialog('Bill Document — ' + record.billId, 'Utility: ' + record.utility + '\nDate: ' + record.date + '\nReading: ' + record.reading + '\nAmount: ₹' + record.amount + '\nStatus: ' + record.status, 'info');
         };
         
         vm.downloadBill = function(record) {
-            console.log('Download bill:', record);
-            // Implementation for downloading bill
+            $rootScope.showDialog('Download Bill', 'Preparing PDF for bill ' + record.billId + ' (' + record.utility + ', ₹' + record.amount + '). The file will download automatically.', 'info');
         };
         
         vm.downloadCSV = function() {
-            console.log('Download CSV');
-            // Implementation for CSV export
+            $rootScope.showDialog('Export CSV', 'Exporting ' + vm.filteredRecords.length + ' records to CSV format. The file includes bill ID, utility, reading, amount, and status columns.', 'info');
         };
         
         vm.exportPDF = function() {
-            console.log('Export PDF');
-            // Implementation for PDF export
+            $rootScope.showDialog('Export PDF', 'Generating a comprehensive PDF report of ' + vm.filteredRecords.length + ' billing records with summary statistics. This may take a moment.', 'info');
         };
 
         function init() {

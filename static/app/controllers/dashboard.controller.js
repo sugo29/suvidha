@@ -7,8 +7,29 @@
 
     function DashboardController($scope, $timeout, ApiService) {
         var vm = this;
+        var $rootScope = $scope.$root;
         vm.loading = true;
         vm.userData = {};
+        
+        // Load user from localStorage immediately for fast display
+        var storedUser = JSON.parse(localStorage.getItem('suvidhaUser') || 'null');
+        if (storedUser) {
+            vm.userData = {
+                username: storedUser.full_name || storedUser.name || 'Guest User',
+                user: {
+                    email: storedUser.email || '',
+                    phone: storedUser.phone || '',
+                    locality: storedUser.locality || '',
+                    ward: storedUser.ward || '',
+                    city: storedUser.city || ''
+                },
+                consumption: {
+                    electricity: { current_bill: 0, current: 0, unit: 'kWh' },
+                    water: { current_bill: 0, current: 0, unit: 'kL' },
+                    gas: { current_bill: 0, current: 0, unit: 'kg' }
+                }
+            };
+        }
         
         // Helper functions for cost calculations
         vm.getTotalCost = function() {
@@ -24,6 +45,20 @@
             if (total === 0) return 0;
             var amount = vm.userData.consumption?.[utility]?.current_bill || 0;
             return Math.round((amount / total) * 100);
+        };
+
+        // Navigate to utilities page
+        vm.navigateToUtility = function() {
+            vm.closeModal();
+            window.location.hash = '#!/utilities';
+        };
+
+        // Close modal
+        vm.closeModal = function() {
+            var modal = document.getElementById('utilityModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
         };
 
         // Initialize

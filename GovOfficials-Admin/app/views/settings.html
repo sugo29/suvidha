@@ -498,7 +498,12 @@
         var app = angular.module('adminApp', []);
 
         app.controller('SettingsController', ['$scope', function($scope) {
-            $scope.user = { name: 'Rajesh Kumar', initials: 'RK', role: 'Government Official' };
+            // Load user data from localStorage (set during login/signup)
+            var official = JSON.parse(localStorage.getItem('currentOfficial') || 'null') || JSON.parse(localStorage.getItem('suvidhaUser') || 'null');
+            var uName = official ? (official.full_name || official.name || 'Government Official') : 'Government Official';
+            var initials = uName.split(' ').map(function(n) { return n[0]; }).join('').toUpperCase().substring(0, 2) || 'GO';
+            
+            $scope.user = { name: uName, initials: initials, role: official ? (official.designation || official.role || 'Government Official').replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); }) : 'Government Official' };
             $scope.currentDate = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
             $scope.notifications = 3;
             $scope.activeTab = 'profile';
@@ -530,15 +535,15 @@
                 $scope.showLangMenu = false;
             };
 
-            // Profile data
+            // Profile data - populated from logged-in user
             $scope.profile = {
-                fullName: 'Rajesh Kumar',
-                employeeId: 'GOV-DL-2024-001',
-                email: 'rajesh.kumar@gov.in',
-                phone: '+91 98765 43210',
-                department: 'Urban Development',
-                designation: 'District Collector',
-                bio: 'Senior government official with 15 years of experience in urban administration.'
+                fullName: uName,
+                employeeId: official ? (official.employee_id || 'N/A') : 'N/A',
+                email: official ? (official.email || '') : '',
+                phone: official ? (official.phone || '') : '',
+                department: official ? (official.department || '').replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); }) : '',
+                designation: official ? (official.designation || '').replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); }) : '',
+                bio: ''
             };
 
             // System info

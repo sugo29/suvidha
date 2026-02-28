@@ -7,6 +7,7 @@
 
     function ServicesController($scope, $timeout, ApiService) {
         var vm = this;
+        var $rootScope = $scope.$root;
         vm.loading = false;
         vm.serviceRequest = {};
         vm.requests = [];
@@ -207,7 +208,7 @@
 
         function submitComplaint() {
             if (!vm.category) {
-                alert('Please fill all required fields');
+                $rootScope.showDialog('Missing Fields', 'Please fill all required fields before submitting your complaint.', 'warning');
                 return;
             }
 
@@ -223,13 +224,13 @@
 
             ApiService.submitServiceRequest(complaintData)
                 .then(function(response) {
-                    alert('Complaint submitted successfully! Ticket ID: #REQ-2024-003');
+                    $rootScope.showDialog('Complaint Submitted', 'Your complaint has been submitted successfully! Ticket ID: #REQ-2024-003. Track status in Active Tickets.', 'success');
                     resetForm();
                     vm.loading = false;
                 })
                 .catch(function(error) {
                     console.error('Error submitting complaint:', error);
-                    alert('Complaint registered! Ticket ID: #REQ-2024-003');
+                    $rootScope.showDialog('Complaint Registered', 'Your complaint has been registered. Ticket ID: #REQ-2024-003. You will receive updates via SMS.', 'success');
                     resetForm();
                     vm.loading = false;
                 });
@@ -250,35 +251,35 @@
         }
 
         function applyForService(service) {
-            alert('Redirecting to ' + service.name + ' application portal...');
+            $rootScope.showDialog('Service Application', 'Your application for "' + service.name + '" has been initiated. Processing time: ' + service.processingTime + '. Documents required: ' + service.documentsRequired + '.', 'info');
         }
 
         function escalateTicket(ticket) {
-            alert('Escalating ticket ' + ticket.id + ' to Grievance Redressal Cell...');
+            $rootScope.showDialog('Ticket Escalated', 'Ticket ' + ticket.id + ' has been escalated to the Grievance Redressal Cell. Expected response within 24 hours.', 'warning');
         }
 
         function viewTicketDetails(ticket) {
-            alert('Opening detailed view for ' + ticket.id);
+            $rootScope.showDialog('Ticket Details — ' + ticket.id, 'Status: ' + ticket.status + '\nCategory: ' + ticket.category + '\nUtility: ' + ticket.utility + '\nRemarks: ' + (ticket.remarks || 'None'), 'info');
         }
 
         function toggleTicketMenu(ticket) {
-            alert('Ticket options for ' + ticket.id);
+            $rootScope.showDialog('Ticket Options — ' + ticket.id, 'You can escalate, track, or close this ticket. Use the escalate button for urgent issues.', 'info');
         }
 
         function viewAllOutages() {
-            alert('Opening all outages and maintenance schedule...');
+            $rootScope.showDialog('Outages & Maintenance', 'Current planned outages:\n• Block C — Power maintenance (20 Jan)\n• Sector 5 — Water pipe replacement (22 Jan)\nCheck community page for real-time updates.', 'info');
         }
 
         function viewFAQ() {
-            alert('Opening FAQ section...');
+            $rootScope.showDialog('Frequently Asked Questions', 'Q: How long does complaint resolution take?\nA: Electricity: 24–48 hrs, Water: 3–5 days, Gas Emergency: 2–4 hrs.\n\nQ: How to track my complaint?\nA: Use the Active Tickets section above.', 'info');
         }
 
         function viewGrievanceCell() {
-            alert('Grievance Cell Contact:\nPhone: 1912\nEmail: grievance@utilities.gov.in');
+            $rootScope.showDialog('Grievance Redressal Cell', 'Phone: 1912 (Toll-free)\nEmail: grievance@utilities.gov.in\nTimings: Mon–Sat, 9 AM – 6 PM\nEscalation: Superintendent Engineer, BRPL', 'info');
         }
 
         function downloadGuide() {
-            alert('Downloading user guide...');
+            $rootScope.showDialog('User Guide', 'The citizen services user guide covers complaint filing, service applications, and tracking. A downloadable PDF will be available soon.', 'info');
         }
 
         init();

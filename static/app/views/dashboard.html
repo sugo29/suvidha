@@ -40,7 +40,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="modal-title" id="modalTitle"></h2>
-                <button class="modal-close" id="modalClose">
+                <button class="modal-close" ng-click="vm.closeModal()" id="modalClose">
                     <i data-lucide="x"></i>
                 </button>
             </div>
@@ -74,8 +74,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-primary" ng-click="navigateToUtility()" id="utilityAction">View Details</button>
-                <button class="btn-secondary" id="modalCloseBtn">Close</button>
+                <button class="btn-primary" ng-click="vm.navigateToUtility()" id="utilityAction">View Details</button>
+                <button class="btn-secondary" ng-click="vm.closeModal()" id="modalCloseBtn">Close</button>
             </div>
         </div>
     </div>
@@ -259,7 +259,7 @@
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Customer ID:</span>
-                        <span class="detail-value">{{username || 'Not assigned'}}</span>
+                        <span class="detail-value">{{vm.userData.username || 'Not assigned'}}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Connection Type:</span>
@@ -296,7 +296,7 @@
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Customer ID:</span>
-                        <span class="detail-value">{{username || 'Not assigned'}}</span>
+                        <span class="detail-value">{{vm.userData.username || 'Not assigned'}}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Connection Type:</span>
@@ -333,7 +333,7 @@
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Customer ID:</span>
-                        <span class="detail-value">{{username || 'Not assigned'}}</span>
+                        <span class="detail-value">{{vm.userData.username || 'Not assigned'}}</span>
                     </div>
                     <div class="detail-row">
                         <span class="detail-label">Connection Type:</span>

@@ -522,12 +522,26 @@
     <script>
         var app = angular.module('seniorApp', []);
         app.controller('SettingsController', ['$scope', function ($scope) {
-            $scope.user = {
-                name: 'Vikram Singh',
-                initials: 'VS',
-                phone: '+91 98765 43210',
-                address: 'Flat 301, Greenview Apartments, Saket, New Delhi'
-            };
+            // Load user data from localStorage (set during login/signup)
+            var storedUser = JSON.parse(localStorage.getItem('suvidhaUser') || 'null');
+            if (storedUser) {
+                var uName = storedUser.full_name || storedUser.name || 'Senior Citizen';
+                $scope.user = {
+                    name: uName,
+                    initials: uName.split(' ').map(function(w) { return w[0]; }).join('').toUpperCase().substring(0, 2),
+                    phone: storedUser.phone || '',
+                    email: storedUser.email || '',
+                    address: storedUser.locality || storedUser.address || ''
+                };
+            } else {
+                $scope.user = {
+                    name: 'Senior Citizen',
+                    initials: 'SC',
+                    phone: '',
+                    email: '',
+                    address: ''
+                };
+            }
             $scope.settings = { smsNotifications: true };
             $scope.fontSize = 16;
             $scope.showLogoutModal = false;

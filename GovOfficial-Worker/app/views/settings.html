@@ -1090,17 +1090,32 @@
         var app = angular.module('workerApp', []);
 
         app.controller('SettingsController', ['$scope', function ($scope) {
-            // User Info (Read-only)
-            $scope.user = {
-                name: 'Vikram Singh',
-                initials: 'VS',
-                email: 'vikram.singh@suvidha.gov.in',
-                agentId: 'FA-2026-00147',
-                phone: '+91 98765 43210',
-                district: 'South Delhi',
-                joinDate: '15 January 2024',
-                category: 'Electric Meter Reader'
-            };
+            // Load user data from localStorage (set during login/signup)
+            var storedUser = JSON.parse(localStorage.getItem('suvidhaUser') || 'null');
+            if (storedUser) {
+                var uName = storedUser.full_name || storedUser.name || 'Field Agent';
+                $scope.user = {
+                    name: uName,
+                    initials: uName.split(' ').map(function(n) { return n[0]; }).join('').toUpperCase().substring(0, 2) || 'FA',
+                    email: storedUser.email || '',
+                    agentId: storedUser.employee_id || 'N/A',
+                    phone: storedUser.phone || '',
+                    district: storedUser.assigned_district || storedUser.assigned_ward || '',
+                    joinDate: storedUser.created_at ? new Date(storedUser.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : '',
+                    category: storedUser.category || 'Field Agent'
+                };
+            } else {
+                $scope.user = {
+                    name: 'Field Agent',
+                    initials: 'FA',
+                    email: '',
+                    agentId: 'N/A',
+                    phone: '',
+                    district: '',
+                    joinDate: '',
+                    category: 'Field Agent'
+                };
+            }
 
             // Meter Type Selection
             $scope.meterType = 'electric';

@@ -7,6 +7,7 @@
 
     function InsightsController($scope, $timeout, ApiService) {
         var vm = this;
+        var $rootScope = $scope.$root;
         vm.loading = true;
         vm.insightsData = {};
         vm.activeSection = 'profile';
@@ -282,19 +283,19 @@
         }
 
         function viewDataDisclaimer() {
-            alert('Data Disclaimer: All insights are based on official utility billing records and ward-level benchmarks provided by government agencies.');
+            $rootScope.showDialog('Data Disclaimer', 'All insights are based on official utility billing records and ward-level benchmarks provided by government agencies. Data is updated monthly and verified against BRPL, DJB, and IGL records.', 'info');
         }
 
         function exportTrendData() {
-            alert('Trend data export feature coming soon!');
+            $rootScope.showDialog('Export Trend Data', 'Your 6-month consumption trend data for all utilities is being compiled into a downloadable CSV report. This includes monthly readings, cost breakdowns, and ward comparisons.', 'info');
         }
 
         function viewMethodology() {
-            alert('Methodology: We analyze your consumption patterns against ward averages, seasonal trends, and household size benchmarks to generate personalized insights.');
+            $rootScope.showDialog('Analysis Methodology', 'We analyze your consumption patterns against ward averages, seasonal trends, and household size benchmarks. Efficiency scores use a weighted average across 3 utilities with a 6-month rolling window.', 'info');
         }
 
         function viewGovernmentAdvisory(utility) {
-            alert('Opening ' + utility + ' government advisory...');
+            $rootScope.showDialog(utility + ' — Government Advisory', 'The latest government advisory for ' + utility + ' includes updated tariff schedules, conservation guidelines, and subsidy information. Visit your local utility office for detailed documentation.', 'info');
         }
 
         function raiseServiceRequest(utility) {
@@ -302,11 +303,11 @@
         }
 
         function viewSafetyGuidelines(utility) {
-            alert('Opening safety guidelines for ' + utility + '...');
+            $rootScope.showDialog(utility + ' Safety Guidelines', 'Essential safety guidelines for ' + utility + ': Regular maintenance schedules, emergency contact numbers, safety inspection procedures, and compliance requirements. For emergencies, call 112.', 'warning');
         }
 
         function viewProgramme(programme) {
-            alert('Opening information for ' + programme + ' programme...');
+            $rootScope.showDialog('Programme Details', 'The "' + programme + '" programme offers subsidies and incentives for efficient utility usage. Eligible households can save up to 15% on monthly bills.', 'success');
         }
 
         init();

@@ -2,8 +2,14 @@ angular.module('suvidhaApp')
     .controller('AuthController', ['$scope', '$location', '$rootScope', 'AuthService', '$timeout',
         function($scope, $location, $rootScope, AuthService, $timeout) {
             
-            // Current state
-            $scope.currentView = 'landing'; // 'landing', 'login', or 'signup'
+            // Read URL query params to determine initial view
+            var searchParams = $location.search();
+            var initialMode = searchParams.mode || 'landing';
+            var initialRole = searchParams.role || null;
+            
+            // Current state - set from URL params
+            $scope.currentView = (initialMode === 'login' || initialMode === 'signup') ? initialMode : 'landing';
+            $scope.selectedRole = initialRole; // pre-select role if passed from landing page
             $scope.currentStep = 1;
             $scope.totalSteps = 6;
             
@@ -134,6 +140,26 @@ angular.module('suvidhaApp')
                 }
             };
             
+            // Login role selection (from login page role grid)
+            $scope.selectLoginRole = function(role) {
+                switch(role) {
+                    case 'citizen':
+                        $scope.selectedRole = 'citizen';
+                        break;
+                    case 'senior':
+                        $scope.selectedRole = 'senior';
+                        break;
+                    case 'worker':
+                        $scope.selectedRole = 'worker';
+                        break;
+                    case 'official':
+                        $scope.selectedRole = 'official';
+                        break;
+                    default:
+                        $scope.selectedRole = role;
+                }
+            };
+            
             // Progress calculation
             $scope.getProgressPercent = function() {
                 return (($scope.currentStep - 1) / ($scope.totalSteps - 1)) * 100;
@@ -156,7 +182,7 @@ angular.module('suvidhaApp')
             // Validation helpers
             $scope.validateStep1 = function() {
                 if (!$scope.signupData.fullName || !$scope.signupData.language) {
-                    alert('Please fill in all required fields.');
+                    $rootScope.showDialog('Missing Fields', 'Please fill in your full name and select a preferred language.', 'warning');
                     return false;
                 }
                 return true;
@@ -164,13 +190,12 @@ angular.module('suvidhaApp')
             
             $scope.validateStep2 = function() {
                 if (!$scope.signupData.email || !$scope.signupData.phone) {
-                    alert('Please fill in all required fields.');
+                    $rootScope.showDialog('Missing Fields', 'Please provide both your email address and phone number.', 'warning');
                     return false;
                 }
-                // Basic email validation
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test($scope.signupData.email)) {
-                    alert('Please enter a valid email address.');
+                    $rootScope.showDialog('Invalid Email', 'Please enter a valid email address (e.g., user@example.com).', 'error');
                     return false;
                 }
                 return true;
@@ -184,7 +209,7 @@ angular.module('suvidhaApp')
             $scope.validateStep4 = function() {
                 if (!$scope.signupData.state || !$scope.signupData.city || 
                     !$scope.signupData.ward || !$scope.signupData.locality) {
-                    alert('Please fill in all required fields.');
+                    $rootScope.showDialog('Missing Location', 'Please fill in your state, city, ward, and locality to continue.', 'warning');
                     return false;
                 }
                 return true;
@@ -194,7 +219,7 @@ angular.module('suvidhaApp')
                 if (!$scope.signupData.electricityProvider || 
                     !$scope.signupData.waterProvider || 
                     !$scope.signupData.gasProvider) {
-                    alert('Please select all service providers.');
+                    $rootScope.showDialog('Missing Providers', 'Please select your electricity, water, and gas service providers.', 'warning');
                     return false;
                 }
                 return true;
@@ -202,12 +227,12 @@ angular.module('suvidhaApp')
             
             $scope.validateStep6 = function() {
                 if ($scope.signupData.password !== $scope.signupData.confirmPassword) {
-                    alert('Passwords do not match. Please try again.');
+                    $rootScope.showDialog('Password Mismatch', 'The passwords you entered do not match. Please try again.', 'error');
                     return false;
                 }
                 
                 if ($scope.signupData.password.length < 8) {
-                    alert('Password must be at least 8 characters long.');
+                    $rootScope.showDialog('Weak Password', 'Your password must be at least 8 characters long for security.', 'warning');
                     return false;
                 }
                 return true;
@@ -258,32 +283,42 @@ angular.module('suvidhaApp')
             // Form submissions
             $scope.login = function() {
                 if (!$scope.loginData.identifier || !$scope.loginData.password) {
-                    alert('Please fill in all fields.');
+                    $rootScope.showDialog('Missing Credentials', 'Please enter your email/phone and password to login.', 'warning');
                     return;
                 }
                 
                 $scope.isLoggingIn = true;
                 
-                // Call backend API
                 AuthService.login($scope.loginData)
                     .then(function(response) {
                         if (response.success) {
-                            // Store user data
                             localStorage.setItem('suvidhaUser', JSON.stringify(response.user));
                             localStorage.setItem('user_id', response.user_id);
                             
                             $scope.isLoggingIn = false;
-                            alert('Login successful! Welcome to Suvidha Dashboard.');
-                            $location.path('/dashboard');
+                            
+                            switch($scope.selectedRole) {
+                                case 'senior':
+                                    window.location.href = '/SeniorCitizen/app/views/dashboard.html';
+                                    break;
+                                case 'official':
+                                    window.location.href = '/GovOfficials-Admin/app/views/dashboard.html';
+                                    break;
+                                case 'worker':
+                                    window.location.href = '/GovOfficial-Worker/app/views/dashboard.html';
+                                    break;
+                                default:
+                                    $location.path('/dashboard');
+                            }
                         } else {
                             $scope.isLoggingIn = false;
-                            alert(response.message || 'Login failed');
+                            $rootScope.showDialog('Login Failed', response.message || 'Unable to login. Please check your credentials and try again.', 'error');
                         }
                     })
                     .catch(function(error) {
                         $scope.isLoggingIn = false;
                         var errorMsg = error.data?.message || 'Login failed. Please check your credentials.';
-                        alert(errorMsg);
+                        $rootScope.showDialog('Login Error', errorMsg, 'error');
                     });
             };
             
@@ -294,31 +329,28 @@ angular.module('suvidhaApp')
                 
                 $scope.isCreatingAccount = true;
                 
-                // Call backend API with form data
                 AuthService.signup($scope.signupData)
                     .then(function(response) {
                         if (response.success) {
-                            // Store user data
                             localStorage.setItem('suvidhaUser', JSON.stringify(response.user));
                             localStorage.setItem('user_id', response.user_id);
                             
                             $scope.isCreatingAccount = false;
-                            alert('Account created successfully! Welcome to Suvidha Dashboard.');
                             $location.path('/dashboard');
                         } else {
                             $scope.isCreatingAccount = false;
-                            alert(response.message || 'Account creation failed');
+                            $rootScope.showDialog('Registration Failed', response.message || 'Account creation failed. Please try again.', 'error');
                         }
                     })
                     .catch(function(error) {
                         $scope.isCreatingAccount = false;
                         var errorMsg = error.data?.message || 'Account creation failed. Please try again.';
-                        alert(errorMsg);
+                        $rootScope.showDialog('Registration Error', errorMsg, 'error');
                     });
             };
             
             $scope.forgotPassword = function() {
-                alert('A password reset link has been sent to your registered email.');
+                $rootScope.showDialog('Password Reset', 'A password reset link has been sent to your registered email address. Please check your inbox and follow the instructions.', 'info');
             };
         }
     ]);

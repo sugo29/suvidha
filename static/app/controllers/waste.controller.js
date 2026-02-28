@@ -7,6 +7,7 @@
 
     function WasteManagementController($scope, $timeout, $location, ApiService) {
         var vm = this;
+        var $rootScope = $scope.$root;
         vm.loading = true;
         vm.isSubmitting = false;
         vm.showSuccess = false;
@@ -133,7 +134,7 @@
         // Submit Waste Issue
         vm.submitIssue = function() {
             if (!vm.issue.type) {
-                alert('Please select an issue type');
+                $rootScope.showDialog('Missing Issue Type', 'Please select the type of waste issue you want to report.', 'warning');
                 return;
             }
 
@@ -172,7 +173,7 @@
                 .catch(function(error) {
                     console.error('Error submitting issue:', error);
                     vm.isSubmitting = false;
-                    alert('Error submitting issue. Please try again.');
+                    $rootScope.showDialog('Submission Error', 'There was an error submitting your issue. Please try again or contact support.', 'error');
                 });
         };
 

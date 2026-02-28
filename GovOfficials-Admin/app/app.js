@@ -46,6 +46,8 @@ app.factory('ApiService', ['$http', '$q', function ($http, $q) {
         currentOfficial = null;
         localStorage.removeItem('adminToken');
         localStorage.removeItem('currentOfficial');
+        localStorage.removeItem('suvidhaUser');
+        localStorage.removeItem('user_id');
     };
     
     service.isAuthenticated = function() {

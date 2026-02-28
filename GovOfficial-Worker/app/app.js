@@ -53,17 +53,32 @@ app.controller('MainController', ['$scope', '$location', '$http', function ($sco
         { code: 'BN', name: 'বাংলা' }
     ];
 
-    $scope.user = {
-        name: 'Field Agent',
-        initials: 'FA',
-        role: 'Field Agent'
-    };
+    // Load user from localStorage first for immediate display
+    var storedUser = JSON.parse(localStorage.getItem('suvidhaUser') || 'null');
+    if (storedUser) {
+        var uName = storedUser.full_name || storedUser.name || 'Field Agent';
+        $scope.user = {
+            name: uName,
+            initials: uName.split(' ').map(function(n) { return n[0]; }).join('').toUpperCase().substring(0, 2) || 'FA',
+            role: 'Field Agent',
+            category: storedUser.category || 'Field Agent',
+            assignedWard: storedUser.assigned_ward || ''
+        };
+    } else {
+        $scope.user = {
+            name: 'Field Agent',
+            initials: 'FA',
+            role: 'Field Agent'
+        };
+    }
 
-    // Load user profile from API
+    // Load user profile from API (overrides localStorage data)
     $http.get('/api/profile').then(function(response) {
         if (response.data.user) {
-            $scope.user.name = response.data.user.full_name || 'Field Agent';
-            $scope.user.initials = (response.data.user.full_name || 'FA').split(' ').map(function(n) { return n[0]; }).join('');
+            $scope.user.name = response.data.user.full_name || $scope.user.name;
+            $scope.user.initials = ($scope.user.name).split(' ').map(function(n) { return n[0]; }).join('').toUpperCase().substring(0, 2);
+            $scope.user.category = response.data.user.category || $scope.user.category;
+            $scope.user.assignedWard = response.data.user.assigned_ward || $scope.user.assignedWard;
         }
     }).catch(function(error) {
         console.log('Could not load user profile:', error);
@@ -86,6 +101,8 @@ app.controller('MainController', ['$scope', '$location', '$http', function ($sco
 
     $scope.logout = function () {
         if (confirm('Are you sure you want to logout?')) {
+            localStorage.removeItem('suvidhaUser');
+            localStorage.removeItem('user_id');
             $http.post('/api/auth/logout').then(function() {
                 window.location.href = '/';
             }).catch(function(error) {
