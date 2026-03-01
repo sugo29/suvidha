@@ -10,6 +10,7 @@
         var $rootScope = $scope.$root;
         vm.loading = true;
         vm.profileData = {};
+        vm.settingsTab = 'profile';
 
         // Load from localStorage immediately
         var storedUser = JSON.parse(localStorage.getItem('suvidhaUser') || 'null');
@@ -73,6 +74,16 @@
                 'Your preferences have been updated. Language: ' + (vm.preferences.language === 'hi' ? 'Hindi' : 'English') + '.',
                 'success'
             );
+        };
+
+        vm.resetPreferences = function() {
+            vm.preferences = { language: 'en', billSms: true, usageEmail: true, highContrast: false, largeText: false, paymentSms: true, advisoryEmail: false };
+            localStorage.removeItem('suvidhaPreferences');
+            $rootScope.showDialog('Preferences Reset', 'All preferences have been reset to defaults.', 'info');
+        };
+
+        vm.downloadMyData = function() {
+            $rootScope.showDialog('Data Download', 'Your data export has been initiated. You will receive a download link via email shortly.', 'info');
         };
 
         function init() {

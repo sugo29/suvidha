@@ -67,7 +67,39 @@
         };
 
         vm.downloadBill = function(utility) {
-            $rootScope.showDialog('Download Bill', 'Your ' + utility + ' bill for the current billing cycle is being prepared. The PDF will be ready for download shortly.', 'info');
+            var billData = vm.utilitiesData[utility];
+            var provider = billData ? billData.provider : 'N/A';
+            var amount = vm.getCurrentBill(utility) || 0;
+            var date = new Date();
+            var month = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+            var content = '='.repeat(50) + '\n';
+            content += '            UTILITY BILL STATEMENT\n';
+            content += '='.repeat(50) + '\n\n';
+            content += 'Utility Type:     ' + utility.charAt(0).toUpperCase() + utility.slice(1) + '\n';
+            content += 'Provider:         ' + provider + '\n';
+            content += 'Billing Period:   ' + month + '\n';
+            content += 'Connection ID:    ' + (vm.connectionId || 'SUVIDHA-' + Math.random().toString(36).substr(2, 8).toUpperCase()) + '\n';
+            content += '-'.repeat(50) + '\n\n';
+            content += 'Current Bill Amount:   ₹' + amount + '\n';
+            content += 'Due Date:              15th of next month\n';
+            content += 'Bill Status:           Pending\n\n';
+            content += '-'.repeat(50) + '\n';
+            content += 'Note: This is a digitally generated statement\n';
+            content += 'from the Suvidha Citizen Portal.\n';
+            content += '='.repeat(50) + '\n';
+
+            var blob = new Blob([content], { type: 'text/plain' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = utility + '_bill_' + date.getFullYear() + '_' + (date.getMonth() + 1) + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            $rootScope.showDialog('Bill Downloaded', 'Your ' + utility + ' bill statement has been downloaded successfully.', 'success');
         };
 
         vm.viewHistory = function(utility) {
@@ -94,7 +126,49 @@
         };
 
         vm.viewTariffDetails = function() {
-            $rootScope.showDialog('Tariff Schedule', 'Current electricity tariff (Domestic):\n• 0–200 units: ₹3.00/kWh\n• 201–400 units: ₹4.50/kWh\n• 401–800 units: ₹6.50/kWh\n• 800+ units: ₹7.00/kWh\nFixed charge: ₹25/kW/month', 'info');
+            vm.viewRatePlanDetails();
+        };
+
+        vm.viewRatePlanDetails = function() {
+            vm.showRatePlanModal = true;
+        };
+
+        vm.closeRatePlanModal = function() {
+            vm.showRatePlanModal = false;
+        };
+
+        vm.ratePlanData = {
+            electricity: {
+                provider: 'BRPL (BSES Rajdhani)',
+                slabs: [
+                    { range: '0 – 200 units', rate: '₹3.00/kWh', type: 'Subsidized', highlight: false },
+                    { range: '201 – 400 units', rate: '₹4.50/kWh', type: 'Standard', highlight: true },
+                    { range: '401 – 800 units', rate: '₹6.50/kWh', type: 'Higher', highlight: false },
+                    { range: '800+ units', rate: '₹7.00/kWh', type: 'Peak', highlight: false }
+                ],
+                fixedCharge: '₹25/kW/month',
+                surcharge: '8% on energy charges',
+                lastUpdated: 'Oct 2025'
+            },
+            gas: {
+                provider: 'IGL (Indraprastha Gas)',
+                slabs: [
+                    { range: '0 – 30 SCM', rate: '₹28.82/SCM', type: 'Domestic', highlight: true },
+                    { range: '30+ SCM', rate: '₹34.50/SCM', type: 'Above quota', highlight: false }
+                ],
+                fixedCharge: '₹45/month',
+                lastUpdated: 'Nov 2025'
+            },
+            water: {
+                provider: 'Delhi Jal Board',
+                slabs: [
+                    { range: '0 – 20 kL', rate: '₹2.58/kL', type: 'Essential', highlight: false },
+                    { range: '20 – 30 kL', rate: '₹3.90/kL', type: 'Standard', highlight: true },
+                    { range: '30+ kL', rate: '₹15.00/kL', type: 'Excess', highlight: false }
+                ],
+                fixedCharge: '₹98.82/month (sewage)',
+                lastUpdated: 'Sep 2025'
+            }
         };
 
         vm.viewSafetyTips = function() {

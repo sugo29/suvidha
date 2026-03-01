@@ -10,9 +10,64 @@
         var $rootScope = $scope.$root;
         vm.loading = true;
         vm.activeSection = 'overview';
-        vm.selectedWard = 'Kalkaji';
         vm.mapView = 'ward';
         vm.advisoryFilter = 'all';
+
+        // Cascading State → City → Ward filter (demo data)
+        vm.filterData = {
+            'Delhi': {
+                'New Delhi': [
+                    { value: 'Kalkaji', label: 'Kalkaji (South)' },
+                    { value: 'Nehru Place', label: 'Nehru Place' },
+                    { value: 'Greater Kailash II', label: 'Greater Kailash II' }
+                ],
+                'South Delhi': [
+                    { value: 'Saket', label: 'Saket' },
+                    { value: 'Hauz Khas', label: 'Hauz Khas' }
+                ]
+            },
+            'Uttar Pradesh': {
+                'Noida': [
+                    { value: 'Sector 62', label: 'Sector 62' },
+                    { value: 'Sector 18', label: 'Sector 18' }
+                ],
+                'Ghaziabad': [
+                    { value: 'Indirapuram', label: 'Indirapuram' },
+                    { value: 'Vaishali', label: 'Vaishali' }
+                ]
+            }
+        };
+
+        vm.stateList = Object.keys(vm.filterData);
+        vm.selectedState = 'Delhi';
+        vm.cityList = Object.keys(vm.filterData['Delhi']);
+        vm.selectedCity = 'New Delhi';
+        vm.wardList = vm.filterData['Delhi']['New Delhi'];
+        vm.selectedWard = 'Kalkaji';
+
+        vm.onStateChange = function() {
+            vm.cityList = Object.keys(vm.filterData[vm.selectedState] || {});
+            vm.selectedCity = vm.cityList[0] || '';
+            vm.onCityChange();
+        };
+
+        vm.onCityChange = function() {
+            vm.wardList = (vm.filterData[vm.selectedState] || {})[vm.selectedCity] || [];
+            vm.selectedWard = vm.wardList.length ? vm.wardList[0].value : '';
+            vm.loadWardData();
+        };
+
+        // Block details data (for rich dialog)
+        vm.blockDetails = {
+            'A': { score: 92, status: 'Stable', electricity: '99.8% uptime', water: '24/7 supply', waste: 'On time', issues: 0, population: 420 },
+            'B': { score: 68, status: 'Moderate', electricity: '96% uptime', water: 'Intermittent evenings', waste: 'On time', issues: 2, population: 380 },
+            'C': { score: 41, status: 'High Stress', electricity: '89% uptime', water: 'Low pressure', waste: '1 day delayed', issues: 5, population: 510 },
+            'D': { score: 88, status: 'Stable', electricity: '99.5% uptime', water: '24/7 supply', waste: 'On time', issues: 0, population: 290 },
+            'E': { score: 95, status: 'Stable', electricity: '99.9% uptime', water: '24/7 supply', waste: 'On time', issues: 0, population: 350 },
+            'F': { score: 60, status: 'Moderate', electricity: '94% uptime', water: 'Scheduled cuts', waste: 'On time', issues: 3, population: 440 },
+            'G': { score: 83, status: 'Stable', electricity: '98% uptime', water: '22hr supply', waste: 'On time', issues: 1, population: 310 },
+            'H': { score: 35, status: 'High Stress', electricity: '82% uptime', water: 'Major disruption', waste: '2 days delayed', issues: 7, population: 470 }
+        };
         
         // Header Stats
         vm.stats = {
@@ -184,7 +239,19 @@
         };
         
         vm.showBlockDetails = function(block) {
-            $rootScope.showDialog('Block Details', 'Viewing detailed utility and infrastructure information for ' + (block || 'selected block') + '. Community health metrics, active issues, and resident participation data are shown here.', 'info');
+            var d = vm.blockDetails[block];
+            if (d) {
+                var msg = 'Health Score: ' + d.score + '% (' + d.status + ')\n'
+                    + 'Population: ' + d.population + ' households\n\n'
+                    + '⚡ Electricity: ' + d.electricity + '\n'
+                    + '💧 Water: ' + d.water + '\n'
+                    + '🗑️ Waste Collection: ' + d.waste + '\n'
+                    + '⚠️ Open Issues: ' + d.issues;
+                var level = d.score >= 75 ? 'info' : d.score >= 50 ? 'warning' : 'warning';
+                $rootScope.showDialog('Block ' + block + ' — ' + d.status, msg, level);
+            } else {
+                $rootScope.showDialog('Block ' + block, 'No data available for this block.', 'info');
+            }
         };
         
         vm.joinChallenge = function(challengeId) {

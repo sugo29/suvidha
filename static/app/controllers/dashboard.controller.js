@@ -10,26 +10,76 @@
         var $rootScope = $scope.$root;
         vm.loading = true;
         vm.userData = {};
+        vm.userLocation = null;
         
+        // Default dummy data for display
+        var defaultData = {
+            consumption: {
+                electricity: { current: 245, current_bill: 1850, unit: 'kWh', billing_period: 'Jan 2026', due_date: '15 Feb 2026', status: 'pending' },
+                water: { current: 12, current_bill: 420, unit: 'kL', billing_period: 'Jan 2026', due_date: '10 Feb 2026', status: 'paid' },
+                gas: { current: 8, current_bill: 650, unit: 'SCM', billing_period: 'Jan 2026', due_date: '20 Feb 2026', status: 'pending' }
+            },
+            reports: { total: 3, open: 1, in_progress: 1, resolved: 1 },
+            community: { points: 120 }
+        };
+
         // Load user from localStorage immediately for fast display
         var storedUser = JSON.parse(localStorage.getItem('suvidhaUser') || 'null');
         if (storedUser) {
             vm.userData = {
                 username: storedUser.full_name || storedUser.name || 'Guest User',
                 user: {
+                    full_name: storedUser.full_name || storedUser.name || '',
                     email: storedUser.email || '',
                     phone: storedUser.phone || '',
                     locality: storedUser.locality || '',
                     ward: storedUser.ward || '',
                     city: storedUser.city || ''
                 },
-                consumption: {
-                    electricity: { current_bill: 0, current: 0, unit: 'kWh' },
-                    water: { current_bill: 0, current: 0, unit: 'kL' },
-                    gas: { current_bill: 0, current: 0, unit: 'kg' }
-                }
+                consumption: defaultData.consumption,
+                reports: defaultData.reports,
+                community: defaultData.community
             };
+        } else {
+            vm.userData = angular.extend({ username: 'Guest User', user: {} }, defaultData);
         }
+        
+        // Request browser geolocation
+        vm.requestLocation = function() {
+            if (!navigator.geolocation) {
+                $rootScope.showDialog('Location Unavailable', 'Your browser does not support geolocation.', 'warning');
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    var lat = position.coords.latitude.toFixed(4);
+                    var lon = position.coords.longitude.toFixed(4);
+                    // Try reverse geocoding via free API
+                    fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lon + '&zoom=16')
+                        .then(function(r) { return r.json(); })
+                        .then(function(data) {
+                            $scope.$apply(function() {
+                                var addr = data.address || {};
+                                vm.userLocation = (addr.neighbourhood || addr.suburb || addr.road || '') + 
+                                    (addr.city || addr.town || addr.state_district ? ', ' + (addr.city || addr.town || addr.state_district) : '') +
+                                    (addr.state ? ', ' + addr.state : '');
+                                if (!vm.userLocation || vm.userLocation === ', ') {
+                                    vm.userLocation = data.display_name ? data.display_name.split(',').slice(0, 3).join(',') : lat + ', ' + lon;
+                                }
+                            });
+                        })
+                        .catch(function() {
+                            $scope.$apply(function() {
+                                vm.userLocation = lat + ', ' + lon;
+                            });
+                        });
+                },
+                function(error) {
+                    $rootScope.showDialog('Location Access', 'Please allow location access in your browser to detect your current location.', 'info');
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        };
         
         // Helper functions for cost calculations
         vm.getTotalCost = function() {
@@ -47,6 +97,10 @@
             return Math.round((amount / total) * 100);
         };
 
+        // Modal state
+        vm.showUtilityModal = false;
+        vm.modalData = {};
+
         // Navigate to utilities page
         vm.navigateToUtility = function() {
             vm.closeModal();
@@ -55,11 +109,39 @@
 
         // Close modal
         vm.closeModal = function() {
-            var modal = document.getElementById('utilityModal');
-            if (modal) {
-                modal.style.display = 'none';
+            vm.showUtilityModal = false;
+        };
+
+        // Chart period toggle
+        vm.chartPeriod = '6M';
+        var trendChartInstance = null;
+
+        var chartData = {
+            '6M': {
+                labels: ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan'],
+                electricity: [310, 295, 285, 305, 342, 245],
+                water: [17, 16, 14, 15, 15.2, 12]
+            },
+            '1Y': {
+                labels: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan'],
+                electricity: [280, 310, 290, 275, 320, 350, 310, 295, 285, 305, 342, 245],
+                water: [14, 15, 16, 18, 22, 25, 17, 16, 14, 15, 15.2, 12]
             }
         };
+
+        vm.switchChartPeriod = function(period) {
+            vm.chartPeriod = period;
+            updateTrendChart(period);
+        };
+
+        function updateTrendChart(period) {
+            if (!trendChartInstance) return;
+            var data = chartData[period];
+            trendChartInstance.data.labels = data.labels;
+            trendChartInstance.data.datasets[0].data = data.electricity;
+            trendChartInstance.data.datasets[1].data = data.water;
+            trendChartInstance.update();
+        }
 
         // Initialize
         function init() {
@@ -89,14 +171,10 @@
                 .catch(function(error) {
                     console.error('Error loading dashboard data:', error);
                     vm.loading = false;
-                    // Set some default data to prevent errors
-                    vm.userData = {
-                        consumption: {
-                            electricity: { current_bill: 0 },
-                            water: { current_bill: 0 },
-                            gas: { current_bill: 0 }
-                        }
-                    };
+                    // Set default data to prevent errors
+                    vm.userData = angular.extend(vm.userData || {}, defaultData);
+                    if (!vm.userData.reports) vm.userData.reports = defaultData.reports;
+                    if (!vm.userData.community) vm.userData.community = defaultData.community;
                 });
         }
 
@@ -336,38 +414,26 @@
             
             // Show utility modal
             function showUtilityModal(utility, data) {
-                const modal = document.getElementById('utilityModal');
-                const modalTitle = document.getElementById('modalTitle');
-                const modalIcon = document.getElementById('modalIcon');
-                const utilityAction = document.getElementById('utilityAction');
-                
-                // Set modal title and icon
-                modalTitle.textContent = data.name;
-                
-                // Create icon element with color
                 const iconClass = utility === 'electricity' ? 'zap' : (utility === 'gas' ? 'flame' : 'droplet');
-                const iconColor = utility === 'electricity' ? '#22c55e' : (utility === 'gas' ? '#ef4444' : '#3b82f6');
-                modalIcon.innerHTML = `<i data-lucide="${iconClass}" style="width: 48px; height: 48px; color: ${iconColor};"></i>`;
                 
-                // Update details
-                document.getElementById('detailBill').textContent = data.currentBill;
-                document.getElementById('detailLastMonth').textContent = data.lastMonth;
-                document.getElementById('detailUsage').textContent = data.units;
-                document.getElementById('detailStatus').textContent = data.status;
-                document.getElementById('detailDueDate').textContent = data.dueDate;
-                document.getElementById('detailTrend').textContent = data.trend;
-                
-                // Set button action
-                const targetUrl = utility === 'electricity' || utility === 'gas' || utility === 'water' ? '#!/utilities' : '#!/services';
-                utilityAction.onclick = function() {
-                    window.location.href = targetUrl;
+                vm.modalData = {
+                    title: data.name,
+                    icon: iconClass,
+                    type: utility,
+                    currentBill: data.currentBill,
+                    lastMonth: data.lastMonth,
+                    units: data.units,
+                    status: data.status,
+                    dueDate: data.dueDate,
+                    trend: data.trend
                 };
+                vm.showUtilityModal = true;
                 
-                // Show modal
-                modal.classList.add('active');
-                if (typeof lucide !== 'undefined') {
-                    lucide.createIcons();
-                }
+                $scope.$applyAsync(function() {
+                    if (typeof lucide !== 'undefined') {
+                        lucide.createIcons();
+                    }
+                });
             }
             
             // Legend hover/click events
@@ -386,7 +452,9 @@
                 
                 item.addEventListener('click', function() {
                     const utility = this.dataset.utility;
-                    showUtilityModal(utility, utilityData[utility]);
+                    $scope.$apply(function() {
+                        showUtilityModal(utility, utilityData[utility]);
+                    });
                 });
             });
             
@@ -424,7 +492,9 @@
                 
                 const clickedUtility = getClickedStrand(mouseX, mouseY);
                 if (clickedUtility && utilityData[clickedUtility]) {
-                    showUtilityModal(clickedUtility, utilityData[clickedUtility]);
+                    $scope.$apply(function() {
+                        showUtilityModal(clickedUtility, utilityData[clickedUtility]);
+                    });
                 }
             });
             
@@ -456,19 +526,14 @@
                 }
             });
             
-            // Modal close handlers
-            const modal = document.getElementById('utilityModal');
-            const modalClose = document.getElementById('modalClose');
-            const modalCloseBtn = document.getElementById('modalCloseBtn');
-            const modalOverlay = document.querySelector('.modal-overlay');
-            
-            function closeModal() {
-                modal.classList.remove('active');
-            }
-            
-            modalClose.addEventListener('click', closeModal);
-            modalCloseBtn.addEventListener('click', closeModal);
-            modalOverlay.addEventListener('click', closeModal);
+            // Modal close via Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && vm.showUtilityModal) {
+                    $scope.$apply(function() {
+                        vm.closeModal();
+                    });
+                }
+            });
             
             // Pause on hidden
             document.addEventListener('visibilitychange', function() {
@@ -536,14 +601,15 @@
             }
             
             const ctx = canvas.getContext('2d');
+            var initData = chartData['6M'];
             
-            new Chart(ctx, {
+            trendChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ['Jan', 'Mar', 'May', 'Jul', 'Sep', 'Nov'],
+                    labels: initData.labels,
                     datasets: [{
                         label: 'Electricity',
-                        data: [320, 310, 295, 285, 305, 342],
+                        data: initData.electricity,
                         borderColor: '#F59E0B',
                         backgroundColor: 'rgba(245, 158, 11, 0.1)',
                         tension: 0.4,
@@ -555,7 +621,7 @@
                         pointHoverRadius: 6
                     }, {
                         label: 'Water',
-                        data: [18, 17, 16, 14, 15, 15.2],
+                        data: initData.water,
                         borderColor: '#3B82F6',
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
                         tension: 0.4,

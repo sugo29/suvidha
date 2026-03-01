@@ -1,79 +1,114 @@
-<!-- Community Page Header -->
-<div class="community-header">
-    <div class="community-title-row">
-        <div>
-            <h1>Community</h1>
-            <p>Utility performance and community participation for <strong ng-bind="vm.selectedWard"></strong></p>
-        </div>
-        <div class="ward-selector-enhanced">
-            <label>
-                <i data-lucide="map-pin"></i>
-                Your Ward
-            </label>
-            <select ng-model="vm.selectedWard" ng-change="vm.loadWardData()" class="form-control enhanced">
-                <option value="Kalkaji">Kalkaji (South)</option>
-                <option value="Nehru Place">Nehru Place</option>
-                <option value="Greater Kailash II">Greater Kailash II</option>
-            </select>
-        </div>
-    </div>
-    
-    <!-- Stats Bar -->
-    <div class="community-stats-bar">
-        <div class="stat-item">
-            <i data-lucide="trending-up"></i>
-            <div class="stat-info">
-                <span class="stat-value" ng-bind="vm.stats.healthScore"></span>
-                <span class="stat-label">Ward Health Score</span>
+<div class="main-content">
+    <!-- Community Page Header -->
+    <div class="community-header" style="text-align:center;">
+        <div class="community-title-row" style="flex-direction:column; align-items:center;">
+            <div style="margin-bottom:1rem;">
+                <h1>Community</h1>
+                <p>Utility performance and community participation for <strong ng-bind="vm.selectedWard"></strong></p>
             </div>
-        </div>
-        <div class="stat-item">
-            <i data-lucide="users"></i>
-            <div class="stat-info">
-                <span class="stat-value" ng-bind="vm.stats.activeParticipants"></span>
-                <span class="stat-label">Active Participants</span>
-            </div>
-        </div>
-        <div class="stat-item">
-            <i data-lucide="activity"></i>
-            <div class="stat-info">
-                <span class="stat-value" ng-bind="vm.stats.recentReports"></span>
-                <span class="stat-label">Recent Reports</span>
+            <div style="display:flex; gap:0.75rem; flex-wrap:wrap; justify-content:center; align-items:flex-end;">
+                <div class="ward-selector-enhanced">
+                    <label>
+                        <i data-lucide="globe"></i>
+                        State
+                    </label>
+                    <select ng-model="vm.selectedState" ng-change="vm.onStateChange()" class="form-control enhanced">
+                        <option ng-repeat="s in vm.stateList" value="{{s}}">{{s}}</option>
+                    </select>
+                </div>
+                <div class="ward-selector-enhanced">
+                    <label>
+                        <i data-lucide="building"></i>
+                        City
+                    </label>
+                    <select ng-model="vm.selectedCity" ng-change="vm.onCityChange()" class="form-control enhanced">
+                        <option ng-repeat="c in vm.cityList" value="{{c}}">{{c}}</option>
+                    </select>
+                </div>
+                <div class="ward-selector-enhanced">
+                    <label>
+                        <i data-lucide="map-pin"></i>
+                        Ward
+                    </label>
+                    <select ng-model="vm.selectedWard" ng-change="vm.loadWardData()" class="form-control enhanced">
+                        <option ng-repeat="w in vm.wardList" value="{{w.value}}">{{w.label}}</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Navigation Tabs -->
-<div class="community-tabs">
-    <button class="community-tab" ng-class="{active: vm.activeSection === 'overview'}" ng-click="vm.showSection('overview')">
-        <i data-lucide="layout-grid"></i>
-        <span>Overview</span>
-    </button>
-    <button class="community-tab" ng-class="{active: vm.activeSection === 'challenges'}" ng-click="vm.showSection('challenges')">
-        <i data-lucide="trophy"></i>
-        <span>Civic Challenges</span>
-    </button>
-    <button class="community-tab" ng-class="{active: vm.activeSection === 'advisories'}" ng-click="vm.showSection('advisories')">
-        <i data-lucide="megaphone"></i>
-        <span>Advisories</span>
-    </button>
-    <button class="community-tab" ng-class="{active: vm.activeSection === 'activity'}" ng-click="vm.showSection('activity')">
-        <i data-lucide="rss"></i>
-        <span>Activity Feed</span>
-    </button>
-    <button class="community-tab" ng-class="{active: vm.activeSection === 'insights'}" ng-click="vm.showSection('insights')">
-        <i data-lucide="bar-chart-3"></i>
-        <span>Ward Insights</span>
-    </button>
-</div>
+    <!-- Stats Grid - Admin Pattern -->
+    <div class="stats-grid">
+        <div class="stat-card success">
+            <div class="stat-icon-box green">
+                <i data-lucide="trending-up"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">Ward Health Score</div>
+                <div class="stat-value" ng-bind="vm.stats.healthScore"></div>
+                <span class="stat-trend up">
+                    <i data-lucide="trending-up"></i> Overall Rating
+                </span>
+            </div>
+        </div>
+        <div class="stat-card primary">
+            <div class="stat-icon-box blue">
+                <i data-lucide="users"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">Active Participants</div>
+                <div class="stat-value" ng-bind="vm.stats.activeParticipants"></div>
+                <span class="stat-trend neutral">This quarter</span>
+            </div>
+        </div>
+        <div class="stat-card warning">
+            <div class="stat-icon-box orange">
+                <i data-lucide="activity"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">Recent Reports</div>
+                <div class="stat-value" ng-bind="vm.stats.recentReports"></div>
+                <span class="stat-trend neutral">Last 30 days</span>
+            </div>
+        </div>
+    </div>
 
-<!-- CONTENT AREA -->
-<main class="community-content">
+    <!-- Navigation Tabs -->
+    <div class="community-tabs">
+        <button class="community-tab" ng-class="{active: vm.activeSection === 'overview'}"
+            ng-click="vm.showSection('overview')">
+            <i data-lucide="layout-grid"></i>
+            <span>Overview</span>
+        </button>
+        <button class="community-tab" ng-class="{active: vm.activeSection === 'challenges'}"
+            ng-click="vm.showSection('challenges')">
+            <i data-lucide="trophy"></i>
+            <span>Civic Challenges</span>
+        </button>
+        <button class="community-tab" ng-class="{active: vm.activeSection === 'advisories'}"
+            ng-click="vm.showSection('advisories')">
+            <i data-lucide="megaphone"></i>
+            <span>Advisories</span>
+        </button>
+        <button class="community-tab" ng-class="{active: vm.activeSection === 'activity'}"
+            ng-click="vm.showSection('activity')">
+            <i data-lucide="rss"></i>
+            <span>Activity Feed</span>
+        </button>
+        <button class="community-tab" ng-class="{active: vm.activeSection === 'insights'}"
+            ng-click="vm.showSection('insights')">
+            <i data-lucide="bar-chart-3"></i>
+            <span>Ward Insights</span>
+        </button>
+    </div>
+
+    <!-- CONTENT AREA -->
+    <main class="community-content">
 
         <!-- SECTION 1: OVERVIEW -->
         <div id="overview" class="community-section" ng-show="vm.activeSection === 'overview'">
-            
+
             <!-- Ward Health Score Card -->
             <div class="enhanced-card health-score-card">
                 <div class="card-icon-header">
@@ -81,17 +116,17 @@
                         <i data-lucide="heart-pulse"></i>
                     </div>
                     <div>
-                        <h3>Ward Health Score</h3>
+                        <h3><span class="icon">💪</span> Ward Health Score</h3>
                         <p>Calculated using reliability, quality, and service metrics</p>
                     </div>
                 </div>
                 <div class="score-display">
                     <div class="score-circle">
                         <svg viewBox="0 0 120 120" class="circular-progress">
-                            <circle cx="60" cy="60" r="54" fill="none" stroke="#e5e7eb" stroke-width="8"/>
-                            <circle cx="60" cy="60" r="54" fill="none" stroke="#10b981" stroke-width="8" 
-                                    stroke-dasharray="339.292" stroke-dashoffset="84.823" 
-                                    stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="#e5e7eb" stroke-width="8" />
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="#10b981" stroke-width="8"
+                                stroke-dasharray="339.292" stroke-dashoffset="84.823" stroke-linecap="round"
+                                transform="rotate(-90 60 60)" />
                         </svg>
                         <div class="score-text">
                             <span class="score-val">78</span>
@@ -175,53 +210,81 @@
             <div class="enhanced-card heatmap-container">
                 <div class="card-header-with-actions">
                     <div>
-                        <h3>Ward Stress Map</h3>
+                        <h3><span class="icon">🗺️</span> Ward Stress Map</h3>
                         <p>Map shows aggregated service reliability by block</p>
                     </div>
                     <div class="map-toggles">
-                        <button class="map-toggle-btn" ng-class="{active: vm.mapView === 'ward'}" ng-click="vm.changeMapView('ward')">
+                        <button class="map-toggle-btn" ng-class="{active: vm.mapView === 'ward'}"
+                            ng-click="vm.changeMapView('ward')">
                             <i data-lucide="home"></i>
                             Ward
                         </button>
-                        <button class="map-toggle-btn" ng-class="{active: vm.mapView === 'zone'}" ng-click="vm.changeMapView('zone')">
+                        <button class="map-toggle-btn" ng-class="{active: vm.mapView === 'zone'}"
+                            ng-click="vm.changeMapView('zone')">
                             <i data-lucide="building"></i>
                             Zone
                         </button>
-                        <button class="map-toggle-btn" ng-class="{active: vm.mapView === 'city'}" ng-click="vm.changeMapView('city')">
+                        <button class="map-toggle-btn" ng-class="{active: vm.mapView === 'city'}"
+                            ng-click="vm.changeMapView('city')">
                             <i data-lucide="map"></i>
                             City
                         </button>
                     </div>
                 </div>
-                <div class="heatmap-visual">
-                    <div class="heat-zone low-stress" ng-click="vm.showBlockDetails('A')">
-                        <span class="block-label">Block A</span>
-                        <span class="stress-indicator">●</span>
+                <div class="heatmap-visual" style="grid-template-columns:repeat(4,1fr); gap:0.5rem;">
+                    <div class="heat-zone low-stress" ng-click="vm.showBlockDetails('A')" title="Block A — Stable (92%)">
+                        <span class="block-label">A</span>
+                        <span class="stress-pct" style="font-size:0.78rem; font-weight:600; color:#10b981;">92%</span>
                     </div>
-                    <div class="heat-zone med-stress" ng-click="vm.showBlockDetails('B')">
-                        <span class="block-label">Block B</span>
-                        <span class="stress-indicator">●</span>
+                    <div class="heat-zone med-stress" ng-click="vm.showBlockDetails('B')" title="Block B — Moderate (68%)">
+                        <span class="block-label">B</span>
+                        <span class="stress-pct" style="font-size:0.78rem; font-weight:600; color:#f59e0b;">68%</span>
                     </div>
-                    <div class="heat-zone high-stress" ng-click="vm.showBlockDetails('C')">
-                        <span class="block-label">Block C</span>
-                        <span class="stress-indicator">●</span>
+                    <div class="heat-zone high-stress" ng-click="vm.showBlockDetails('C')" title="Block C — High Stress (41%)">
+                        <span class="block-label">C</span>
+                        <span class="stress-pct" style="font-size:0.78rem; font-weight:600; color:#ef4444;">41%</span>
                     </div>
-                    <div class="heat-zone low-stress" ng-click="vm.showBlockDetails('D')">
-                        <span class="block-label">Block D</span>
-                        <span class="stress-indicator">●</span>
+                    <div class="heat-zone low-stress" ng-click="vm.showBlockDetails('D')" title="Block D — Stable (88%)">
+                        <span class="block-label">D</span>
+                        <span class="stress-pct" style="font-size:0.78rem; font-weight:600; color:#10b981;">88%</span>
+                    </div>
+                    <div class="heat-zone low-stress" ng-click="vm.showBlockDetails('E')" title="Block E — Stable (95%)">
+                        <span class="block-label">E</span>
+                        <span class="stress-pct" style="font-size:0.78rem; font-weight:600; color:#10b981;">95%</span>
+                    </div>
+                    <div class="heat-zone med-stress" ng-click="vm.showBlockDetails('F')" title="Block F — Moderate (60%)">
+                        <span class="block-label">F</span>
+                        <span class="stress-pct" style="font-size:0.78rem; font-weight:600; color:#f59e0b;">60%</span>
+                    </div>
+                    <div class="heat-zone low-stress" ng-click="vm.showBlockDetails('G')" title="Block G — Stable (83%)">
+                        <span class="block-label">G</span>
+                        <span class="stress-pct" style="font-size:0.78rem; font-weight:600; color:#10b981;">83%</span>
+                    </div>
+                    <div class="heat-zone high-stress" ng-click="vm.showBlockDetails('H')" title="Block H — High Stress (35%)">
+                        <span class="block-label">H</span>
+                        <span class="stress-pct" style="font-size:0.78rem; font-weight:600; color:#ef4444;">35%</span>
                     </div>
                 </div>
-                <div class="heatmap-legend">
-                    <span class="legend-item"><span class="dot success"></span> Stable</span>
-                    <span class="legend-item"><span class="dot warning"></span> Moderate</span>
-                    <span class="legend-item"><span class="dot danger"></span> High Stress</span>
+                <!-- Gradient Legend Bar -->
+                <div class="heatmap-legend" style="flex-direction:column; gap:0.5rem;">
+                    <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted);">
+                        <span>High Stress</span>
+                        <span>Moderate</span>
+                        <span>Stable</span>
+                    </div>
+                    <div style="height:8px; border-radius:4px; background:linear-gradient(90deg, #ef4444, #f59e0b, #10b981);"></div>
+                    <div style="display:flex; gap:1.5rem; margin-top:0.25rem;">
+                        <span class="legend-item"><span class="dot success"></span> Stable (&gt;75%)</span>
+                        <span class="legend-item"><span class="dot warning"></span> Moderate (50-75%)</span>
+                        <span class="legend-item"><span class="dot danger"></span> High Stress (&lt;50%)</span>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- SECTION 2: CHALLENGES -->
         <div id="challenges" class="community-section" ng-show="vm.activeSection === 'challenges'">
-            
+
             <!-- Participation Score -->
             <div class="enhanced-card participation-card">
                 <div class="participation-header">
@@ -230,7 +293,7 @@
                             <i data-lucide="award"></i>
                         </div>
                         <div>
-                            <h3>Your Civic Participation</h3>
+                            <h3><span class="icon">🏆</span> Your Civic Participation</h3>
                             <div class="participation-stats">
                                 <div class="part-stat">
                                     <strong ng-bind="vm.participation.points"></strong>
@@ -259,7 +322,7 @@
                         <i data-lucide="zap"></i>
                     </div>
                     <div class="challenge-header">
-                        <h4>Peak Hour Saver</h4>
+                        <h4><span class="icon">⚡</span> Peak Hour Saver</h4>
                         <span class="points-badge">
                             <i data-lucide="coins"></i>
                             50 Points
@@ -291,7 +354,7 @@
                         <i data-lucide="droplet"></i>
                     </div>
                     <div class="challenge-header">
-                        <h4>Leak Detective</h4>
+                        <h4><span class="icon">💧</span> Leak Detective</h4>
                         <span class="points-badge">
                             <i data-lucide="coins"></i>
                             30 Points
@@ -324,7 +387,7 @@
                         <i data-lucide="flame"></i>
                     </div>
                     <div class="challenge-header">
-                        <h4>Safety First</h4>
+                        <h4><span class="icon">🔥</span> Safety First</h4>
                         <span class="points-badge premium">
                             <i data-lucide="star"></i>
                             100 Points
@@ -359,7 +422,7 @@
             <!-- Active Challenges -->
             <div class="enhanced-card active-challenges" ng-if="vm.activeChallenges.length > 0">
                 <h3>
-                    <i data-lucide="trophy"></i>
+                    <span class="icon">🏅</span>
                     Your Active Challenges
                 </h3>
                 <div class="active-challenge-list">
@@ -383,27 +446,32 @@
 
         <!-- SECTION 3: ADVISORIES -->
         <div id="advisories" class="community-section" ng-show="vm.activeSection === 'advisories'">
-            
+
             <div class="advisory-filters">
-                <button class="filter-chip" ng-class="{active: vm.advisoryFilter === 'all'}" ng-click="vm.filterAdvisories('all')">
+                <button class="filter-chip" ng-class="{active: vm.advisoryFilter === 'all'}"
+                    ng-click="vm.filterAdvisories('all')">
                     All
                 </button>
-                <button class="filter-chip" ng-class="{active: vm.advisoryFilter === 'electricity'}" ng-click="vm.filterAdvisories('electricity')">
+                <button class="filter-chip" ng-class="{active: vm.advisoryFilter === 'electricity'}"
+                    ng-click="vm.filterAdvisories('electricity')">
                     <i data-lucide="zap"></i>
                     Electricity
                 </button>
-                <button class="filter-chip" ng-class="{active: vm.advisoryFilter === 'water'}" ng-click="vm.filterAdvisories('water')">
+                <button class="filter-chip" ng-class="{active: vm.advisoryFilter === 'water'}"
+                    ng-click="vm.filterAdvisories('water')">
                     <i data-lucide="droplet"></i>
                     Water
                 </button>
-                <button class="filter-chip" ng-class="{active: vm.advisoryFilter === 'gas'}" ng-click="vm.filterAdvisories('gas')">
+                <button class="filter-chip" ng-class="{active: vm.advisoryFilter === 'gas'}"
+                    ng-click="vm.filterAdvisories('gas')">
                     <i data-lucide="flame"></i>
                     Gas
                 </button>
             </div>
 
             <div class="advisory-list">
-                <div class="enhanced-card advisory-card urgent" ng-repeat="advisory in vm.filteredAdvisories | limitTo:5">
+                <div class="enhanced-card advisory-card urgent"
+                    ng-repeat="advisory in vm.filteredAdvisories | limitTo:5">
                     <div class="advisory-tag" ng-class="advisory.priority">
                         <i data-lucide="alert-triangle" ng-if="advisory.priority === 'urgent'"></i>
                         <i data-lucide="info" ng-if="advisory.priority === 'info'"></i>
@@ -450,10 +518,10 @@
 
         <!-- SECTION 4: ACTIVITY FEED -->
         <div id="activity" class="community-section" ng-show="vm.activeSection === 'activity'">
-            
+
             <div class="enhanced-card">
                 <h3>
-                    <i data-lucide="activity"></i>
+                    <span class="icon">📡</span>
                     Community Activity
                 </h3>
                 <p class="section-desc">Anonymous feed of civic participation and improvements</p>
@@ -494,12 +562,12 @@
 
         <!-- SECTION 5: INSIGHTS -->
         <div id="insights" class="community-section" ng-show="vm.activeSection === 'insights'">
-            
+
             <!-- Comparison Table -->
             <div class="enhanced-card comparison-table-card">
                 <div class="card-header-with-actions">
                     <div>
-                        <h3>Comparison with Ward and City</h3>
+                        <h3><span class="icon">📊</span> Comparison with Ward and City</h3>
                         <p>How these insights are calculated</p>
                     </div>
                     <button class="btn-icon" ng-click="vm.exportInsights()" title="Export Data">
@@ -556,7 +624,7 @@
             <div class="performance-bars-grid">
                 <div class="enhanced-card performance-card">
                     <h4>
-                        <i data-lucide="zap"></i>
+                        <span class="icon">⚡</span>
                         Electricity Performance
                     </h4>
                     <div class="performance-bar-item">
@@ -575,7 +643,7 @@
 
                 <div class="enhanced-card performance-card">
                     <h4>
-                        <i data-lucide="droplet"></i>
+                        <span class="icon">💧</span>
                         Water Performance
                     </h4>
                     <div class="performance-bar-item">
@@ -594,7 +662,7 @@
 
                 <div class="enhanced-card performance-card">
                     <h4>
-                        <i data-lucide="flame"></i>
+                        <span class="icon">🔥</span>
                         Gas Performance
                     </h4>
                     <div class="performance-bar-item">
@@ -618,7 +686,7 @@
                     <div class="insight-badge positive">
                         <i data-lucide="trending-up"></i>
                     </div>
-                    <h4>Improving Metrics</h4>
+                    <h4><span class="icon">📈</span> Improving Metrics</h4>
                     <ul class="insight-list">
                         <li>Solar adoption up 3% year-on-year</li>
                         <li>Water quality index improved</li>
@@ -630,7 +698,7 @@
                     <div class="insight-badge attention">
                         <i data-lucide="alert-circle"></i>
                     </div>
-                    <h4>Needs Attention</h4>
+                    <h4><span class="icon">⚠️</span> Needs Attention</h4>
                     <ul class="insight-list">
                         <li>Peak hour stress increasing</li>
                         <li>Gas connection backlog remains</li>
@@ -645,8 +713,9 @@
 <!-- Initialize Lucide Icons -->
 <script>
     if (typeof lucide !== 'undefined') {
-        setTimeout(function() {
+        setTimeout(function () {
             lucide.createIcons();
         }, 100);
     }
 </script>
+</div> <!-- /.main-content -->

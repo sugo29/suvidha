@@ -1,5 +1,5 @@
 // Waste Management Controller
-(function() {
+(function () {
     'use strict';
 
     angular.module('suvidhaApp')
@@ -38,6 +38,7 @@
 
         vm.showReportForm = false;
         vm.showAiWasteHelper = false;
+        vm.showWasteGuide = false;
 
         // AI Waste Analysis Data
         vm.aiPhoto = null;
@@ -115,7 +116,7 @@
 
         function loadWasteData() {
             ApiService.getWasteData()
-                .then(function(response) {
+                .then(function (response) {
                     if (response.data) {
                         vm.userData = response.data.user || vm.userData;
                         vm.wasteStatus = response.data.status || vm.wasteStatus;
@@ -123,7 +124,7 @@
                     vm.issue.address = vm.userData.address;
                     vm.loading = false;
                 })
-                .catch(function(error) {
+                .catch(function (error) {
                     console.error('Error loading waste data:', error);
                     // Set default address
                     vm.issue.address = vm.userData.address || 'Your residential address';
@@ -132,7 +133,7 @@
         }
 
         // Submit Waste Issue
-        vm.submitIssue = function() {
+        vm.submitIssue = function () {
             if (!vm.issue.type) {
                 $rootScope.showDialog('Missing Issue Type', 'Please select the type of waste issue you want to report.', 'warning');
                 return;
@@ -150,7 +151,7 @@
             };
 
             ApiService.submitWasteIssue(issueData)
-                .then(function(response) {
+                .then(function (response) {
                     vm.isSubmitting = false;
                     vm.showSuccess = true;
                     vm.successMessage = 'Your issue has been reported! Our team will address it within 24 hours.';
@@ -166,11 +167,11 @@
                     // document.querySelector('form').reset();
 
                     // Hide success message after 5 seconds
-                    $timeout(function() {
+                    $timeout(function () {
                         vm.showSuccess = false;
                     }, 5000);
                 })
-                .catch(function(error) {
+                .catch(function (error) {
                     console.error('Error submitting issue:', error);
                     vm.isSubmitting = false;
                     $rootScope.showDialog('Submission Error', 'There was an error submitting your issue. Please try again or contact support.', 'error');
@@ -178,22 +179,22 @@
         };
 
         // Open Live Service
-        vm.openLiveService = function() {
+        vm.openLiveService = function () {
             // Create a new view/modal for live service or navigate to new route
             // For now, we'll use a modal approach
             vm.showLiveService = true;
         };
 
         // Close Live Service Modal
-        vm.closeLiveService = function() {
+        vm.closeLiveService = function () {
             vm.showLiveService = false;
         };
 
         // Refresh Location
-        vm.refreshLocation = function() {
+        vm.refreshLocation = function () {
             vm.isRefreshing = true;
 
-            $timeout(function() {
+            $timeout(function () {
                 // Simulate location update
                 var distances = ['1.2 km', '1.0 km', '0.8 km'];
                 var randomDistance = distances[Math.floor(Math.random() * distances.length)];
@@ -206,17 +207,17 @@
         };
 
         // Analyze Waste Photo with AI
-        vm.analyzeWastePhoto = function() {
+        vm.analyzeWastePhoto = function () {
             if (!vm.aiPhoto) return;
 
             vm.aiAnalyzing = true;
 
             // Simulate AI analysis delay
-            $timeout(function() {
+            $timeout(function () {
                 // Mock AI analysis - randomly select waste type
                 var wasteTypes = Object.keys(vm.wasteAnalysisDatabase);
                 var randomWaste = wasteTypes[Math.floor(Math.random() * wasteTypes.length)];
-                
+
                 vm.aiResult = vm.wasteAnalysisDatabase[randomWaste];
                 vm.aiAnalyzing = false;
             }, 2000);

@@ -37,56 +37,124 @@
             elec: [
                 { 
                     name: 'New Connection', 
-                    description: 'Apply for new electricity connection', 
+                    description: 'Apply for a new domestic electricity connection for your residence. Includes meter installation and wiring inspection.', 
                     icon: 'plug',
                     processingTime: '7-10 days',
-                    documentsRequired: 3
+                    documentsRequired: 3,
+                    fee: '₹2,500',
+                    feeLabel: 'Application Fee',
+                    badge: 'Popular',
+                    badgeClass: 'badge-popular',
+                    eligibility: 'Property owner / authorized tenant',
+                    provider: 'BRPL'
                 },
                 { 
                     name: 'Load Enhancement', 
-                    description: 'Increase sanctioned load', 
+                    description: 'Increase your sanctioned load to support additional appliances like ACs, heaters, or EV chargers.', 
                     icon: 'trending-up',
                     processingTime: '5-7 days',
-                    documentsRequired: 2
+                    documentsRequired: 2,
+                    fee: '₹1,200',
+                    feeLabel: 'Processing Fee',
+                    badge: '',
+                    badgeClass: '',
+                    eligibility: 'Existing connection holder',
+                    provider: 'BRPL'
                 },
                 { 
                     name: 'Meter Replacement', 
-                    description: 'Replace faulty meter', 
+                    description: 'Request replacement for faulty, damaged, or outdated meters. Free if meter is under warranty.', 
                     icon: 'repeat',
                     processingTime: '3-5 days',
-                    documentsRequired: 1
+                    documentsRequired: 1,
+                    fee: 'Free*',
+                    feeLabel: 'Under Warranty',
+                    badge: 'Quick',
+                    badgeClass: 'badge-quick',
+                    eligibility: 'Existing connection holder',
+                    provider: 'BRPL'
                 }
             ],
             water: [
                 { 
                     name: 'New Water Connection', 
-                    description: 'Apply for water supply connection', 
+                    description: 'Apply for a new municipal water supply connection. Includes pipeline laying up to 15m from main line.', 
                     icon: 'droplet',
                     processingTime: '10-15 days',
-                    documentsRequired: 4
+                    documentsRequired: 4,
+                    fee: '₹3,800',
+                    feeLabel: 'Connection Fee',
+                    badge: 'Popular',
+                    badgeClass: 'badge-popular',
+                    eligibility: 'Property owner with NOC',
+                    provider: 'DJB'
                 },
                 { 
                     name: 'Meter Installation', 
-                    description: 'Install water meter', 
+                    description: 'Install a water flow meter on your existing connection for accurate billing and leak detection.', 
                     icon: 'activity',
                     processingTime: '7-10 days',
-                    documentsRequired: 2
+                    documentsRequired: 2,
+                    fee: '₹1,500',
+                    feeLabel: 'Installation Fee',
+                    badge: '',
+                    badgeClass: '',
+                    eligibility: 'Existing connection holder',
+                    provider: 'DJB'
+                },
+                { 
+                    name: 'Pipeline Repair', 
+                    description: 'Report and schedule repair for leaking or burst pipelines in your area. Emergency repairs within 24 hours.', 
+                    icon: 'wrench',
+                    processingTime: '1-3 days',
+                    documentsRequired: 0,
+                    fee: 'Free',
+                    feeLabel: 'No Charge',
+                    badge: 'Quick',
+                    badgeClass: 'badge-quick',
+                    eligibility: 'Any resident',
+                    provider: 'DJB'
                 }
             ],
             gas: [
                 { 
                     name: 'New Gas Connection', 
-                    description: 'Apply for PNG connection', 
+                    description: 'Apply for a new Piped Natural Gas (PNG) domestic connection. Includes pipeline, meter, and regulator installation.', 
                     icon: 'flame',
                     processingTime: '15-20 days',
-                    documentsRequired: 5
+                    documentsRequired: 5,
+                    fee: '₹6,500',
+                    feeLabel: 'Installation Fee',
+                    badge: 'Popular',
+                    badgeClass: 'badge-popular',
+                    eligibility: 'Property in PNG-covered area',
+                    provider: 'IGL'
                 },
                 { 
                     name: 'Safety Inspection', 
-                    description: 'Schedule safety check', 
+                    description: 'Schedule a mandatory annual safety inspection of your gas pipeline and appliances by certified engineers.', 
                     icon: 'shield',
                     processingTime: '3-5 days',
-                    documentsRequired: 0
+                    documentsRequired: 0,
+                    fee: 'Free',
+                    feeLabel: 'Complimentary',
+                    badge: 'Quick',
+                    badgeClass: 'badge-quick',
+                    eligibility: 'Existing PNG connection',
+                    provider: 'IGL'
+                },
+                { 
+                    name: 'Connection Transfer', 
+                    description: 'Transfer your existing PNG connection to a new owner during property sale or change of tenancy.', 
+                    icon: 'arrow-right-left',
+                    processingTime: '7-10 days',
+                    documentsRequired: 4,
+                    fee: '₹500',
+                    feeLabel: 'Transfer Fee',
+                    badge: '',
+                    badgeClass: '',
+                    eligibility: 'Existing connection holder',
+                    provider: 'IGL'
                 }
             ]
         };
@@ -251,16 +319,35 @@
         }
 
         function applyForService(service) {
-            $rootScope.showDialog('Service Application', 'Your application for "' + service.name + '" has been initiated. Processing time: ' + service.processingTime + '. Documents required: ' + service.documentsRequired + '.', 'info');
+            vm.selectedService = service;
+            vm.showApplyModal = true;
         }
+
+        vm.confirmApplyService = function() {
+            var service = vm.selectedService;
+            vm.showApplyModal = false;
+            $rootScope.showDialog('Application Submitted!', 'Your application for "' + service.name + '" has been submitted successfully.\n\nApplication ID: #APP-' + Date.now().toString(36).toUpperCase() + '\nProcessing Time: ' + service.processingTime + '\n\nYou will receive updates via SMS and email.', 'success');
+            vm.selectedService = null;
+        };
+
+        vm.closeApplyModal = function() {
+            vm.showApplyModal = false;
+            vm.selectedService = null;
+        };
 
         function escalateTicket(ticket) {
             $rootScope.showDialog('Ticket Escalated', 'Ticket ' + ticket.id + ' has been escalated to the Grievance Redressal Cell. Expected response within 24 hours.', 'warning');
         }
 
         function viewTicketDetails(ticket) {
-            $rootScope.showDialog('Ticket Details — ' + ticket.id, 'Status: ' + ticket.status + '\nCategory: ' + ticket.category + '\nUtility: ' + ticket.utility + '\nRemarks: ' + (ticket.remarks || 'None'), 'info');
+            vm.selectedTicket = ticket;
+            vm.showTicketModal = true;
         }
+
+        vm.closeTicketModal = function() {
+            vm.showTicketModal = false;
+            vm.selectedTicket = null;
+        };
 
         function toggleTicketMenu(ticket) {
             $rootScope.showDialog('Ticket Options — ' + ticket.id, 'You can escalate, track, or close this ticket. Use the escalate button for urgent issues.', 'info');

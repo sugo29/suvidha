@@ -1,5 +1,5 @@
 // Records Controller - Enhanced
-(function() {
+(function () {
     'use strict';
 
     angular.module('suvidhaApp')
@@ -18,7 +18,7 @@
         vm.sortReverse = true;
         vm.currentPage = 1;
         vm.itemsPerPage = 10;
-        
+
         // Header Stats
         vm.stats = {
             totalBills: 42,
@@ -26,7 +26,7 @@
             avgMonthly: '₹4,020',
             pending: 2
         };
-        
+
         // Sample Records Data
         vm.records = [
             {
@@ -174,38 +174,38 @@
                 statusIcon: 'check-circle'
             }
         ];
-        
+
         vm.filteredRecords = vm.records;
-        
+
         // Methods
-        vm.filterRecords = function() {
-            vm.filteredRecords = vm.records.filter(function(record) {
-                var matchesSearch = !vm.searchQuery || 
+        vm.filterRecords = function () {
+            vm.filteredRecords = vm.records.filter(function (record) {
+                var matchesSearch = !vm.searchQuery ||
                     record.billId.toLowerCase().indexOf(vm.searchQuery.toLowerCase()) !== -1 ||
                     record.utility.toLowerCase().indexOf(vm.searchQuery.toLowerCase()) !== -1;
-                
-                var matchesUtility = !vm.utilityFilter || 
+
+                var matchesUtility = !vm.utilityFilter ||
                     record.utility.toLowerCase() === vm.utilityFilter.toLowerCase();
-                
-                var matchesStatus = !vm.statusFilter || 
+
+                var matchesStatus = !vm.statusFilter ||
                     record.status.toLowerCase() === vm.statusFilter.toLowerCase();
-                
+
                 return matchesSearch && matchesUtility && matchesStatus;
             });
-            
+
             vm.updatePagination();
-            $timeout(function() {
+            $timeout(function () {
                 if (typeof lucide !== 'undefined') {
                     lucide.createIcons();
                 }
             }, 50);
         };
-        
-        vm.hasActiveFilters = function() {
+
+        vm.hasActiveFilters = function () {
             return vm.utilityFilter || vm.statusFilter || vm.periodFilter !== 'all';
         };
-        
-        vm.clearFilter = function(type) {
+
+        vm.clearFilter = function (type) {
             if (type === 'utility') {
                 vm.utilityFilter = '';
             } else if (type === 'status') {
@@ -215,80 +215,117 @@
             }
             vm.filterRecords();
         };
-        
-        vm.clearAllFilters = function() {
+
+        vm.clearAllFilters = function () {
             vm.searchQuery = '';
             vm.utilityFilter = '';
             vm.statusFilter = '';
             vm.periodFilter = 'all';
             vm.filterRecords();
         };
-        
-        vm.setViewMode = function(mode) {
+
+        vm.setViewMode = function (mode) {
             vm.viewMode = mode;
-            $timeout(function() {
+            $timeout(function () {
                 if (typeof lucide !== 'undefined') {
                     lucide.createIcons();
                 }
             }, 50);
         };
-        
-        vm.sortBy = function(column) {
+
+        vm.sortBy = function (column) {
             if (vm.sortColumn === column) {
                 vm.sortReverse = !vm.sortReverse;
             } else {
                 vm.sortColumn = column;
                 vm.sortReverse = false;
             }
-            $timeout(function() {
+            $timeout(function () {
                 if (typeof lucide !== 'undefined') {
                     lucide.createIcons();
                 }
             }, 50);
         };
-        
-        vm.updatePagination = function() {
+
+        vm.updatePagination = function () {
             vm.totalPages = Math.ceil(vm.filteredRecords.length / vm.itemsPerPage);
             vm.paginationStart = ((vm.currentPage - 1) * vm.itemsPerPage) + 1;
             vm.paginationEnd = Math.min(vm.currentPage * vm.itemsPerPage, vm.filteredRecords.length);
         };
-        
-        vm.previousPage = function() {
+
+        vm.previousPage = function () {
             if (vm.currentPage > 1) {
                 vm.currentPage--;
                 vm.updatePagination();
             }
         };
-        
-        vm.nextPage = function() {
+
+        vm.nextPage = function () {
             if (vm.currentPage < vm.totalPages) {
                 vm.currentPage++;
                 vm.updatePagination();
             }
         };
-        
-        vm.viewDocument = function(record) {
-            $rootScope.showDialog('Bill Document — ' + record.billId, 'Utility: ' + record.utility + '\nDate: ' + record.date + '\nReading: ' + record.reading + '\nAmount: ₹' + record.amount + '\nStatus: ' + record.status, 'info');
+
+        vm.viewDocument = function (record) {
+            vm.selectedRecord = record;
+            vm.showBillModal = true;
+            $timeout(function () {
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            }, 50);
         };
-        
-        vm.downloadBill = function(record) {
-            $rootScope.showDialog('Download Bill', 'Preparing PDF for bill ' + record.billId + ' (' + record.utility + ', ₹' + record.amount + '). The file will download automatically.', 'info');
+
+        vm.closeBillModal = function () {
+            vm.showBillModal = false;
+            vm.selectedRecord = null;
         };
-        
-        vm.downloadCSV = function() {
-            $rootScope.showDialog('Export CSV', 'Exporting ' + vm.filteredRecords.length + ' records to CSV format. The file includes bill ID, utility, reading, amount, and status columns.', 'info');
+
+        vm.downloadBill = function (record) {
+            var csvContent = 'Bill Receipt - Suvidha Portal\n';
+            csvContent += '================================\n\n';
+            csvContent += 'Bill ID,' + record.billId + '\n';
+            csvContent += 'Utility,' + record.utility + '\n';
+            csvContent += 'Date,' + record.date + '\n';
+            csvContent += 'Meter Reading,' + record.reading + '\n';
+            csvContent += 'Amount,Rs.' + record.amount + '\n';
+            csvContent += 'Status,' + record.status + '\n\n';
+            csvContent += 'Generated on,' + new Date().toLocaleDateString() + '\n';
+            csvContent += 'Source,Suvidha Civic Tech Portal\n';
+
+            var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            var link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = record.billId + '_receipt.csv';
+            link.click();
+            URL.revokeObjectURL(link.href);
         };
-        
-        vm.exportPDF = function() {
+
+        vm.downloadCSV = function () {
+            var csvContent = 'Date,Utility,Bill ID,Reading,Amount,Status\n';
+            vm.filteredRecords.forEach(function (record) {
+                csvContent += record.date + ',' + record.utility + ',' + record.billId + ',' + record.reading + ',Rs.' + record.amount + ',' + record.status + '\n';
+            });
+
+            var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            var link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'billing_records_' + new Date().toISOString().slice(0, 10) + '.csv';
+            link.click();
+            URL.revokeObjectURL(link.href);
+        };
+
+        vm.exportPDF = function () {
             $rootScope.showDialog('Export PDF', 'Generating a comprehensive PDF report of ' + vm.filteredRecords.length + ' billing records with summary statistics. This may take a moment.', 'info');
         };
 
         function init() {
             loadRecordsData();
             vm.updatePagination();
-            
+
             // Initialize Lucide icons
-            $timeout(function() {
+            $timeout(function () {
                 if (typeof lucide !== 'undefined') {
                     lucide.createIcons();
                 }
@@ -297,7 +334,7 @@
 
         function loadRecordsData() {
             ApiService.getRecordsData()
-                .then(function(response) {
+                .then(function (response) {
                     if (response.data && response.data.length > 0) {
                         vm.records = response.data;
                         vm.filteredRecords = vm.records;
@@ -305,7 +342,7 @@
                     }
                     vm.loading = false;
                 })
-                .catch(function(error) {
+                .catch(function (error) {
                     console.error('Error loading records data:', error);
                     vm.loading = false;
                 });

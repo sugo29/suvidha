@@ -35,7 +35,13 @@
             font-family: var(--font-primary);
             line-height: 1.6;
             color: var(--gray-900);
-            background: linear-gradient(135deg, rgba(0, 112, 60, 0.06) 0%, rgba(29, 112, 184, 0.04) 50%, rgba(0, 166, 81, 0.06) 100%);
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.78)),
+                url('/static/images/backdrop.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             min-height: 100vh;
             display: flex;
             align-items: center;
