@@ -210,6 +210,14 @@
     </div>
 
     <!-- Scripts -->
+    <script>
+        // Initialize authentication token from Flask session
+        // This ensures AngularJS app knows user is authenticated
+        if (!localStorage.getItem('authToken')) {
+            // Set a dummy token since Flask backend handles auth via sessions
+            localStorage.setItem('authToken', 'flask-session-auth');
+        }
+    </script>
     <script src="/static/app/app.js"></script>
     <script src="/static/app/services/auth.service.js"></script>
     <script src="/static/app/services/api.service.js"></script>

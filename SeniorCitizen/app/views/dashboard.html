@@ -1333,11 +1333,26 @@
         var app = angular.module('seniorApp', []);
 
         app.controller('DashboardController', ['$scope', function ($scope) {
-            // User Data
+            // User Data - Load from localStorage
+            var storedUser = JSON.parse(localStorage.getItem('suvidhaUser') || 'null');
+            var userName = 'Guest User';
+            var userInitials = 'GU';
+            var userPhone = 'N/A';
+            
+            if (storedUser) {
+                userName = storedUser.full_name || storedUser.name || 'Guest User';
+                userPhone = storedUser.phone || 'N/A';
+                // Generate initials from name
+                var nameParts = userName.split(' ');
+                userInitials = nameParts.length >= 2 
+                    ? (nameParts[0][0] + nameParts[1][0]).toUpperCase()
+                    : userName.substring(0, 2).toUpperCase();
+            }
+            
             $scope.user = {
-                name: 'Vikram Singh',
-                initials: 'VS',
-                phone: '+91 98765 43210'
+                name: userName,
+                initials: userInitials,
+                phone: userPhone
             };
 
             // Current Date - Friendly format

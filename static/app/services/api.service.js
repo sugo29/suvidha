@@ -7,6 +7,9 @@
             var self = this;
             var baseUrl = '/api';
 
+            // Configure $http to send credentials (cookies) with every request
+            $http.defaults.withCredentials = true;
+
             self.get = function(endpoint) {
                 return $http.get(baseUrl + endpoint);
             };

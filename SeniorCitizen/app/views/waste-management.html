@@ -443,10 +443,13 @@
         app.controller('WasteManagementController', ['$scope', '$timeout', '$location',
             function($scope, $timeout, $location) {
 
-                // User Data
+                // User Data - Load from localStorage
+                var storedUser = JSON.parse(localStorage.getItem('suvidhaUser') || 'null');
+                var userName = storedUser ? (storedUser.full_name || storedUser.name || 'Guest User') : 'Guest User';
+                var userInitials = userName.split(' ').map(function(word) { return word[0]; }).join('').toUpperCase().substring(0, 2);
                 $scope.user = {
-                    name: 'Rajesh Kumar',
-                    initials: 'RK'
+                    name: userName,
+                    initials: userInitials
                 };
 
                 // Waste Status Data

@@ -5,18 +5,6 @@
     angular.module('suvidhaApp', ['ngRoute', 'ngSanitize'])
         .config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
             $routeProvider
-                .when('/landing', {
-                    templateUrl: '/static/app/views/landing.html',
-                    controller: 'AuthController',
-                    controllerAs: 'vm',
-                    requireAuth: false
-                })
-                .when('/auth', {
-                    templateUrl: '/static/app/views/auth.html',
-                    controller: 'AuthController',
-                    controllerAs: 'vm',
-                    requireAuth: false
-                })
                 .when('/', {
                     templateUrl: '/static/app/views/dashboard.html',
                     controller: 'DashboardController',
@@ -78,7 +66,7 @@
                     requireAuth: true
                 })
                 .otherwise({
-                    redirectTo: '/landing'
+                    redirectTo: '/dashboard'
                 });
 
             // Use HTML5 mode (optional - removes # from URLs)
@@ -89,15 +77,15 @@
             $rootScope.currentLang = 'en';
 
             // --- User name for sidebar ---
-            function loadUserName() {
+            $rootScope.loadUserName = function() {
                 try {
                     var user = JSON.parse(localStorage.getItem('suvidhaUser') || '{}');
-                    $rootScope.userName = user.name || user.username || 'Citizen';
+                    $rootScope.userName = user.full_name || user.name || user.username || 'Citizen';
                 } catch (e) {
                     $rootScope.userName = 'Citizen';
                 }
-            }
-            loadUserName();
+            };
+            $rootScope.loadUserName();
 
             // --- Sidebar toggle ---
             $rootScope.sidebarCollapsed = false;
@@ -142,28 +130,23 @@
                     .then(function() {
                         localStorage.removeItem('suvidhaUser');
                         localStorage.removeItem('authToken');
-                        $location.path('/landing');
+                        window.location.href = '/login';
                     })
                     .catch(function() {
                         localStorage.removeItem('suvidhaUser');
                         localStorage.removeItem('authToken');
-                        $location.path('/landing');
+                        window.location.href = '/login';
                     });
             };
 
-            // Authentication check on route change
-            $rootScope.$on('$routeChangeStart', function(event, next) {
-                // Check if route requires authentication
-                if (next.requireAuth && !AuthService.isAuthenticated()) {
-                    // Redirect to landing page
-                    event.preventDefault();
-                    $location.path('/landing');
-                } else if (next.$$route && (next.$$route.originalPath === '/auth' || next.$$route.originalPath === '/landing') && AuthService.isAuthenticated()) {
-                    // If already authenticated and trying to access auth/landing page, redirect to dashboard
-                    event.preventDefault();
-                    $location.path('/dashboard');
-                }
-            });
+            // Authentication check on route change - DISABLED
+            // Flask backend handles authentication via sessions
+            // $rootScope.$on('$routeChangeStart', function(event, next) {
+            //     if (next.requireAuth && !AuthService.isAuthenticated()) {
+            //         event.preventDefault();
+            //         window.location.href = '/login';
+            //     }
+            // });
 
             // Track current page for sidebar active state
             $rootScope.$on('$routeChangeSuccess', function() {

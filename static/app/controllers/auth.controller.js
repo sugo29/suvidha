@@ -4,11 +4,11 @@ angular.module('suvidhaApp')
             
             // Read URL query params to determine initial view
             var searchParams = $location.search();
-            var initialMode = searchParams.mode || 'landing';
+            var initialMode = searchParams.mode || 'login';
             var initialRole = searchParams.role || null;
             
-            // Current state - set from URL params
-            $scope.currentView = (initialMode === 'login' || initialMode === 'signup') ? initialMode : 'landing';
+            // Current state - set from URL params (default to login, remove landing option)
+            $scope.currentView = (initialMode === 'login' || initialMode === 'signup') ? initialMode : 'login';
             $scope.selectedRole = initialRole; // pre-select role if passed from landing page
             $scope.currentStep = 1;
             $scope.totalSteps = 6;
@@ -294,6 +294,7 @@ angular.module('suvidhaApp')
                         if (response.success) {
                             localStorage.setItem('suvidhaUser', JSON.stringify(response.user));
                             localStorage.setItem('user_id', response.user_id);
+                            $rootScope.loadUserName(); // Update sidebar username
                             
                             $scope.isLoggingIn = false;
                             
@@ -334,6 +335,7 @@ angular.module('suvidhaApp')
                         if (response.success) {
                             localStorage.setItem('suvidhaUser', JSON.stringify(response.user));
                             localStorage.setItem('user_id', response.user_id);
+                            $rootScope.loadUserName(); // Update sidebar username
                             
                             $scope.isCreatingAccount = false;
                             $location.path('/dashboard');

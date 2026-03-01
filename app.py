@@ -2,7 +2,7 @@ from flask import Flask, render_template, session, request, jsonify, send_from_d
 from flask_cors import CORS
 import os
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import (db, User, Vendor, Community, CommunityStats, Bill, ServiceReport,
                     GovOfficial, Grievance, MeterReading, RWAProject, AuditLog, 
@@ -30,10 +30,12 @@ app = CustomFlask(__name__, static_folder='static', static_url_path='/static')
 app.secret_key = 'your-secret-key-here-change-in-production'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///suvidha.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_HTTPONLY'] = True
 
 # Initialize database
 db.init_app(app)
-CORS(app)
+CORS(app, supports_credentials=True, origins=['http://127.0.0.1:5000', 'http://localhost:5000'])
 
 # Initialize admin models and register blueprint
 init_admin_models(db, {
@@ -110,10 +112,13 @@ with app.app_context():
 # ============================================
 @app.route('/')
 def landing():
-    return render_template('landing.html')
+    return render_template('index.html')
 
 @app.route('/app')
 def citizen_app():
+    # Check if user is logged in
+    if 'user_id' not in session:
+        return redirect('/login')
     return render_template('index.html')
 
 @app.route('/login')

@@ -281,7 +281,20 @@
     <script>
         var app = angular.module('seniorApp', []);
         app.controller('PayController', ['$scope', function ($scope) {
-            $scope.user = { name: 'Vikram Singh', initials: 'VS' };
+            // Load user from localStorage
+            var storedUser = JSON.parse(localStorage.getItem('suvidhaUser') || 'null');
+            var userName = 'Guest User';
+            var userInitials = 'GU';
+            
+            if (storedUser) {
+                userName = storedUser.full_name || storedUser.name || 'Guest User';
+                var nameParts = userName.split(' ');
+                userInitials = nameParts.length >= 2 
+                    ? (nameParts[0][0] + nameParts[1][0]).toUpperCase()
+                    : userName.substring(0, 2).toUpperCase();
+            }
+            
+            $scope.user = { name: userName, initials: userInitials };
             $scope.paymentMethods = [
                 { id: 'upi', name: 'UPI Payment', icon: '📱', desc: 'Pay using Google Pay, PhonePe' },
                 { id: 'card', name: 'Debit/Credit Card', icon: '💳', desc: 'Use your bank card' },
